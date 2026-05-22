@@ -3,6 +3,8 @@ using System.Xml.Linq;
 using FacturXManager.Modules.Compliance.Application.Abstractions;
 using FacturXManager.Modules.Compliance.Domain.Invoicing;
 
+// S1192 : les noms d'éléments XML CII (ID, Name, TypeCode, etc.) sont répétés par nature.
+#pragma warning disable S1192
 namespace FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 
 /// <summary>
@@ -33,7 +35,11 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
                 BuildExchangedDocument(invoice),
                 BuildTradeTransaction(invoice)));
 
-        return document.Declaration + Environment.NewLine + document;
+        string body = document.ToString();
+
+        return document.Declaration is null
+            ? body
+            : $"{document.Declaration}{Environment.NewLine}{body}";
     }
 
     private static XElement BuildDocumentContext(Invoice invoice)

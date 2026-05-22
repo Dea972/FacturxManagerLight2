@@ -34,7 +34,7 @@ internal sealed class ChorusProTransmitter(
             request.DocumentReference,
             request.RecipientSiret);
 
-        var stopwatch = Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         try
         {

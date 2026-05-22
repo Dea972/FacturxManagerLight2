@@ -10,6 +10,7 @@ using FacturXManager.Modules.EReporting.Infrastructure.Database;
 using FacturXManager.Modules.EReporting.Infrastructure.Declarations;
 using FacturXManager.Modules.EReporting.Infrastructure.Dgfip;
 
+#pragma warning disable S1172 // Unused method parameters should be removed
 namespace FacturXManager.Modules.EReporting.Infrastructure;
 
 public static class EReportingModule
