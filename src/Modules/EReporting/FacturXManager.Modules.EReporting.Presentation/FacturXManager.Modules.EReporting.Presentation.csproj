@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\..\Common\FacturXManager.Common.Presentation\FacturXManager.Common.Presentation.csproj" />
+    <ProjectReference
+      Include="..\FacturXManager.Modules.EReporting.Application\FacturXManager.Modules.EReporting.Application.csproj" />
+  </ItemGroup>
+
+</Project>

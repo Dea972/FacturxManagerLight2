@@ -61,6 +61,24 @@
     <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.IntegrationEvents/FacturXManager.Modules.AiEngine.IntegrationEvents.csproj" />
     <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Presentation/FacturXManager.Modules.AiEngine.Presentation.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Compliance/">
+    <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Application/FacturXManager.Modules.Compliance.Application.csproj" />
+    <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Domain/FacturXManager.Modules.Compliance.Domain.csproj" />
+    <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Infrastructure/FacturXManager.Modules.Compliance.Infrastructure.csproj" />
+    <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Presentation/FacturXManager.Modules.Compliance.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/EReporting/">
+    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Application/FacturXManager.Modules.EReporting.Application.csproj" />
+    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Domain/FacturXManager.Modules.EReporting.Domain.csproj" />
+    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Infrastructure/FacturXManager.Modules.EReporting.Infrastructure.csproj" />
+    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Presentation/FacturXManager.Modules.EReporting.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Transmission/">
+    <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Application/FacturXManager.Modules.Transmission.Application.csproj" />
+    <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Domain/FacturXManager.Modules.Transmission.Domain.csproj" />
+    <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Infrastructure/FacturXManager.Modules.Transmission.Infrastructure.csproj" />
+    <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Presentation/FacturXManager.Modules.Transmission.Presentation.csproj" />
+  </Folder>
   <Folder Name="/test/">
     <Project Path="test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />
   </Folder>
