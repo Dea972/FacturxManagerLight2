@@ -1,4 +1,32 @@
 <Solution>
+  <Folder Name="/.claude.agents/">
+    <File Path=".claude/agents/code-reviewer.md" />
+    <File Path=".claude/agents/security-auditor.md" />
+  </Folder>
+  <Folder Name="/.claude.commands/">
+    <File Path=".claude/commands/deploy.md" />
+    <File Path=".claude/commands/fix-issue.md" />
+    <File Path=".claude/commands/review.md" />
+  </Folder>
+  <Folder Name="/.claude.rules/">
+    <File Path=".claude/rules/api-conventions.md" />
+    <File Path=".claude/rules/code-style.md" />
+    <File Path=".claude/rules/testing.md" />
+  </Folder>
+  <Folder Name="/.claude.skills.deploy/">
+    <File Path=".claude/skills/deploy/SKILL.md" />
+  </Folder>
+  <Folder Name="/.claude.skills.security-review/">
+    <File Path=".claude/skills/security-review/SKILL.md" />
+  </Folder>
+  <Folder Name="/.claude/">
+    <File Path=".claude/CLAUDE.md" />
+    <File Path=".claude/settings.json" />
+    <File Path=".claude/settings.local.json" />
+  </Folder>
+  <Folder Name="/.github/">
+    <File Path=".github/copilot-instructions.md" />
+  </Folder>
   <Folder Name="/aspire/">
     <Project Path="aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
     <Project Path="aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
@@ -20,6 +48,10 @@
     <Project Path="src/Common/FacturXManager.Common.Domain/FacturXManager.Common.Domain.csproj" />
     <Project Path="src/Common/FacturXManager.Common.Infrastructure/FacturXManager.Common.Infrastructure.csproj" />
     <Project Path="src/Common/FacturXManager.Common.Presentation/FacturXManager.Common.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Generators/">
+    <Project Path="../../../repos/ChaussonStore/src/Generators/SnapshotGenerator/SnapshotGenerator.csproj" />
+    <Project Path="../../../repos/ChaussonStore/src/Generators/ValueObjectGenerator/ValueObjectGenerator.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/AiEngine/">

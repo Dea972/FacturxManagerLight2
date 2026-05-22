@@ -360,3 +360,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/files.zip
+/.claude/settings.local.json
+/.claude.zip
