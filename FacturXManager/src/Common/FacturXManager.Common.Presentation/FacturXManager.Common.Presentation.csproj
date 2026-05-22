@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ModelContextProtocol" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FacturXManager.Common.Domain\FacturXManager.Common.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

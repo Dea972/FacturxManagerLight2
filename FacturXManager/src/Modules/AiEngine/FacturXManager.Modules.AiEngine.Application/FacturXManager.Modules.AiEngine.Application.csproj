@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="..\FacturXManager.Modules.AiEngine.Domain\FacturXManager.Modules.AiEngine.Domain.csproj" />
+    <ProjectReference
+      Include="..\..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
+  </ItemGroup>
+
+</Project>

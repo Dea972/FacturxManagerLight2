@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
+    <ProjectReference Include="..\..\Common\FacturXManager.Common.Infrastructure\FacturXManager.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Common\FacturXManager.Common.Presentation\FacturXManager.Common.Presentation.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\AiEngine\FacturXManager.Modules.AiEngine.Infrastructure\FacturXManager.Modules.AiEngine.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,6 @@
+@FacturXManager.Api_HostAddress = http://localhost:5136
+
+GET {{FacturXManager.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
