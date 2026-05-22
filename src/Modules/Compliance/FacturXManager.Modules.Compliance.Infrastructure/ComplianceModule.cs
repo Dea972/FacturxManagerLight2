@@ -1,7 +1,9 @@
-using System.Reflection;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FacturXManager.Common.Presentation.Endpoints;
+using FacturXManager.Modules.Compliance.Application.Abstractions;
+using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 
 #pragma warning disable S1172 // Unused method parameters should be removed
 namespace FacturXManager.Modules.Compliance.Infrastructure;
@@ -12,7 +14,12 @@ public static class ComplianceModule
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ComplianceModule))!));
+        services.AddMediatR(config =>
+            config.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly));
+
+        services.AddValidatorsFromAssembly(
+            Application.AssemblyReference.Assembly,
+            includeInternalTypes: true);
 
         services.AddInfrastructure();
 
@@ -25,17 +32,14 @@ public static class ComplianceModule
 
     private static void AddInfrastructure(this IServiceCollection services)
     {
-        // Register infrastructure services here
-        // Example:
-        // services.AddScoped<IRepository, Repository>();
+        services.AddScoped<IInvoiceBuilder, InvoiceBuilder>();
+        services.AddScoped<IEn16931Validator, En16931Validator>();
+        services.AddScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>();
+
+        // Point d'extension PDF/A-3b : remplacer par une implémentation adossée à une bibliothèque PDF.
+        services.AddScoped<IFacturXPdfA3bRenderer, UnconfiguredFacturXPdfA3bRenderer>();
     }
 
-    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)
-    {
-        // Configure options here
-        // Example:
-        // services.Configure<ComplianceOptions>(configuration.GetSection("Compliance"));
-
-        return Task.CompletedTask;
-    }
+    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>
+        Task.CompletedTask;
 }
