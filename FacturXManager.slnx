@@ -1,35 +1,35 @@
 <Solution>
   <Folder Name="/aspire/">
-    <Project Path="FacturXManager/aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
-    <Project Path="FacturXManager/aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
+    <Project Path="aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
+    <Project Path="aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
-    <File Path="FacturXManager/.editorconfig" />
-    <File Path="FacturXManager/Directory.Build.props" />
-    <File Path="FacturXManager/Directory.Packages.props" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Adapters/">
-    <Project Path="FacturXManager/src/Adapters/FacturXManager.Sdk/FacturXManager.Sdk.csproj" />
+    <Project Path="src/Adapters/FacturXManager.Sdk/FacturXManager.Sdk.csproj" />
   </Folder>
   <Folder Name="/src/API/">
-    <Project Path="FacturXManager/src/API/FacturXManager.Api/FacturXManager.Api.csproj" />
+    <Project Path="src/API/FacturXManager.Api/FacturXManager.Api.csproj" />
   </Folder>
   <Folder Name="/src/Common/">
-    <Project Path="FacturXManager/src/Common/FacturXManager.Common.Application/FacturXManager.Common.Application.csproj" />
-    <Project Path="FacturXManager/src/Common/FacturXManager.Common.Domain/FacturXManager.Common.Domain.csproj" />
-    <Project Path="FacturXManager/src/Common/FacturXManager.Common.Infrastructure/FacturXManager.Common.Infrastructure.csproj" />
-    <Project Path="FacturXManager/src/Common/FacturXManager.Common.Presentation/FacturXManager.Common.Presentation.csproj" />
+    <Project Path="src/Common/FacturXManager.Common.Application/FacturXManager.Common.Application.csproj" />
+    <Project Path="src/Common/FacturXManager.Common.Domain/FacturXManager.Common.Domain.csproj" />
+    <Project Path="src/Common/FacturXManager.Common.Infrastructure/FacturXManager.Common.Infrastructure.csproj" />
+    <Project Path="src/Common/FacturXManager.Common.Presentation/FacturXManager.Common.Presentation.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/AiEngine/">
-    <Project Path="FacturXManager/src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Application/FacturXManager.Modules.AiEngine.Application.csproj" />
-    <Project Path="FacturXManager/src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Domain/FacturXManager.Modules.AiEngine.Domain.csproj" />
-    <Project Path="FacturXManager/src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Infrastructure/FacturXManager.Modules.AiEngine.Infrastructure.csproj" />
-    <Project Path="FacturXManager/src/Modules/AiEngine/FacturXManager.Modules.AiEngine.IntegrationEvents/FacturXManager.Modules.AiEngine.IntegrationEvents.csproj" />
-    <Project Path="FacturXManager/src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Presentation/FacturXManager.Modules.AiEngine.Presentation.csproj" />
+    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Application/FacturXManager.Modules.AiEngine.Application.csproj" />
+    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Domain/FacturXManager.Modules.AiEngine.Domain.csproj" />
+    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Infrastructure/FacturXManager.Modules.AiEngine.Infrastructure.csproj" />
+    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.IntegrationEvents/FacturXManager.Modules.AiEngine.IntegrationEvents.csproj" />
+    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Presentation/FacturXManager.Modules.AiEngine.Presentation.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="FacturXManager/test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />
+    <Project Path="test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />
   </Folder>
 </Solution>
