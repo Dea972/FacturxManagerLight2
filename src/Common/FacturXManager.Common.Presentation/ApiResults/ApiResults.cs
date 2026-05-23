@@ -26,6 +26,8 @@ public static class ApiResults
                 ErrorType.Problem => error.Code,
                 ErrorType.NotFound => error.Code,
                 ErrorType.Conflict => error.Code,
+                ErrorType.ExternalService => error.Code,
+                ErrorType.Timeout => error.Code,
                 _ => "Server failure"
             };
 
@@ -36,6 +38,8 @@ public static class ApiResults
                 ErrorType.Problem => error.Description,
                 ErrorType.NotFound => error.Description,
                 ErrorType.Conflict => error.Description,
+                ErrorType.ExternalService => error.Description,
+                ErrorType.Timeout => error.Description,
                 _ => "An unexpected error occurred"
             };
 
@@ -46,6 +50,8 @@ public static class ApiResults
                 ErrorType.Problem => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                 ErrorType.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
                 ErrorType.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+                ErrorType.ExternalService => "https://tools.ietf.org/html/rfc7231#section-6.6.3",
+                ErrorType.Timeout => "https://tools.ietf.org/html/rfc7231#section-6.6.5",
                 _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
             };
 
@@ -56,6 +62,8 @@ public static class ApiResults
                 ErrorType.Problem => StatusCodes.Status400BadRequest,
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 ErrorType.Conflict => StatusCodes.Status409Conflict,
+                ErrorType.ExternalService => StatusCodes.Status502BadGateway,
+                ErrorType.Timeout => StatusCodes.Status504GatewayTimeout,
                 _ => StatusCodes.Status500InternalServerError
             };
 

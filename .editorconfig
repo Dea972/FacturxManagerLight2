@@ -424,3 +424,8 @@ dotnet_style_coalesce_expression = true:error
 dotnet_style_null_propagation = true:error
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
 
+# S107: Methods should not have too many parameters
+# Désactivé : les factory d'agrégats DDD et les records CQRS (commandes, models, responses)
+# exposent légitimement de nombreux champs métier.
+dotnet_diagnostic.S107.severity = none
+

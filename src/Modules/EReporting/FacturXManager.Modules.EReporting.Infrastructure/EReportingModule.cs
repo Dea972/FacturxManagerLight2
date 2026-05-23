@@ -1,7 +1,14 @@
-using System.Reflection;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FacturXManager.Common.Presentation.Endpoints;
+using FacturXManager.Modules.EReporting.Application.Abstractions;
+using FacturXManager.Modules.EReporting.Application.Abstractions.Data;
+using FacturXManager.Modules.EReporting.Domain.Declarations;
+using FacturXManager.Modules.EReporting.Infrastructure.Database;
+using FacturXManager.Modules.EReporting.Infrastructure.Declarations;
+using FacturXManager.Modules.EReporting.Infrastructure.Dgfip;
 
 #pragma warning disable S1172 // Unused method parameters should be removed
 namespace FacturXManager.Modules.EReporting.Infrastructure;
@@ -12,9 +19,14 @@ public static class EReportingModule
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(EReportingModule))!));
+        services.AddMediatR(config =>
+            config.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly));
 
-        services.AddInfrastructure();
+        services.AddValidatorsFromAssembly(
+            Application.AssemblyReference.Assembly,
+            includeInternalTypes: true);
+
+        services.AddInfrastructure(configuration);
 
         services.AddEndpoints(Presentation.AssemblyReference.Assembly);
 
@@ -23,19 +35,22 @@ public static class EReportingModule
         return services;
     }
 
-    private static void AddInfrastructure(this IServiceCollection services)
+    private static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register infrastructure services here
-        // Example:
-        // services.AddScoped<IRepository, Repository>();
+        string connectionString = configuration.GetConnectionString("Database") ?? string.Empty;
+
+        services.AddDbContext<EReportingDbContext>(options =>
+            options
+                .UseSqlServer(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", Schemas.EReporting))
+                .UseSnakeCaseNamingConvention());
+
+        services.AddScoped<IDeclarationRepository, DeclarationRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EReportingDbContext>());
+
+        // Point d'extension DGFiP : remplacer par un client opérationnel dès stabilisation de l'API.
+        services.AddScoped<IDgfipReportingClient, UnconfiguredDgfipReportingClient>();
     }
 
-    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)
-    {
-        // Configure options here
-        // Example:
-        // services.Configure<EReportingOptions>(configuration.GetSection("EReporting"));
-
-        return Task.CompletedTask;
-    }
+    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>
+        Task.CompletedTask;
 }
