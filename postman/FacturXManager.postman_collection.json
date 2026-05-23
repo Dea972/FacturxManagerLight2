@@ -1,0 +1,298 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "FacturX Manager API",
+    "description": "Collection de référence pour l'API FacturX Manager. Couvre les modules Compliance, Transmission et EReporting.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const tokenUrl = pm.environment.get('pisteTokenUrl');",
+          "if (!tokenUrl) return; // environnement local, pas de token PISTE",
+          "",
+          "pm.sendRequest({",
+          "    url: tokenUrl,",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+          "    body: {",
+          "        mode: 'urlencoded',",
+          "        urlencoded: [",
+          "            { key: 'grant_type', value: 'client_credentials' },",
+          "            { key: 'client_id', value: pm.environment.get('pisteClientId') },",
+          "            { key: 'client_secret', value: pm.environment.get('pisteClientSecret') }",
+          "        ]",
+          "    }",
+          "}, (err, res) => {",
+          "    if (!err) pm.environment.set('accessToken', res.json().access_token);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [],
+  "item": [
+    {
+      "name": "Compliance",
+      "description": "Validation EN16931, génération XML CII et PDF/A-3b (Factur-X).",
+      "item": [
+        {
+          "name": "POST /compliance/invoices/validate — Validate Invoice Compliance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/compliance/invoices/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["compliance", "invoices", "validate"]
+            },
+            "description": "Vérifie la conformité EN16931 d'une facture sans produire de document. Retourne un rapport de conformité détaillé.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /compliance/invoices/certify — Certify Invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/compliance/invoices/certify",
+              "host": ["{{baseUrl}}"],
+              "path": ["compliance", "invoices", "certify"]
+            },
+            "description": "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarqué (Factur-X). Retourne le document certifié encodé en Base64.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transmission",
+      "description": "Acheminement des documents certifiés vers Chorus Pro / PDP / PPF.",
+      "item": [
+        {
+          "name": "POST /transmissions — Submit Transmission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transmissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["transmissions"]
+            },
+            "description": "Dépose un document certifié Factur-X (PDF/A-3b en Base64) sur la plateforme du canal demandé (ex: ChorusPro) et trace la tentative de dépôt.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentReference\": \"FA-2025-00042\",\n  \"recipientSiret\": \"98765432100018\",\n  \"channel\": \"ChorusPro\",\n  \"facturXPdfBase64\": \"JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nCvkAgAA//8DBQID\",\n  \"executingService\": \"DSI-Facturation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /transmissions/{transmissionId} — Get Transmission",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/transmissions/{{transmissionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["transmissions", "{{transmissionId}}"],
+              "variable": [
+                {
+                  "key": "transmissionId",
+                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "Identifiant unique de la transmission"
+                }
+              ]
+            },
+            "description": "Retourne le statut courant et l'historique des tentatives d'une transmission identifiée par son GUID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "EReporting",
+      "description": "Déclarations périodiques B2C et internationales à destination de la DGFiP.",
+      "item": [
+        {
+          "name": "POST /ereporting/declarations — Create Declaration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ereporting/declarations",
+              "host": ["{{baseUrl}}"],
+              "path": ["ereporting", "declarations"]
+            },
+            "description": "Crée une nouvelle déclaration d'e-reporting au statut Brouillon pour la période et le type de transaction indiqués.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"year\": 2025,\n  \"month\": 6,\n  \"transactionType\": \"B2C\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /ereporting/declarations/{declarationId} — Get Declaration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["ereporting", "declarations", "{{declarationId}}"],
+              "variable": [
+                {
+                  "key": "declarationId",
+                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "Identifiant unique de la déclaration"
+                }
+              ]
+            },
+            "description": "Retourne le détail complet et le statut courant d'une déclaration d'e-reporting."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /ereporting/declarations/{declarationId}/entries — Add Declaration Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/entries",
+              "host": ["{{baseUrl}}"],
+              "path": ["ereporting", "declarations", "{{declarationId}}", "entries"],
+              "variable": [
+                {
+                  "key": "declarationId",
+                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "Identifiant unique de la déclaration (statut Brouillon requis)"
+                }
+              ]
+            },
+            "description": "Ajoute une transaction à une déclaration au statut Brouillon. Montants HT et TVA en euros.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taxableAmount\": 450.00,\n  \"vatAmount\": 90.00,\n  \"countryCode\": \"FR\",\n  \"operationNature\": \"GOODS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /ereporting/declarations/{declarationId}/finalize — Finalize Declaration",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/finalize",
+              "host": ["{{baseUrl}}"],
+              "path": ["ereporting", "declarations", "{{declarationId}}", "finalize"],
+              "variable": [
+                {
+                  "key": "declarationId",
+                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "Identifiant unique de la déclaration (statut Brouillon requis)"
+                }
+              ]
+            },
+            "description": "Finalise une déclaration Brouillon pour la rendre prête à la soumission DGFiP. Retourne 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /ereporting/declarations/{declarationId}/submit — Submit Declaration",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["ereporting", "declarations", "{{declarationId}}", "submit"],
+              "variable": [
+                {
+                  "key": "declarationId",
+                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "description": "Identifiant unique de la déclaration (statut Finalisé requis)"
+                }
+              ]
+            },
+            "description": "Soumet une déclaration finalisée à la DGFiP via l'API PISTE. Retourne le récapitulatif de soumission."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

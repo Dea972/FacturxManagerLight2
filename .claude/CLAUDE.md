@@ -230,3 +230,16 @@ Adopter la posture d'un tech lead senior DDD / CQRS / Modular Monolith :
 > ⚠️ **Incohérence détectée** : [description]
 > 💡 **Suggestion** : [correction proposée]
 > ➡️ Je procède avec la correction sauf instruction contraire.
+
+## Collections Postman
+
+Le repertoire postman/ contient la collection et les environnements de reference.
+
+**Regle absolue : mettre a jour FacturXManager.postman_collection.json a chaque ajout, modification ou suppression d'endpoint.**
+
+- Ajouter l'item dans le dossier Module > Agregat approprie
+- Convention de nommage : METHODE /chemin - NomEndpoint`r
+- Body JSON avec des valeurs d'exemple realistes
+- Query parameters optionnels avec disabled: true`r
+- Ajouter une description pour les endpoints non triviaux
+- Ne **jamais** supprimer un item existant sans confirmation explicite

@@ -361,5 +361,19 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /files.zip
+
+# Postman environments contenant des secrets
+/postman/*.Sandbox.postman_environment.json
+/postman/*.Production.postman_environment.json
 /.claude/settings.local.json
 /.claude.zip
+/.claude/skills/security-review/SKILL.md
+/.claude/skills/deploy/SKILL.md
+/.claude/rules/api-conventions.md
+/.claude/rules/code-style.md
+/.claude/rules/testing.md
+/.claude/commands/deploy.md
+/.claude/commands/fix-issue.md
+/.claude/commands/review.md
+/.claude/agents/code-reviewer.md
+/.claude/agents/security-auditor.md

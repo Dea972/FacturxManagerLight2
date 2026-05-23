@@ -1,24 +1,5 @@
 <Solution>
-  <Folder Name="/.claude.agents/">
-    <File Path=".claude/agents/code-reviewer.md" />
-    <File Path=".claude/agents/security-auditor.md" />
-  </Folder>
-  <Folder Name="/.claude.commands/">
-    <File Path=".claude/commands/deploy.md" />
-    <File Path=".claude/commands/fix-issue.md" />
-    <File Path=".claude/commands/review.md" />
-  </Folder>
-  <Folder Name="/.claude.rules/">
-    <File Path=".claude/rules/api-conventions.md" />
-    <File Path=".claude/rules/code-style.md" />
-    <File Path=".claude/rules/testing.md" />
-  </Folder>
-  <Folder Name="/.claude.skills.deploy/">
-    <File Path=".claude/skills/deploy/SKILL.md" />
-  </Folder>
-  <Folder Name="/.claude.skills.security-review/">
-    <File Path=".claude/skills/security-review/SKILL.md" />
-  </Folder>
+ 
   <Folder Name="/.claude/">
     <File Path=".claude/CLAUDE.md" />
     <File Path=".claude/settings.json" />
@@ -31,6 +12,7 @@
     <Project Path="aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
     <Project Path="aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/postman/" />
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
@@ -38,6 +20,7 @@
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Adapters/">
+    <Project Path="src/Adapters/FacturXManager.HttpClient/FacturXManager.Client.csproj" Id="cf6e7cfb-c3a5-4116-a2ff-8e2945caba02" />
     <Project Path="src/Adapters/FacturXManager.Sdk/FacturXManager.Sdk.csproj" />
   </Folder>
   <Folder Name="/src/API/">

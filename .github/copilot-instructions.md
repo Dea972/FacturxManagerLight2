@@ -126,7 +126,9 @@ Quand c'est nécessaire :
   avec décoration `IdempotentDomainEventHandler<T>` / `IdempotentIntegrationEventHandler<T>`
 - Mapping : **Riok.Mapperly**
 - HTTP clients externes : **Refit**
-  - Séparer interfaces lecture / écriture si applicable (`IXxxApiRead` / `IXxxApiWrite`)
+  - Une interface par agrégat (`IXxxApi`)
+  - Modèles de retour suffixés `Dto` (ex : `TransmissionDto`, `CertifyInvoiceDto`)
+  - Modèles de requête suffixés `Request` (ex : `SubmitTransmissionRequest`)
   - Centraliser la configuration `BaseAddress` dans des méthodes d'extension communes
 - **Migrations EF Core** : ne **jamais** exécuter automatiquement
   Proposer la commande et attendre confirmation. Deux lignes distinctes (ne pas chaîner avec `&&`) :
@@ -261,3 +263,18 @@ Avant toute génération ou modification, analyser le contexte et signaler :
 > 🏗️ **Analyse** : ce que cette implémentation implique architecturalement
 > ⚠️ **Points d'attention** : risques, dettes, incohérences détectées
 > ✅ **Proposition** : implémentation recommandée avec justification courte
+
+---
+
+## 14. Collections Postman
+
+Le repertoire postman/ contient la collection et les environnements de reference.
+
+**Regle absolue : mettre a jour FacturXManager.postman_collection.json a chaque ajout, modification ou suppression d'endpoint.**
+
+- Ajouter l'item dans le dossier Module > Agregat approprie
+- Convention de nommage : METHODE /chemin - NomEndpoint`r
+- Body JSON avec des valeurs d'exemple realistes
+- Query parameters optionnels avec disabled: true`r
+- Ajouter une description pour les endpoints non triviaux
+- Ne **jamais** supprimer un item existant sans confirmation explicite
