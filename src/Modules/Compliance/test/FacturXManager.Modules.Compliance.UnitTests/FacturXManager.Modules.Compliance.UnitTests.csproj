@@ -2,9 +2,6 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-    <AnalysisMode>Recommended</AnalysisMode>
   </PropertyGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@ public class PartyTests : BaseTest
     public void HasLegalRegistrationId_ShouldReturnTrue_WhenSirenProvided()
     {
         // Arrange
-        Party party = Party.Create("X", InvoiceTestData.FrenchAddress(), legalRegistrationId: "552120222");
+        var party = Party.Create("X", InvoiceTestData.FrenchAddress(), legalRegistrationId: "552120222");
 
         // Assert
         party.HasLegalRegistrationId.Should().BeTrue();
@@ -20,7 +20,7 @@ public class PartyTests : BaseTest
     public void HasLegalRegistrationId_ShouldReturnFalse_WhenSirenMissing()
     {
         // Arrange
-        Party party = Party.Create("Y", InvoiceTestData.FrenchAddress());
+        var party = Party.Create("Y", InvoiceTestData.FrenchAddress());
 
         // Assert
         party.HasLegalRegistrationId.Should().BeFalse();

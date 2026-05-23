@@ -10,7 +10,7 @@ public class PostalAddressTests : BaseTest
     public void Create_ShouldUpperCaseCountryCode()
     {
         // Act
-        PostalAddress address = PostalAddress.Create("1 rue", "75001", "Paris", "fr");
+        var address = PostalAddress.Create("1 rue", "75001", "Paris", "fr");
 
         // Assert
         address.CountryCode.Should().Be("FR");
@@ -20,9 +20,9 @@ public class PostalAddressTests : BaseTest
     public void Equality_ShouldBeStructural()
     {
         // Arrange
-        PostalAddress a = PostalAddress.Create("1 rue", "75001", "Paris", "FR");
-        PostalAddress b = PostalAddress.Create("1 rue", "75001", "Paris", "FR");
-        PostalAddress c = PostalAddress.Create("2 rue", "75001", "Paris", "FR");
+        var a = PostalAddress.Create("1 rue", "75001", "Paris", "FR");
+        var b = PostalAddress.Create("1 rue", "75001", "Paris", "FR");
+        var c = PostalAddress.Create("2 rue", "75001", "Paris", "FR");
 
         // Assert
         a.Should().Be(b);
