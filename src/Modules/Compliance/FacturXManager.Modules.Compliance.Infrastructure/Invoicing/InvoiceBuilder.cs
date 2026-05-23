@@ -38,7 +38,7 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
 
         Party seller = ToParty(model.Seller);
         Party buyer = ToParty(model.Buyer);
-        PaymentDetails payment = PaymentDetails.Create(model.Payment.MeansCode, model.Payment.DueDate, model.Payment.Iban);
+        var payment = PaymentDetails.Create(model.Payment.MeansCode, model.Payment.DueDate, model.Payment.Iban);
 
         return Invoice.Create(
             model.Number,
@@ -56,7 +56,7 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
 
     private static Party ToParty(PartyModel model)
     {
-        PostalAddress address = PostalAddress.Create(
+        var address = PostalAddress.Create(
             model.AddressLine1,
             model.PostalCode,
             model.City,

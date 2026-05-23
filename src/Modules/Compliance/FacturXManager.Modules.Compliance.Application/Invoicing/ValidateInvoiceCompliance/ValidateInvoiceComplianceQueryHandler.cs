@@ -36,7 +36,7 @@ internal sealed class ValidateInvoiceComplianceQueryHandler(
         return Task.FromResult(Result.Success(report));
     }
 
-    private static IReadOnlyList<ComplianceViolation> ExtractViolations(Error error)
+    private static List<ComplianceViolation> ExtractViolations(Error error)
     {
         if (error is ValidationError validationError)
         {

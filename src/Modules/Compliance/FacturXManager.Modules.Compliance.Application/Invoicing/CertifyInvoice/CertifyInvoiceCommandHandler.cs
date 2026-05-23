@@ -9,7 +9,7 @@ internal sealed class CertifyInvoiceCommandHandler(
     IInvoiceBuilder invoiceBuilder,
     IEn16931Validator validator,
     ICrossIndustryInvoiceWriter xmlWriter,
-    IFacturXPdfA3bRenderer pdfRenderer)
+    IFacturXPdfA3BRenderer pdfRenderer)
     : ICommandHandler<CertifyInvoiceCommand, CertifyInvoiceSummary>
 {
     public async Task<Result<CertifyInvoiceSummary>> Handle(

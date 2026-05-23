@@ -13,7 +13,7 @@ namespace FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 /// ou s2industries.ZUGFeRD pour l'embarquement Factur-X). Pour activer la certification :
 /// <list type="number">
 ///   <item>ajouter le package choisi dans <c>Directory.Packages.props</c> ;</item>
-///   <item>implémenter <see cref="IFacturXPdfA3bRenderer"/> en produisant un PDF/A-3b qui :
+///   <item>implémenter <see cref="IFacturXPdfA3BRenderer"/> en produisant un PDF/A-3b qui :
 ///     génère la représentation visuelle de la facture, embarque
 ///     <see cref="FacturXRenderRequest.CrossIndustryInvoiceXml"/> sous le nom
 ///     <see cref="FacturXRenderRequest.EmbeddedFileName"/> (relation AFRelationship=Data),
@@ -21,7 +21,7 @@ namespace FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 ///   <item>remplacer l'enregistrement DI de cette classe par la nouvelle implémentation.</item>
 /// </list>
 /// </remarks>
-internal sealed class UnconfiguredFacturXPdfA3bRenderer : IFacturXPdfA3bRenderer
+internal sealed class UnconfiguredFacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
 {
     public Task<Result<byte[]>> RenderAsync(
         FacturXRenderRequest request,

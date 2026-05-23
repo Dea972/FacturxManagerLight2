@@ -37,7 +37,7 @@ public static class ComplianceModule
         services.AddScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>();
 
         // Point d'extension PDF/A-3b : remplacer par une implémentation adossée à une bibliothèque PDF.
-        services.AddScoped<IFacturXPdfA3bRenderer, UnconfiguredFacturXPdfA3bRenderer>();
+        services.AddScoped<IFacturXPdfA3BRenderer, UnconfiguredFacturXPdfA3BRenderer>();
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>

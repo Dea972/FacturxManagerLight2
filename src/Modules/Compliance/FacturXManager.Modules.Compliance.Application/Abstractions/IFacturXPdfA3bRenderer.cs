@@ -6,7 +6,7 @@ namespace FacturXManager.Modules.Compliance.Application.Abstractions;
 /// Point d'extension produisant les octets du PDF/A-3b avec le XML CII embarqué (factur-x.xml).
 /// L'implémentation concrète repose sur une bibliothèque PDF/A-3b (à câbler en Infrastructure).
 /// </summary>
-public interface IFacturXPdfA3bRenderer
+public interface IFacturXPdfA3BRenderer
 {
     Task<Result<byte[]>> RenderAsync(FacturXRenderRequest request, CancellationToken cancellationToken = default);
 }
