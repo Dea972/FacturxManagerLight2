@@ -2,6 +2,8 @@ using Bogus;
 using FacturXManager.Modules.Compliance.Application.Abstractions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using NSubstitute.ClearExtensions;
 
 namespace FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 

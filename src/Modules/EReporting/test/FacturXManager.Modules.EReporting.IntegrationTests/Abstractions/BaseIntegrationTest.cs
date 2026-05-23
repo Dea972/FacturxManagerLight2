@@ -4,6 +4,8 @@ using FacturXManager.Modules.EReporting.Application.Abstractions.Data;
 using FacturXManager.Modules.EReporting.Domain.Declarations;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using NSubstitute.ClearExtensions;
 
 namespace FacturXManager.Modules.EReporting.IntegrationTests.Abstractions;
 

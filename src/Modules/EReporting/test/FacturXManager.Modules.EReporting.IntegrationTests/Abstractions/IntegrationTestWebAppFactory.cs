@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 
 namespace FacturXManager.Modules.EReporting.IntegrationTests.Abstractions;
@@ -46,13 +47,10 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
     {
         builder.UseEnvironment("Test");
 
-        builder.ConfigureAppConfiguration((_, configuration) =>
+        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
-            });
-        });
+            ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
+        }));
 
         builder.ConfigureServices(services =>
         {

@@ -4,6 +4,8 @@ using FacturXManager.Modules.Transmission.Application.Abstractions.Data;
 using FacturXManager.Modules.Transmission.Domain.Transmissions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using NSubstitute.ClearExtensions;
 using DomainTransmission = FacturXManager.Modules.Transmission.Domain.Transmissions.Transmission;
 
 namespace FacturXManager.Modules.Transmission.IntegrationTests.Abstractions;
