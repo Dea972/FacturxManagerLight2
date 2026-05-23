@@ -66,6 +66,7 @@
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Domain/FacturXManager.Modules.Compliance.Domain.csproj" />
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Infrastructure/FacturXManager.Modules.Compliance.Infrastructure.csproj" />
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Presentation/FacturXManager.Modules.Compliance.Presentation.csproj" />
+    <Project Path="src/Modules/Compliance/test/FacturXManager.Modules.Compliance.UnitTests/FacturXManager.Modules.Compliance.UnitTests.csproj" />
   </Folder>
   <Folder Name="/src/Modules/EReporting/">
     <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Application/FacturXManager.Modules.EReporting.Application.csproj" />

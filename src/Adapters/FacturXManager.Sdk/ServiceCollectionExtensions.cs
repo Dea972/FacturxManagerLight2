@@ -5,6 +5,9 @@ using FacturXManager.Common.Infrastructure.Authorization;
 using FacturXManager.Common.Presentation.Endpoints;
 using FacturXManager.Common.Presentation.Tools;
 using FacturXManager.Modules.AiEngine.Infrastructure;
+using FacturXManager.Modules.Compliance.Infrastructure;
+using FacturXManager.Modules.EReporting.Infrastructure;
+using FacturXManager.Modules.Transmission.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -49,17 +52,15 @@ public static class ServiceCollectionExtensions
         // Register AI Engine module (AI services, chat completion, embeddings).
         await services.AddAiEngineModuleAsync(configuration);
 
-        // Add module registrations here (domain-specific modules: Conversation, etc.).
-        // Example:
-        // services.AddConversationModule(configuration);
-        // Keep this section as the single place to aggregate module additions.
-
+        // Modules métier Factur-X (réforme française de facturation électronique).
+        await services.AddComplianceModuleAsync(configuration);
+        await services.AddTransmissionModuleAsync(configuration);
+        await services.AddEReportingModuleAsync(configuration);
 
         // Register MCP server (Model Context Protocol) with tool implementations.
         services.AddMcpServerWithTools([]);
 
-        // Discover and register endpoint definitions from presentation layer / modules.
-        services.AddEndpoints((System.Reflection.Assembly[])Array.Empty<object>());
+        // Les endpoints de chaque module sont déjà enregistrés par leur Add<Module>ModuleAsync respectif.
 
         // Return the modified service collection.
         return services;

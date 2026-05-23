@@ -1,16 +1,21 @@
+using FacturXManager.Infrastructure;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+string connectionString = builder.Configuration.GetConnectionString("Database")
+    ?? throw new InvalidOperationException(
+        "La chaîne de connexion 'Database' est obligatoire (section ConnectionStrings).");
+
+await builder.Services.AddFacturXManagerAsync(connectionString, builder.Configuration);
 
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -18,5 +23,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapFacturXManagerEndpoints();
 
 await app.RunAsync();
