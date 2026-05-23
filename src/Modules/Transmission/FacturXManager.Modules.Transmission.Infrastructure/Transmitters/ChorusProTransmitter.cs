@@ -82,7 +82,19 @@ internal sealed class ChorusProTransmitter(
                 content.Label ?? $"Code retour Chorus Pro {content.ReturnCode}.",
                 content.Label);
         }
-        catch (Exception exception) when (exception is HttpRequestException or ApiException or TaskCanceledException)
+        catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            stopwatch.Stop();
+
+            logger.LogError(
+                exception,
+                "Timeout lors du dépôt Chorus Pro {DocumentReference} après {ElapsedMs} ms",
+                request.DocumentReference,
+                stopwatch.ElapsedMilliseconds);
+
+            return InvoiceTransmissionResult.Timeout(exception.Message);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or ApiException)
         {
             stopwatch.Stop();
 

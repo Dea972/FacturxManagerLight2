@@ -22,4 +22,13 @@ public static class TransmissionErrors
         Error.Conflict(
             "Transmission.AlreadyFinalized",
             "La transmission est déjà finalisée (acceptée ou rejetée) et ne peut plus changer d'état.");
+
+    public static Error Rejected(string motif) =>
+        Error.Problem("Transmission.Rejected", $"Dépôt rejeté par la plateforme : {motif}");
+
+    public static Error TechnicalFailure(string message) =>
+        Error.ExternalService("Transmission.ExternalService", $"Erreur technique du canal de transmission : {message}");
+
+    public static Error Timeout(string message) =>
+        Error.Timeout("Transmission.Timeout", $"Le délai d'attente du canal a été dépassé : {message}");
 }

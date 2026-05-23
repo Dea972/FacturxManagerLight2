@@ -68,13 +68,26 @@ internal sealed class SubmitTransmissionCommandHandler(
                 break;
         }
 
+        // Trace de la tentative (sera persistée dès que la couche de persistance sera activée).
         repository.Insert(transmission);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new SubmitTransmissionSummary(
-            transmission.Id,
-            transmission.Status.ToString(),
-            transmission.ChannelDepositId,
-            result.Message);
+        return result.Outcome switch
+        {
+            TransmissionOutcome.Submitted => new SubmitTransmissionSummary(
+                transmission.Id,
+                transmission.Status.ToString(),
+                transmission.ChannelDepositId,
+                result.Message),
+
+            TransmissionOutcome.Rejected => Result.Failure<SubmitTransmissionSummary>(
+                TransmissionErrors.Rejected(result.Message ?? "Rejet plateforme")),
+
+            TransmissionOutcome.Timeout => Result.Failure<SubmitTransmissionSummary>(
+                TransmissionErrors.Timeout(result.Message ?? "Timeout plateforme")),
+
+            _ => Result.Failure<SubmitTransmissionSummary>(
+                TransmissionErrors.TechnicalFailure(result.Message ?? "Erreur technique")),
+        };
     }
 }

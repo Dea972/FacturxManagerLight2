@@ -26,3 +26,6 @@ app.UseHttpsRedirection();
 app.MapFacturXManagerEndpoints();
 
 await app.RunAsync();
+
+// Marqueur exposé pour WebApplicationFactory<Program> dans les tests d'intégration.
+public partial class Program;

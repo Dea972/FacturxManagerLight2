@@ -1,6 +1,4 @@
-﻿using ChaussonStore.Modules.Catalog.IntegrationTests.Abstractions;
-
-namespace ChaussonStore.Modules.Customers.IntegrationTests.Abstractions;
+namespace FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 
 [CollectionDefinition(nameof(IntegrationTestCollection))]
 public sealed class IntegrationTestCollection : ICollectionFixture<IntegrationTestWebAppFactory>;

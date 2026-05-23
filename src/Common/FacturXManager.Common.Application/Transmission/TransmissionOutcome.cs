@@ -12,5 +12,8 @@ public enum TransmissionOutcome
     Rejected = 1,
 
     /// <summary>Une erreur technique a empêché la transmission (réseau, indisponibilité, etc.).</summary>
-    TechnicalFailure = 2
+    TechnicalFailure = 2,
+
+    /// <summary>L'appel à la plateforme a dépassé le délai d'attente.</summary>
+    Timeout = 3
 }

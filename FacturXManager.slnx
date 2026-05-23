@@ -78,14 +78,22 @@
     <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Infrastructure/FacturXManager.Modules.EReporting.Infrastructure.csproj" />
     <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Presentation/FacturXManager.Modules.EReporting.Presentation.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/EReporting/test/" />
+  <Folder Name="/src/Modules/EReporting/test/">
+    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.ArchitectureTests/FacturXManager.Modules.EReporting.ArchitectureTests.csproj" />
+    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.IntegrationTests/FacturXManager.Modules.EReporting.IntegrationTests.csproj" />
+    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.UnitTests/FacturXManager.Modules.EReporting.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Transmission/">
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Application/FacturXManager.Modules.Transmission.Application.csproj" />
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Domain/FacturXManager.Modules.Transmission.Domain.csproj" />
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Infrastructure/FacturXManager.Modules.Transmission.Infrastructure.csproj" />
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Presentation/FacturXManager.Modules.Transmission.Presentation.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/Transmission/test/" />
+  <Folder Name="/src/Modules/Transmission/test/">
+    <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.ArchitectureTests/FacturXManager.Modules.Transmission.ArchitectureTests.csproj" />
+    <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.IntegrationTests/FacturXManager.Modules.Transmission.IntegrationTests.csproj" />
+    <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.UnitTests/FacturXManager.Modules.Transmission.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/test/">
     <Project Path="test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />
   </Folder>

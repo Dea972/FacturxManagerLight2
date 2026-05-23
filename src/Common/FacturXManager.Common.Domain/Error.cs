@@ -32,4 +32,10 @@ public record Error
 
     public static Error Conflict(string code, string description) =>
         new(code, description, ErrorType.Conflict);
+
+    public static Error ExternalService(string code, string description) =>
+        new(code, description, ErrorType.ExternalService);
+
+    public static Error Timeout(string code, string description) =>
+        new(code, description, ErrorType.Timeout);
 }

@@ -17,4 +17,7 @@ public sealed record InvoiceTransmissionResult(
 
     public static InvoiceTransmissionResult TechnicalFailure(string message, string? rawResponse = null) =>
         new(TransmissionOutcome.TechnicalFailure, null, rawResponse, message);
+
+    public static InvoiceTransmissionResult Timeout(string message, string? rawResponse = null) =>
+        new(TransmissionOutcome.Timeout, null, rawResponse, message);
 }
