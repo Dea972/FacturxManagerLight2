@@ -1,4 +1,5 @@
 using FacturXManager.Common.Domain;
+using FacturXManager.Modules.Compliance.Domain.Invoicing;
 
 namespace FacturXManager.Modules.Compliance.Application.Abstractions;
 
@@ -24,4 +25,5 @@ public sealed record FacturXRenderRequest(
     string CurrencyCode,
     decimal TotalWithoutVat,
     decimal TotalVat,
-    decimal TotalWithVat);
+    decimal TotalWithVat,
+    FacturXProfile Profile = FacturXProfile.En16931);

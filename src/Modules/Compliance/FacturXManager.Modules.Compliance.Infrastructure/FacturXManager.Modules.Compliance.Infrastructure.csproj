@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\FacturXManager.Modules.Compliance.Application\FacturXManager.Modules.Compliance.Application.csproj" />
-    <ProjectReference
-      Include="..\FacturXManager.Modules.Compliance.Presentation\FacturXManager.Modules.Compliance.Presentation.csproj" />
-    <ProjectReference
-      Include="..\..\..\Common\FacturXManager.Common.Infrastructure\FacturXManager.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\FacturXManager.Modules.Compliance.Application\FacturXManager.Modules.Compliance.Application.csproj" />
+    <ProjectReference Include="..\FacturXManager.Modules.Compliance.Presentation\FacturXManager.Modules.Compliance.Presentation.csproj" />
+    <ProjectReference Include="..\..\..\Common\FacturXManager.Common.Infrastructure\FacturXManager.Common.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfSharp" />
+    <PackageReference Include="QuestPDF" />
   </ItemGroup>
 
 </Project>

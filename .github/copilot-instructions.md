@@ -220,6 +220,11 @@ Pour chaque Command ou Query implémentée :
 - ⚠️ Logs Serilog obligatoires sur tous les appels externes (avant + après, avec durée)
 - ⚠️ `IInvoiceTransmitter` (SharedKernel) : toujours passer par cette abstraction,
   jamais appeler `ChorusProTransmitter` directement depuis Application
+- ⚠️ PdfSharp 6.x utilisé pour le rendu PDF/A-3b — ne pas utiliser
+  s2industries.ZUGFeRD.PDF (incompatibilité PdfSharp connue)
+- ⚠️ Polices obligatoirement embarquées dans le PDF/A-3b
+- ⚠️ XML attaché avec AFRelationship=Data, MIME type application/xml,
+  nom de fichier exactement factur-x.xml
 
 ---
 
