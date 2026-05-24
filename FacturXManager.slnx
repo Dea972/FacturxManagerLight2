@@ -55,6 +55,17 @@
     <Project Path="src/Modules/Compliance/test/FacturXManager.Modules.Compliance.IntegrationTests/FacturXManager.Modules.Compliance.IntegrationTests.csproj" Id="893f1cd9-0305-4aff-81a3-cf3d8b39599b" />
     <Project Path="src/Modules/Compliance/test/FacturXManager.Modules.Compliance.UnitTests/FacturXManager.Modules.Compliance.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Directory/">
+    <Project Path="src/Modules/Directory/FacturXManager.Modules.Directory.Application/FacturXManager.Modules.Directory.Application.csproj" />
+    <Project Path="src/Modules/Directory/FacturXManager.Modules.Directory.Domain/FacturXManager.Modules.Directory.Domain.csproj" />
+    <Project Path="src/Modules/Directory/FacturXManager.Modules.Directory.Infrastructure/FacturXManager.Modules.Directory.Infrastructure.csproj" />
+    <Project Path="src/Modules/Directory/FacturXManager.Modules.Directory.Presentation/FacturXManager.Modules.Directory.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Directory/test/">
+    <Project Path="src/Modules/Directory/test/FacturXManager.Modules.Directory.ArchitectureTests/FacturXManager.Modules.Directory.ArchitectureTests.csproj" />
+    <Project Path="src/Modules/Directory/test/FacturXManager.Modules.Directory.IntegrationTests/FacturXManager.Modules.Directory.IntegrationTests.csproj" />
+    <Project Path="src/Modules/Directory/test/FacturXManager.Modules.Directory.UnitTests/FacturXManager.Modules.Directory.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/EReporting/">
     <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Application/FacturXManager.Modules.EReporting.Application.csproj" />
     <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Domain/FacturXManager.Modules.EReporting.Domain.csproj" />
