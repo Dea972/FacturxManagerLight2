@@ -36,8 +36,9 @@ public static class ComplianceModule
         services.AddScoped<IEn16931Validator, En16931Validator>();
         services.AddScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>();
 
-        // Point d'extension PDF/A-3b : remplacer par une implémentation adossée à une bibliothèque PDF.
-        services.AddScoped<IFacturXPdfA3BRenderer, UnconfiguredFacturXPdfA3BRenderer>();
+        // Rendu PDF/A-3b basé sur PdfSharp 6.x. Conserver UnconfiguredFacturXPdfA3BRenderer
+        // pour les contextes où le rendu PDF n'est pas souhaité.
+        services.AddScoped<IFacturXPdfA3BRenderer, FacturXPdfA3BRenderer>();
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>

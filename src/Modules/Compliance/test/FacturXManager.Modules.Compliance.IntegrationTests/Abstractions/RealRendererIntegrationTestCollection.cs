@@ -1,0 +1,4 @@
+namespace FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
+
+[CollectionDefinition(nameof(RealRendererIntegrationTestCollection))]
+public sealed class RealRendererIntegrationTestCollection : ICollectionFixture<RealRendererIntegrationTestWebAppFactory>;

@@ -42,7 +42,8 @@ internal sealed class CertifyInvoiceCommandHandler(
             invoice.CurrencyCode,
             invoice.TotalWithoutVat,
             invoice.TotalVat,
-            invoice.TotalWithVat);
+            invoice.TotalWithVat,
+            invoice.Profile);
 
         Result<byte[]> pdfResult = await pdfRenderer.RenderAsync(renderRequest, cancellationToken);
         if (pdfResult.IsFailure)
