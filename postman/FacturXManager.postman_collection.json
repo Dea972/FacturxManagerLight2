@@ -163,6 +163,33 @@
       ]
     },
     {
+      "name": "Directory",
+      "description": "Consultation de l'annuaire des entreprises (SIRENE INSEE aujourd'hui, annuaire PPF demain).",
+      "item": [
+        {
+          "name": "GET /directory/companies/{identifier} — Lookup Company",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/directory/companies/{{identifier}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["directory", "companies", "{{identifier}}"],
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "54205118000017",
+                  "description": "SIREN (9 chiffres) ou SIRET (14 chiffres). Espaces et tirets tolérés."
+                }
+              ]
+            },
+            "description": "Recherche l'identité d'une entreprise française à partir d'un SIREN (9 chiffres) ou d'un SIRET (14 chiffres). S'appuie sur l'API SIRENE (INSEE). Retourne la raison sociale, le statut administratif (Active/Ceased), la diffusabilité RGPD et la source."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "EReporting",
       "description": "Déclarations périodiques B2C et internationales à destination de la DGFiP.",
       "item": [

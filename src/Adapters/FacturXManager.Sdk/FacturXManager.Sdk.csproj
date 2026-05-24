@@ -11,5 +11,6 @@
     <ProjectReference Include="..\..\Modules\Compliance\FacturXManager.Modules.Compliance.Infrastructure\FacturXManager.Modules.Compliance.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Transmission\FacturXManager.Modules.Transmission.Infrastructure\FacturXManager.Modules.Transmission.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\EReporting\FacturXManager.Modules.EReporting.Infrastructure\FacturXManager.Modules.EReporting.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Directory\FacturXManager.Modules.Directory.Infrastructure\FacturXManager.Modules.Directory.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

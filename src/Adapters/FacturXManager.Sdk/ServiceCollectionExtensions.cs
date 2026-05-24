@@ -3,6 +3,7 @@ using FacturXManager.Common.Infrastructure;
 using FacturXManager.Common.Presentation.Endpoints;
 using FacturXManager.Modules.AiEngine.Infrastructure;
 using FacturXManager.Modules.Compliance.Infrastructure;
+using FacturXManager.Modules.Directory.Infrastructure;
 using FacturXManager.Modules.EReporting.Infrastructure;
 using FacturXManager.Modules.Transmission.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -37,7 +38,8 @@ public static class ServiceCollectionExtensions
     {
         // Register application layer services (CQRS handlers, mediators, validators, etc.).
         services.AddApplication([
-            Modules.Compliance.Application.AssemblyReference.Assembly, 
+            Modules.Compliance.Application.AssemblyReference.Assembly,
+            Modules.Directory.Application.AssemblyReference.Assembly,
             Modules.EReporting.Application.AssemblyReference.Assembly,
             Modules.Transmission.Application.AssemblyReference.Assembly
         ]);
@@ -51,6 +53,7 @@ public static class ServiceCollectionExtensions
         await services.AddComplianceModuleAsync(configuration);
         await services.AddTransmissionModuleAsync(configuration);
         await services.AddEReportingModuleAsync(configuration);
+        await services.AddDirectoryModuleAsync(configuration);
 
 
         // Les endpoints de chaque module sont déjà enregistrés par leur Add<Module>ModuleAsync respectif.

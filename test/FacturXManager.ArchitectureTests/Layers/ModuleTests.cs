@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
 using FacturXManager.ArchitectureTests.Abstractions;
 using FacturXManager.Modules.Compliance.Infrastructure;
+using FacturXManager.Modules.Directory.Infrastructure;
 using FacturXManager.Modules.EReporting.Infrastructure;
 using FacturXManager.Modules.Transmission.Infrastructure;
 using NetArchTest.Rules;
@@ -12,7 +13,7 @@ public class ModuleTests : BaseTest
     [Fact]
     public void ComplianceModule_ShouldNotHaveDependencyOn_AnyOtherModule()
     {
-        string[] otherModules = [TransmissionNamespace, EReportingNamespace];
+        string[] otherModules = [TransmissionNamespace, EReportingNamespace, DirectoryNamespace];
 
         List<Assembly> complianceAssemblies =
         [
@@ -32,7 +33,7 @@ public class ModuleTests : BaseTest
     [Fact]
     public void EReportingModule_ShouldNotHaveDependencyOn_AnyOtherModule()
     {
-        string[] otherModules = [ComplianceNamespace, TransmissionNamespace];
+        string[] otherModules = [ComplianceNamespace, TransmissionNamespace, DirectoryNamespace];
 
         List<Assembly> EReportingAssemblies =
         [
@@ -48,4 +49,22 @@ public class ModuleTests : BaseTest
             .ShouldBeSuccessful();
     }
 
+    [Fact]
+    public void DirectoryModule_ShouldNotHaveDependencyOn_AnyOtherModule()
+    {
+        string[] otherModules = [ComplianceNamespace, TransmissionNamespace, EReportingNamespace];
+
+        List<Assembly> directoryAssemblies =
+        [
+            FacturXManager.Modules.Directory.Application.AssemblyReference.Assembly,
+            FacturXManager.Modules.Directory.Presentation.AssemblyReference.Assembly,
+            typeof(DirectoryModule).Assembly
+        ];
+
+        Types.InAssemblies(directoryAssemblies)
+            .Should()
+            .NotHaveDependencyOnAny(otherModules)
+            .GetResult()
+            .ShouldBeSuccessful();
+    }
 }
