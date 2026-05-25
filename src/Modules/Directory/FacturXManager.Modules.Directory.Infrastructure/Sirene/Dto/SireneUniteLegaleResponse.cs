@@ -37,6 +37,9 @@ internal sealed class SirenePeriodeUniteLegale
     [JsonPropertyName("dateFin")]
     public string? DateFin { get; init; }
 
+    [JsonPropertyName("denominationUniteLegale")]
+    public string DenominationUniteLegale { get; init; }
+
     [JsonPropertyName("etatAdministratifUniteLegale")]
     public string? EtatAdministratif { get; init; }
 }

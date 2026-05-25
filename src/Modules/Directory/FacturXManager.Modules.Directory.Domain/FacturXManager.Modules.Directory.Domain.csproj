@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\FacturXManager.Common.Domain\FacturXManager.Common.Domain.csproj" />
+	  <ProjectReference Include="..\..\..\Generators\ValueObjectGenerator\ValueObjectGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
