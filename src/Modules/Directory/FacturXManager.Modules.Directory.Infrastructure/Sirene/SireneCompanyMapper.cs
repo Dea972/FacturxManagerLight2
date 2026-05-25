@@ -77,10 +77,16 @@ internal static class SireneCompanyMapper
             return uniteLegale.Denomination.Trim();
         }
 
+
+        if (!string.IsNullOrWhiteSpace(uniteLegale.Periodes?[0]?.DenominationUniteLegale))
+        {
+            return uniteLegale.Periodes?[0]?.DenominationUniteLegale.Trim();
+        }
+
         // Personne physique (entrepreneur individuel) : prénom + nom (d'usage le cas échéant).
         string? lastName = string.IsNullOrWhiteSpace(uniteLegale.NomUsage) ? uniteLegale.Nom : uniteLegale.NomUsage;
 
-        if (string.IsNullOrWhiteSpace(uniteLegale.PrenomUsuel) && string.IsNullOrWhiteSpace(lastName))
+        if (string.IsNullOrWhiteSpace(uniteLegale.PrenomUsuel) && string.IsNullOrWhiteSpace(lastName) )
         {
             return null;
         }

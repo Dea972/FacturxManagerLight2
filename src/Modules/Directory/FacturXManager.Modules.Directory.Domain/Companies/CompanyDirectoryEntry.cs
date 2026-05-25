@@ -1,4 +1,5 @@
 using FacturXManager.Common.Domain;
+using ValueObjectGenerator.Attributes;
 
 namespace FacturXManager.Modules.Directory.Domain.Companies;
 
