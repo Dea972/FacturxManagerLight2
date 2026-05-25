@@ -12,4 +12,6 @@ public abstract class BaseTest
     protected const string TransmissionNamespace = "FacturXManager.Modules.Transmission";
 
     protected const string EReportingNamespace = "FacturXManager.Modules.EReporting";
+
+    protected const string DirectoryNamespace = "FacturXManager.Modules.Directory";
 }

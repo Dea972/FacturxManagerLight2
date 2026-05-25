@@ -5,6 +5,16 @@
     "description": "Collection de référence pour l'API FacturX Manager. Couvre les modules Compliance, Transmission et EReporting.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{apiBaseUrl}}/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
   "auth": {
     "type": "bearer",
     "bearer": [
@@ -61,8 +71,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/compliance/invoices/validate",
-              "host": ["{{baseUrl}}"],
-              "path": ["compliance", "invoices", "validate"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "compliance", "invoices", "validate" ]
             },
             "description": "Vérifie la conformité EN16931 d'une facture sans produire de document. Retourne un rapport de conformité détaillé.",
             "body": {
@@ -89,8 +99,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/compliance/invoices/certify",
-              "host": ["{{baseUrl}}"],
-              "path": ["compliance", "invoices", "certify"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "compliance", "invoices", "certify" ]
             },
             "description": "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarqué (Factur-X). Retourne le document certifié encodé en Base64.",
             "body": {
@@ -123,8 +133,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/transmissions",
-              "host": ["{{baseUrl}}"],
-              "path": ["transmissions"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transmissions" ]
             },
             "description": "Dépose un document certifié Factur-X (PDF/A-3b en Base64) sur la plateforme du canal demandé (ex: ChorusPro) et trace la tentative de dépôt.",
             "body": {
@@ -146,8 +156,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/transmissions/{{transmissionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["transmissions", "{{transmissionId}}"],
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "transmissions", "{{transmissionId}}" ],
               "variable": [
                 {
                   "key": "transmissionId",
@@ -157,6 +167,33 @@
               ]
             },
             "description": "Retourne le statut courant et l'historique des tentatives d'une transmission identifiée par son GUID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Directory",
+      "description": "Consultation de l'annuaire des entreprises (SIRENE INSEE aujourd'hui, annuaire PPF demain).",
+      "item": [
+        {
+          "name": "GET /directory/companies/{identifier} — Lookup Company",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/directory/companies/{{identifier}}",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "directory", "companies", "{{identifier}}" ],
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "54205118000017",
+                  "description": "SIREN (9 chiffres) ou SIRET (14 chiffres). Espaces et tirets tolérés."
+                }
+              ]
+            },
+            "description": "Recherche l'identité d'une entreprise française à partir d'un SIREN (9 chiffres) ou d'un SIRET (14 chiffres). S'appuie sur l'API SIRENE (INSEE). Retourne la raison sociale, le statut administratif (Active/Ceased), la diffusabilité RGPD et la source."
           },
           "response": []
         }
@@ -178,8 +215,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/ereporting/declarations",
-              "host": ["{{baseUrl}}"],
-              "path": ["ereporting", "declarations"]
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "ereporting", "declarations" ]
             },
             "description": "Crée une nouvelle déclaration d'e-reporting au statut Brouillon pour la période et le type de transaction indiqués.",
             "body": {
@@ -201,8 +238,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["ereporting", "declarations", "{{declarationId}}"],
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "ereporting", "declarations", "{{declarationId}}" ],
               "variable": [
                 {
                   "key": "declarationId",
@@ -227,8 +264,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/entries",
-              "host": ["{{baseUrl}}"],
-              "path": ["ereporting", "declarations", "{{declarationId}}", "entries"],
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "ereporting", "declarations", "{{declarationId}}", "entries" ],
               "variable": [
                 {
                   "key": "declarationId",
@@ -257,8 +294,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/finalize",
-              "host": ["{{baseUrl}}"],
-              "path": ["ereporting", "declarations", "{{declarationId}}", "finalize"],
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "ereporting", "declarations", "{{declarationId}}", "finalize" ],
               "variable": [
                 {
                   "key": "declarationId",
@@ -278,8 +315,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/submit",
-              "host": ["{{baseUrl}}"],
-              "path": ["ereporting", "declarations", "{{declarationId}}", "submit"],
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "ereporting", "declarations", "{{declarationId}}", "submit" ],
               "variable": [
                 {
                   "key": "declarationId",
