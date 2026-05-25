@@ -3,6 +3,7 @@ using FacturXManager.Common.Infrastructure;
 using FacturXManager.Common.Presentation.Endpoints;
 using FacturXManager.Modules.AiEngine.Infrastructure;
 using FacturXManager.Modules.Compliance.Infrastructure;
+using FacturXManager.Modules.Directory.Infrastructure;
 using FacturXManager.Modules.EReporting.Infrastructure;
 using FacturXManager.Modules.Transmission.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FacturXManager.Infrastructure;
+namespace FacturXManager.Sdk;
 
 /// <summary>
 /// Provides extension methods to bootstrap the Modular Monolith Template.
@@ -33,11 +34,12 @@ public static class ServiceCollectionExtensions
     public async static Task<IServiceCollection> AddFacturXManagerAsync(
         this IServiceCollection services,
         string connectionString,
-        IConfiguration configuration)
+        ConfigurationManager configuration)
     {
         // Register application layer services (CQRS handlers, mediators, validators, etc.).
         services.AddApplication([
-            Modules.Compliance.Application.AssemblyReference.Assembly, 
+            Modules.Compliance.Application.AssemblyReference.Assembly,
+            Modules.Directory.Application.AssemblyReference.Assembly,
             Modules.EReporting.Application.AssemblyReference.Assembly,
             Modules.Transmission.Application.AssemblyReference.Assembly
         ]);
@@ -46,11 +48,13 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructure(connectionString, []);
 
 
+        configuration.AddModuleConfiguration(["directory","transmission"]);
 
         // Modules métier Factur-X (réforme française de facturation électronique).
         await services.AddComplianceModuleAsync(configuration);
         await services.AddTransmissionModuleAsync(configuration);
         await services.AddEReportingModuleAsync(configuration);
+        await services.AddDirectoryModuleAsync(configuration);
 
 
         // Les endpoints de chaque module sont déjà enregistrés par leur Add<Module>ModuleAsync respectif.

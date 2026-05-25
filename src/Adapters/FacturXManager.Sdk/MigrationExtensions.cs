@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 #pragma warning disable S1144 // Unused private types or members should be removed
-namespace FacturXManager.Infrastructure;
+namespace FacturXManager.Sdk;
 
 public static class MigrationExtensions
 {
