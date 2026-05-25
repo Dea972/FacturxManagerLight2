@@ -1,4 +1,4 @@
-using FacturXManager.Infrastructure;
+using FacturXManager.Sdk;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,10 @@ string connectionString = builder.Configuration.GetConnectionString("Database")
     ?? throw new InvalidOperationException(
         "La chaîne de connexion 'Database' est obligatoire (section ConnectionStrings).");
 
+
 await builder.Services.AddFacturXManagerAsync(connectionString, builder.Configuration);
+
+builder.Configuration.AddEnvironmentVariables();
 
 WebApplication app = builder.Build();
 

@@ -16,7 +16,7 @@ public class CompanyDirectoryEntryTests : BaseTest
         Siren siren = Siren.Create(ValidSiren).Value;
 
         // Act
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
+        var entry = CompanyDirectoryEntry.Create(
             siren,
             siret: null,
             legalName: "TOTALENERGIES SE",
@@ -37,7 +37,7 @@ public class CompanyDirectoryEntryTests : BaseTest
         Siren siren = Siren.Create(ValidSiren).Value;
 
         // Act
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
+        var entry = CompanyDirectoryEntry.Create(
             siren,
             siret: null,
             legalName: "ENTREPRISE CESSEE",
@@ -56,7 +56,7 @@ public class CompanyDirectoryEntryTests : BaseTest
         Siret siret = Siret.Create(ValidSiret).Value;
 
         // Act : RGPD — l'unité légale n'est pas diffusable, dénomination masquée
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
+        var entry = CompanyDirectoryEntry.Create(
             siret.ToSiren(),
             siret,
             legalName: null,

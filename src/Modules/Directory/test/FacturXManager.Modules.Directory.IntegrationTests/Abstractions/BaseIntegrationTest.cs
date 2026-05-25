@@ -1,9 +1,6 @@
 using Bogus;
-using FacturXManager.Modules.Directory.Application.Abstractions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using NSubstitute.ClearExtensions;
 
 namespace FacturXManager.Modules.Directory.IntegrationTests.Abstractions;
 
@@ -18,19 +15,12 @@ public abstract class BaseIntegrationTest : IDisposable
 
     protected readonly IServiceProvider ServiceProvider;
 
-    protected readonly IDirectoryLookupProvider LookupProvider;
-
     protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
     {
         _ = factory.CreateClient();
         Scope = factory.Services.CreateScope();
         ServiceProvider = Scope.ServiceProvider;
         Sender = ServiceProvider.GetRequiredService<ISender>();
-        LookupProvider = factory.LookupProvider;
-
-        // Reset state between tests
-        LookupProvider.ClearReceivedCalls();
-        LookupProvider.ClearSubstitute();
     }
 
     public void Dispose()

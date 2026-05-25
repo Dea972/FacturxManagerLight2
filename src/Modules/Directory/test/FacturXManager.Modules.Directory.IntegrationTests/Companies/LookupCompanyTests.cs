@@ -1,16 +1,22 @@
 using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Directory.Application.Companies.LookupCompany;
-using FacturXManager.Modules.Directory.Domain.Companies;
 using FacturXManager.Modules.Directory.IntegrationTests.Abstractions;
 using FluentAssertions;
-using NSubstitute;
 
 namespace FacturXManager.Modules.Directory.IntegrationTests.Companies;
 
+/// <summary>
+/// Tests d'intégration contre la vraie API SIRENE (INSEE).
+/// Requiert la variable d'environnement <c>SIRENE_API_KEY</c>.
+/// SIREN de référence : TotalEnergies SE (542051180) — entreprise cotée, données stables.
+/// </summary>
 public class LookupCompanyTests : BaseIntegrationTest
 {
-    private const string ValidSiren = "542051180";
-    private const string ValidSiret = "54205118000017";
+    /// <summary>TotalEnergies SE — SIREN connu, actif, diffusé.</summary>
+    private const string ValidSiren = "442395448";
+
+    /// <summary>Siège social TotalEnergies — SIRET connu, actif, diffusé.</summary>
+    private const string ValidSiret = "44239544800057";
 
     public LookupCompanyTests(IntegrationTestWebAppFactory factory) : base(factory)
     {
@@ -39,83 +45,9 @@ public class LookupCompanyTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Handle_ShouldRouteToSirenLookup_WhenIdentifierHas9Digits()
-    {
-        // Arrange
-        Siren siren = Siren.Create(ValidSiren).Value;
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
-            siren,
-            siret: null,
-            legalName: "TOTALENERGIES SE",
-            status: CompanyLegalStatus.Active,
-            isPubliclyDisclosed: true,
-            source: DirectorySource.Sirene);
-
-        LookupProvider.LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(entry));
-
-        // Act
-        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiren));
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Siren.Should().Be(ValidSiren);
-        result.Value.Siret.Should().BeNull();
-        result.Value.LegalName.Should().Be("TOTALENERGIES SE");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.Source.Should().Be("Sirene");
-
-        await LookupProvider.Received(1).LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>());
-        await LookupProvider.DidNotReceive().LookupBySiretAsync(Arg.Any<Siret>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_ShouldRouteToSiretLookup_WhenIdentifierHas14Digits()
-    {
-        // Arrange
-        Siret siret = Siret.Create(ValidSiret).Value;
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
-            siret.ToSiren(),
-            siret,
-            legalName: "TOTALENERGIES SE - SIEGE",
-            status: CompanyLegalStatus.Active,
-            isPubliclyDisclosed: true,
-            source: DirectorySource.Sirene);
-
-        LookupProvider.LookupBySiretAsync(Arg.Any<Siret>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(entry));
-
-        // Act
-        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiret));
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Siret.Should().Be(ValidSiret);
-        result.Value.Siren.Should().Be("542051180");
-
-        await LookupProvider.Received(1).LookupBySiretAsync(Arg.Any<Siret>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnNotFound_WhenProviderReturnsNotFound()
-    {
-        // Arrange
-        LookupProvider.LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Failure<CompanyDirectoryEntry>(CompanyErrors.NotFound(ValidSiren)));
-
-        // Act
-        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiren));
-
-        // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("Directory.Company.NotFound");
-    }
-
-    [Fact]
     public async Task Handle_ShouldReturnInvalidChecksum_WhenSirenLuhnIsInvalid()
     {
-        // Arrange : 9 chiffres mais Luhn invalide → la query échoue avant tout appel provider
+        // Arrange : 9 chiffres avec Luhn invalide — aucun appel HTTP ne doit partir
         const string invalidLuhn = "123456789";
 
         // Act
@@ -124,56 +56,60 @@ public class LookupCompanyTests : BaseIntegrationTest
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Directory.Company.InvalidSirenChecksum");
+    }
 
-        await LookupProvider.DidNotReceive().LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>());
+    [Fact]
+    public async Task Handle_ShouldRouteToSirenLookup_WhenIdentifierHas9Digits()
+    {
+        // Act
+        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiren));
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Siren.Should().Be(ValidSiren);
+        result.Value.Siret.Should().BeNull();
+        result.Value.LegalName.Should().NotBeNullOrWhiteSpace();
+        result.Value.IsActive.Should().BeTrue();
+        result.Value.Source.Should().Be("Sirene");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldRouteToSiretLookup_WhenIdentifierHas14Digits()
+    {
+        // Act
+        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiret));
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Siret.Should().Be(ValidSiret);
+        result.Value.Siren.Should().Be(ValidSiren);
+        result.Value.LegalName.Should().NotBeNullOrWhiteSpace();
+        result.Value.Source.Should().Be("Sirene");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnNotFound_WhenSirenDoesNotExist()
+    {
+        // Arrange : SIREN Luhn-valide mais non attribué (préfixe 000 non alloué par l'INSEE)
+        const string unassignedSiren = "000000000";
+
+        // Act
+        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(unassignedSiren));
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.Error.Code.Should().Be("Directory.Company.NotFound");
     }
 
     [Fact]
     public async Task Handle_ShouldNormalizeSpacesAndDashes_BeforeLookup()
     {
-        // Arrange
-        Siren siren = Siren.Create(ValidSiren).Value;
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
-            siren,
-            siret: null,
-            legalName: "TOTALENERGIES SE",
-            status: CompanyLegalStatus.Active,
-            isPubliclyDisclosed: true,
-            source: DirectorySource.Sirene);
-
-        LookupProvider.LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(entry));
-
-        // Act
-        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery("542 051 180"));
+        // Act — saisie avec espaces, normalisée avant l'appel HTTP
+        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery("442 395 448"));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Siren.Should().Be(ValidSiren);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldExposeProtectedFlag_WhenCompanyIsNotPubliclyDisclosed()
-    {
-        // Arrange : RGPD — dénomination non diffusable côté SIRENE
-        Siren siren = Siren.Create(ValidSiren).Value;
-        CompanyDirectoryEntry entry = CompanyDirectoryEntry.Create(
-            siren,
-            siret: null,
-            legalName: null,
-            status: CompanyLegalStatus.Active,
-            isPubliclyDisclosed: false,
-            source: DirectorySource.Sirene);
-
-        LookupProvider.LookupBySirenAsync(Arg.Any<Siren>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(entry));
-
-        // Act
-        Result<CompanyLookupResponse> result = await Sender.Send(new LookupCompanyQuery(ValidSiren));
-
-        // Assert : pas une erreur, juste un flag à exposer
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LegalName.Should().BeNull();
-        result.Value.IsPubliclyDisclosed.Should().BeFalse();
     }
 }

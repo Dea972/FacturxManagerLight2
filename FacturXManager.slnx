@@ -12,7 +12,12 @@
     <Project Path="aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
     <Project Path="aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
   </Folder>
-  <Folder Name="/postman/" />
+  <Folder Name="/postman/" >
+    <File Path="postman/FacturXManager.Local.postman_environment.json" />
+    <File Path="postman/FacturXManager.postman_collection.json" />
+    <File Path="postman/FacturXManager.Production.postman_environment.json" />
+    <File Path="postman/FacturXManager.Sandbox.postman_environment.json" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />

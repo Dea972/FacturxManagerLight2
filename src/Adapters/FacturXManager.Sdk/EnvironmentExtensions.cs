@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace FacturXManager.Infrastructure;
+namespace FacturXManager.Sdk;
 
 public static class EnvironmentExtensions
 {

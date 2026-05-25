@@ -7,7 +7,7 @@ namespace FacturXManager.Modules.Directory.Infrastructure.Sirene;
 /// Injecte le token Bearer SIRENE sur chaque appel sortant. Le token est lu via
 /// <see cref="IOptions{TOptions}"/> et n'est jamais journalisé.
 /// </summary>
-internal sealed class SireneBearerAuthHandler(IOptions<SireneOptions> options) : DelegatingHandler
+internal sealed class SireneApiKeyAuthHandler(IOptions<SireneOptions> options) : DelegatingHandler
 {
     private readonly SireneOptions _options = options.Value;
 
@@ -15,9 +15,9 @@ internal sealed class SireneBearerAuthHandler(IOptions<SireneOptions> options) :
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrWhiteSpace(_options.BearerToken))
+        if (!string.IsNullOrWhiteSpace(_options.ApiKey))
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.BearerToken);
+            request.Headers.Add("X-INSEE-Api-Key-Integration", _options.ApiKey);
         }
 
         return base.SendAsync(request, cancellationToken);

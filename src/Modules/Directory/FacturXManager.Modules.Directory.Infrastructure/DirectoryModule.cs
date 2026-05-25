@@ -33,7 +33,7 @@ public static class DirectoryModule
 
     private static void AddInfrastructure(this IServiceCollection services)
     {
-        services.AddTransient<SireneBearerAuthHandler>();
+        services.AddTransient<SireneApiKeyAuthHandler>();
 
         services
             .AddRefitClient<ISireneApi>()
@@ -45,7 +45,7 @@ public static class DirectoryModule
                     client.BaseAddress = new Uri(options.BaseUrl);
                 }
             })
-            .AddHttpMessageHandler<SireneBearerAuthHandler>();
+            .AddHttpMessageHandler<SireneApiKeyAuthHandler>();
 
         services.AddScoped<IDirectoryLookupProvider, SireneDirectoryLookupProvider>();
     }

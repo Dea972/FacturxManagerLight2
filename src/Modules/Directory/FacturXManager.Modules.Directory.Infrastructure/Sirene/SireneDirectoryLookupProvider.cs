@@ -93,7 +93,7 @@ internal sealed class SireneDirectoryLookupProvider(
 
         try
         {
-            ApiResponse<SireneEtablissementResponse> response = await sireneApi.GetEtablissementAsync(siret.Value, cancellationToken);
+            ApiResponse<SireneEtablissementDto> response = await sireneApi.GetEtablissementAsync(siret.Value, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {

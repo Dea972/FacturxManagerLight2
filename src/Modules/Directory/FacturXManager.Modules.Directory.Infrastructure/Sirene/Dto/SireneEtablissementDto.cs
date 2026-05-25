@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace FacturXManager.Modules.Directory.Infrastructure.Sirene.Dto;
 
-internal sealed class SireneEtablissementResponse
+internal sealed class SireneEtablissementDto
 {
     [JsonPropertyName("etablissement")]
     public SireneEtablissement? Etablissement { get; init; }
