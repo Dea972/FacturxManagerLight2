@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace FacturXManager.Infrastructure;
+namespace FacturXManager.Sdk;
 
 internal static class ConfigurationExtensions
 {

@@ -14,7 +14,7 @@ internal interface ISireneApi
         CancellationToken cancellationToken = default);
 
     [Get("/siret/{siret}")]
-    Task<ApiResponse<SireneEtablissementResponse>> GetEtablissementAsync(
+    Task<ApiResponse<SireneEtablissementDto>> GetEtablissementAsync(
         string siret,
         CancellationToken cancellationToken = default);
 }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FacturXManager.Infrastructure;
+namespace FacturXManager.Sdk;
 
 /// <summary>
 /// Provides extension methods to bootstrap the Modular Monolith Template.
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
     public async static Task<IServiceCollection> AddFacturXManagerAsync(
         this IServiceCollection services,
         string connectionString,
-        IConfiguration configuration)
+        ConfigurationManager configuration)
     {
         // Register application layer services (CQRS handlers, mediators, validators, etc.).
         services.AddApplication([
@@ -48,6 +48,7 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructure(connectionString, []);
 
 
+        configuration.AddModuleConfiguration(["directory","transmission"]);
 
         // Modules métier Factur-X (réforme française de facturation électronique).
         await services.AddComplianceModuleAsync(configuration);

@@ -12,7 +12,7 @@ public sealed class SireneOptions
     public string BaseUrl { get; init; } = string.Empty;
 
     /// <summary>Token Bearer permanent issu du portail INSEE. Confidentiel.</summary>
-    public string BearerToken { get; init; } = string.Empty;
+    public string ApiKey { get; init; } = string.Empty;
 
     /// <summary>Durée de mise en cache des résultats de consultation (par défaut 15 minutes).</summary>
     public int CacheDurationMinutes { get; init; } = 15;
