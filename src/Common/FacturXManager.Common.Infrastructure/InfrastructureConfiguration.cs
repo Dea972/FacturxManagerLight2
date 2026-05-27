@@ -15,17 +15,12 @@ public static class InfrastructureConfiguration
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        string connectionString,
         Action<IRegistrationConfigurator>[] moduleConfigureConsumers)
     {
         services.TryAddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         services.AddDistributedMemoryCache();
 
-
-        services.TryAddScoped<IDbConnectionFactory>(provider =>
-            new DbConnectionFactory(connectionString));
-        services.TryAddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
         services.TryAddSingleton<ICacheService, CacheService>();
 
@@ -36,8 +31,6 @@ public static class InfrastructureConfiguration
             configurator.SchedulerName = $"default-name-{scheduler}";
         });
 
-
-        services.AddDistributedMemoryCache(); // This requires the Microsoft.Extensions.Caching.Memory namespace
 
 
         services.TryAddSingleton<InsertOutboxMessagesInterceptor>();

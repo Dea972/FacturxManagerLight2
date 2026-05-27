@@ -1,10 +1,8 @@
 ﻿using FacturXManager.Common.Application;
 using FacturXManager.Common.Infrastructure;
 using FacturXManager.Common.Presentation.Endpoints;
-using FacturXManager.Modules.AiEngine.Infrastructure;
 using FacturXManager.Modules.Compliance.Infrastructure;
 using FacturXManager.Modules.Directory.Infrastructure;
-using FacturXManager.Modules.EReporting.Infrastructure;
 using FacturXManager.Modules.Transmission.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -33,19 +31,17 @@ public static class ServiceCollectionExtensions
     /// </remarks>
     public async static Task<IServiceCollection> AddFacturXManagerAsync(
         this IServiceCollection services,
-        string connectionString,
         ConfigurationManager configuration)
     {
         // Register application layer services (CQRS handlers, mediators, validators, etc.).
         services.AddApplication([
             Modules.Compliance.Application.AssemblyReference.Assembly,
             Modules.Directory.Application.AssemblyReference.Assembly,
-            Modules.EReporting.Application.AssemblyReference.Assembly,
             Modules.Transmission.Application.AssemblyReference.Assembly
         ]);
 
         // Register infrastructure concerns (DbContext, repositories, outbox, message bus, etc.).
-        services.AddInfrastructure(connectionString, []);
+        services.AddInfrastructure([]);
 
 
         configuration.AddModuleConfiguration(["directory","transmission"]);
@@ -53,7 +49,6 @@ public static class ServiceCollectionExtensions
         // Modules métier Factur-X (réforme française de facturation électronique).
         await services.AddComplianceModuleAsync(configuration);
         await services.AddTransmissionModuleAsync(configuration);
-        await services.AddEReportingModuleAsync(configuration);
         await services.AddDirectoryModuleAsync(configuration);
 
 

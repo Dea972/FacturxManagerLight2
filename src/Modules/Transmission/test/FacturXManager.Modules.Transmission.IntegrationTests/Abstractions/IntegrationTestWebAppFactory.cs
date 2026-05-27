@@ -49,15 +49,17 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
     {
         builder.UseEnvironment("Test");
 
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
-        }));
+            configuration.AddUserSecrets<Program>();
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
+            });
+        });
 
         builder.ConfigureServices(services =>
         {
-            services.RemoveAll<IInvoiceTransmitter>();
-            services.AddSingleton(Transmitter);
 
             services.RemoveAll<ITransmissionRepository>();
             services.AddSingleton(TransmissionRepository);

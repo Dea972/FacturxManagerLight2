@@ -6,14 +6,10 @@ builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
 
-string connectionString = builder.Configuration.GetConnectionString("Database")
-    ?? throw new InvalidOperationException(
-        "La chaîne de connexion 'Database' est obligatoire (section ConnectionStrings).");
-
-
-await builder.Services.AddFacturXManagerAsync(connectionString, builder.Configuration);
+await builder.Services.AddFacturXManagerAsync( builder.Configuration);
 
 builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddUserSecrets<Program>();
 
 WebApplication app = builder.Build();
 

@@ -15,12 +15,16 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
     {
         builder.UseEnvironment("Test");
 
-        builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
-            ["Directory:Sirene:BaseUrl"] = "https://api.insee.fr/api-sirene/3.11",
-            ["Directory:Sirene:CacheDurationMinutes"] = "0",
-        }));
+            configuration.AddUserSecrets<Program>();
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:Database"] = "Server=test;Database=facturxmanager_tests;Integrated Security=True;",
+                ["Directory:Sirene:BaseUrl"] = "https://api.insee.fr/api-sirene/3.11",
+                ["Directory:Sirene:CacheDurationMinutes"] = "0",
+            });
+        });
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

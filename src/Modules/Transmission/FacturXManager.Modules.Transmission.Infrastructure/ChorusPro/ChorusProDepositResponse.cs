@@ -18,4 +18,7 @@ internal sealed record ChorusProDepositResponse
 
     [JsonPropertyName("numeroFluxDepot")]
     public string? DepositFluxNumber { get; init; }
+
+    [JsonPropertyName("identifiantFactureCPP")]
+    public long? InvoiceIdCpp { get; init; }
 }

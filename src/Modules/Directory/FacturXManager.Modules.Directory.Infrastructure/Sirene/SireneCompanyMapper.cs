@@ -14,7 +14,7 @@ internal static class SireneCompanyMapper
     private const string DiffusionPublic = "O";
     private const string EtatActif = "A";
 
-    internal static Result<CompanyDirectoryEntry> ToDirectoryEntry(SireneUniteLegale? uniteLegale, string fallbackSiren)
+    internal static Result<CompanyDirectoryEntry> ToDirectoryEntry(SireneLegalUnit? uniteLegale, string fallbackSiren)
     {
         if (uniteLegale is null)
         {
@@ -27,7 +27,7 @@ internal static class SireneCompanyMapper
             return Result.Failure<CompanyDirectoryEntry>(sirenResult.Error);
         }
 
-        bool isPublic = string.Equals(uniteLegale.StatutDiffusion, DiffusionPublic, StringComparison.OrdinalIgnoreCase);
+        bool isPublic = string.Equals(uniteLegale.DisclosureStatus, DiffusionPublic, StringComparison.OrdinalIgnoreCase);
 
         return CompanyDirectoryEntry.Create(
             sirenResult.Value,
@@ -38,7 +38,7 @@ internal static class SireneCompanyMapper
             source: DirectorySource.Sirene);
     }
 
-    internal static Result<CompanyDirectoryEntry> ToDirectoryEntry(SireneEtablissement? etablissement, string fallbackSiret)
+    internal static Result<CompanyDirectoryEntry> ToDirectoryEntry(SireneCompany? etablissement, string fallbackSiret)
     {
         if (etablissement is null)
         {
@@ -51,10 +51,10 @@ internal static class SireneCompanyMapper
             return Result.Failure<CompanyDirectoryEntry>(siretResult.Error);
         }
 
-        SireneUniteLegale? uniteLegale = etablissement.UniteLegale;
+        SireneLegalUnit? uniteLegale = etablissement.Company;
 
         bool isPublic = uniteLegale is null ||
-            string.Equals(uniteLegale.StatutDiffusion, DiffusionPublic, StringComparison.OrdinalIgnoreCase);
+            string.Equals(uniteLegale.DisclosureStatus, DiffusionPublic, StringComparison.OrdinalIgnoreCase);
 
         return CompanyDirectoryEntry.Create(
             siretResult.Value.ToSiren(),
@@ -65,40 +65,40 @@ internal static class SireneCompanyMapper
             source: DirectorySource.Sirene);
     }
 
-    private static string? ComposeLegalName(SireneUniteLegale? uniteLegale)
+    private static string? ComposeLegalName(SireneLegalUnit? uniteLegale)
     {
         if (uniteLegale is null)
         {
             return null;
         }
 
-        if (!string.IsNullOrWhiteSpace(uniteLegale.Denomination))
+        if (!string.IsNullOrWhiteSpace(uniteLegale.LegalName))
         {
-            return uniteLegale.Denomination.Trim();
+            return uniteLegale.LegalName.Trim();
         }
 
 
-        if (!string.IsNullOrWhiteSpace(uniteLegale.Periodes?[0]?.DenominationUniteLegale))
+        if (uniteLegale.Periods?[0]?.LegalName is string name && !string.IsNullOrWhiteSpace(name))
         {
-            return uniteLegale.Periodes?[0]?.DenominationUniteLegale.Trim();
+            return name.Trim();
         }
 
         // Personne physique (entrepreneur individuel) : prénom + nom (d'usage le cas échéant).
-        string? lastName = string.IsNullOrWhiteSpace(uniteLegale.NomUsage) ? uniteLegale.Nom : uniteLegale.NomUsage;
+        string? lastName = string.IsNullOrWhiteSpace(uniteLegale.UsageLastName) ? uniteLegale.LastName : uniteLegale.UsageLastName;
 
-        if (string.IsNullOrWhiteSpace(uniteLegale.PrenomUsuel) && string.IsNullOrWhiteSpace(lastName) )
+        if (string.IsNullOrWhiteSpace(uniteLegale.FirstName) && string.IsNullOrWhiteSpace(lastName))
         {
             return null;
         }
 
-        return $"{uniteLegale.PrenomUsuel} {lastName}".Trim();
+        return $"{uniteLegale.FirstName} {lastName}".Trim();
     }
 
-    private static CompanyLegalStatus ResolveStatus(SireneUniteLegale uniteLegale) =>
-        ResolveStatus(uniteLegale.Periodes?.FirstOrDefault(p => p.DateFin is null)?.EtatAdministratif);
+    private static CompanyLegalStatus ResolveStatus(SireneLegalUnit uniteLegale) =>
+        ResolveStatus(uniteLegale.Periods?.FirstOrDefault(p => p.EndDate is null)?.AdministrativeStatus);
 
-    private static CompanyLegalStatus ResolveStatus(SireneEtablissement etablissement) =>
-        ResolveStatus(etablissement.Periodes?.FirstOrDefault(p => p.DateFin is null)?.EtatAdministratif);
+    private static CompanyLegalStatus ResolveStatus(SireneCompany etablissement) =>
+        ResolveStatus(etablissement.Periods?.FirstOrDefault(p => p.EndDate is null)?.AdministrativeStatus);
 
     private static CompanyLegalStatus ResolveStatus(string? code) => code switch
     {

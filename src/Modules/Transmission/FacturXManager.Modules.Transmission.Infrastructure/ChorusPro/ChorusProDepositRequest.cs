@@ -18,4 +18,7 @@ internal sealed record ChorusProDepositRequest
 
     [JsonPropertyName("syntaxeFlux")]
     public string FluxSyntax { get; init; } = "IN_DP_E2_FACTURX";
+
+    [JsonPropertyName("idUtilisateurCourant")]
+    public int CurrentUserId { get; init; }
 }

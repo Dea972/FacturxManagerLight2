@@ -377,3 +377,5 @@ FodyWeavers.xsd
 /.claude/commands/review.md
 /.claude/agents/code-reviewer.md
 /.claude/agents/security-auditor.md
+/outofscope/EReporting.zip
+/src/Modules/Transmission.zip

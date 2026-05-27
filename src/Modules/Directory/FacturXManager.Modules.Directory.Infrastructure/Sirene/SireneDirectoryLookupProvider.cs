@@ -41,7 +41,7 @@ internal sealed class SireneDirectoryLookupProvider(
 
         try
         {
-            ApiResponse<SireneUniteLegaleResponse> response = await sireneApi.GetUniteLegaleAsync(siren.Value, cancellationToken);
+            ApiResponse<SireneLegalUnitDto> response = await sireneApi.GetUniteLegaleAsync(siren.Value, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -59,7 +59,7 @@ internal sealed class SireneDirectoryLookupProvider(
             }
 
             Result<CompanyDirectoryEntry> mapped =
-                SireneCompanyMapper.ToDirectoryEntry(response.Content.UniteLegale, siren.Value);
+                SireneCompanyMapper.ToDirectoryEntry(response.Content.Company, siren.Value);
 
             if (mapped.IsSuccess)
             {
@@ -93,7 +93,7 @@ internal sealed class SireneDirectoryLookupProvider(
 
         try
         {
-            ApiResponse<SireneEtablissementDto> response = await sireneApi.GetEtablissementAsync(siret.Value, cancellationToken);
+            ApiResponse<SireneCompanyDto> response = await sireneApi.GetEtablissementAsync(siret.Value, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -111,7 +111,7 @@ internal sealed class SireneDirectoryLookupProvider(
             }
 
             Result<CompanyDirectoryEntry> mapped =
-                SireneCompanyMapper.ToDirectoryEntry(response.Content.Etablissement, siret.Value);
+                SireneCompanyMapper.ToDirectoryEntry(response.Content.LegalUnit, siret.Value);
 
             if (mapped.IsSuccess)
             {

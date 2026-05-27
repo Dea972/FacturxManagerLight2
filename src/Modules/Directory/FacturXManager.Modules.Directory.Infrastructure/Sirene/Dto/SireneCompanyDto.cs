@@ -2,13 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace FacturXManager.Modules.Directory.Infrastructure.Sirene.Dto;
 
-internal sealed class SireneEtablissementDto
+internal sealed class SireneCompanyDto
 {
     [JsonPropertyName("etablissement")]
-    public SireneEtablissement? Etablissement { get; init; }
+    public SireneCompany? LegalUnit { get; init; }
 }
 
-internal sealed class SireneEtablissement
+internal sealed class SireneCompany
 {
     [JsonPropertyName("siret")]
     public string? Siret { get; init; }
@@ -17,17 +17,17 @@ internal sealed class SireneEtablissement
     public string? Siren { get; init; }
 
     [JsonPropertyName("uniteLegale")]
-    public SireneUniteLegale? UniteLegale { get; init; }
+    public SireneLegalUnit? Company { get; init; }
 
     [JsonPropertyName("periodesEtablissement")]
-    public IReadOnlyList<SirenePeriodeEtablissement>? Periodes { get; init; }
+    public IReadOnlyList<SirenePeriodCompany>? Periods { get; init; }
 }
 
-internal sealed class SirenePeriodeEtablissement
+internal sealed class SirenePeriodCompany
 {
     [JsonPropertyName("dateFin")]
-    public string? DateFin { get; init; }
+    public string? EndDate { get; init; }
 
     [JsonPropertyName("etatAdministratifEtablissement")]
-    public string? EtatAdministratif { get; init; }
+    public string? AdministrativeStatus { get; init; }
 }

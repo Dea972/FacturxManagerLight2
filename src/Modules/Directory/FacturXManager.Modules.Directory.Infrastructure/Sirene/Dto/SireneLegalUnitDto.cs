@@ -2,44 +2,44 @@ using System.Text.Json.Serialization;
 
 namespace FacturXManager.Modules.Directory.Infrastructure.Sirene.Dto;
 
-internal sealed class SireneUniteLegaleResponse
+internal sealed class SireneLegalUnitDto
 {
     [JsonPropertyName("uniteLegale")]
-    public SireneUniteLegale? UniteLegale { get; init; }
+    public SireneLegalUnit? Company { get; init; }
 }
 
-internal sealed class SireneUniteLegale
+internal sealed class SireneLegalUnit
 {
     [JsonPropertyName("siren")]
     public string? Siren { get; init; }
 
     [JsonPropertyName("statutDiffusionUniteLegale")]
-    public string? StatutDiffusion { get; init; }
+    public string? DisclosureStatus { get; init; }
 
     [JsonPropertyName("denominationUniteLegale")]
-    public string? Denomination { get; init; }
+    public string? LegalName { get; init; }
 
     [JsonPropertyName("prenomUsuelUniteLegale")]
-    public string? PrenomUsuel { get; init; }
+    public string? FirstName { get; init; }
 
     [JsonPropertyName("nomUniteLegale")]
-    public string? Nom { get; init; }
+    public string? LastName { get; init; }
 
     [JsonPropertyName("nomUsageUniteLegale")]
-    public string? NomUsage { get; init; }
+    public string? UsageLastName { get; init; }
 
     [JsonPropertyName("periodesUniteLegale")]
-    public IReadOnlyList<SirenePeriodeUniteLegale>? Periodes { get; init; }
+    public IReadOnlyList<SirenePeriodLegalUnit>? Periods { get; init; }
 }
 
-internal sealed class SirenePeriodeUniteLegale
+internal sealed class SirenePeriodLegalUnit
 {
     [JsonPropertyName("dateFin")]
-    public string? DateFin { get; init; }
+    public string? EndDate { get; init; }
 
     [JsonPropertyName("denominationUniteLegale")]
-    public string DenominationUniteLegale { get; init; }
+    public string? LegalName { get; init; }
 
     [JsonPropertyName("etatAdministratifUniteLegale")]
-    public string? EtatAdministratif { get; init; }
+    public string? AdministrativeStatus { get; init; }
 }

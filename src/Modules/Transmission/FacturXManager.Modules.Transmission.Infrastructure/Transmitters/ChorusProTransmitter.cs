@@ -10,7 +10,7 @@ namespace FacturXManager.Modules.Transmission.Infrastructure.Transmitters;
 /// Adaptateur Chorus Pro (PISTE) en mode DEPOT_PDF_API. Dépose le PDF/A-3b encodé en Base64.
 /// </summary>
 internal sealed class ChorusProTransmitter(
-    IChorusProApiWrite api,
+    IChorusProApi api,
     ILogger<ChorusProTransmitter> logger)
     : IChannelTransmitter
 {
@@ -25,7 +25,7 @@ internal sealed class ChorusProTransmitter(
             WithSignature = false,
             FileContentBase64 = request.FacturXPdfBase64,
             FileName = $"{request.DocumentReference}.pdf",
-            FluxSyntax = "IN_DP_E2_FACTURX",
+            FluxSyntax = "IN_DP_E2_CII_FACTURX",
         };
 
         // On ne logue jamais le contenu Base64 du PDF.
@@ -34,7 +34,7 @@ internal sealed class ChorusProTransmitter(
             request.DocumentReference,
             request.RecipientSiret);
 
-        Stopwatch stopwatch = Stopwatch.StartNew();
+        var stopwatch = Stopwatch.StartNew();
 
         try
         {
