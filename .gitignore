@@ -379,3 +379,4 @@ FodyWeavers.xsd
 /.claude/agents/security-auditor.md
 /outofscope/EReporting.zip
 /src/Modules/Transmission.zip
+/src/API/FacturXManager.Api/facturxmanager.db

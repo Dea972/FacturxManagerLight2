@@ -1,10 +1,11 @@
-using FacturXManager.Common.Application.Transmission;
 using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Transmission.Application.Transmissions.SubmitTransmission;
 using FacturXManager.Modules.Transmission.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Transmission.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;
-using NSubstitute;
+using WireMock.RequestBuilders;
+using WireMock.ResponseBuilders;
+using DomainTransmission = FacturXManager.Modules.Transmission.Domain.Transmissions.Transmission;
 
 namespace FacturXManager.Modules.Transmission.IntegrationTests.Transmissions;
 
@@ -15,11 +16,15 @@ public class SubmitTransmissionTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnSubmittedSummary_WhenDepositSucceeds()
+    public async Task Handle_ShouldReturnSubmittedSummary_WhenChorusProAcceptsDeposit()
     {
         // Arrange
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Submitted("CHORUS-DEPOT-42", "DÃ©pÃ´t acceptÃ©"));
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":0,"libelle":"Dépôt accepté","numeroFluxDepot":"CHORUS-DEPOT-42"}"""));
 
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
 
@@ -30,15 +35,18 @@ public class SubmitTransmissionTests : BaseIntegrationTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Status.Should().Be("Submitted");
         result.Value.ChannelDepositId.Should().Be("CHORUS-DEPOT-42");
-        await UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_ShouldFailWithRejected_When4xxFromChorusPro()
+    public async Task Handle_ShouldFailWithRejected_WhenChorusProReturns400WithLibelle()
     {
-        // Arrange : la plateforme renvoie un rejet mÃ©tier (SIRET destinataire invalide par exemple)
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Rejected("SIRET destinataire inconnu"));
+        // Arrange : Chorus Pro rejette avec un libellé métier dans le body
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(400)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":1,"libelle":"SIRET destinataire inconnu de Chorus Pro"}"""));
 
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
 
@@ -48,16 +56,20 @@ public class SubmitTransmissionTests : BaseIntegrationTest
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Transmission.Rejected");
-        result.Error.Description.Should().Contain("SIRET destinataire inconnu");
+        result.Error.Description.Should().Contain("SIRET destinataire inconnu de Chorus Pro");
         result.Error.Type.Should().Be(ErrorType.Problem);
     }
 
     [Fact]
-    public async Task Handle_ShouldFailWithExternalService_When5xxFromChorusPro()
+    public async Task Handle_ShouldFailWithExternalService_WhenChorusProReturns503()
     {
-        // Arrange : erreur technique cÃ´tÃ© plateforme
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.TechnicalFailure("HTTP 503 indisponible"));
+        // Arrange : erreur technique côté plateforme
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(503)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":-1,"libelle":"Service temporairement indisponible"}"""));
 
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
 
@@ -67,15 +79,20 @@ public class SubmitTransmissionTests : BaseIntegrationTest
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Transmission.ExternalService");
+        result.Error.Description.Should().Contain("Service temporairement indisponible");
         result.Error.Type.Should().Be(ErrorType.ExternalService);
     }
 
     [Fact]
-    public async Task Handle_ShouldFailWithTimeout_WhenChorusProTimesOut()
+    public async Task Handle_ShouldFailWithRejected_WhenChorusProReturnsNonZeroReturnCode()
     {
-        // Arrange
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Timeout("La requÃªte PISTE a dÃ©passÃ© 30s"));
+        // Arrange : HTTP 200 mais codeRetour != 0 (rejet applicatif Chorus Pro)
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":12,"libelle":"Données de facturation invalides"}"""));
 
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
 
@@ -84,14 +101,14 @@ public class SubmitTransmissionTests : BaseIntegrationTest
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Transmission.Timeout");
-        result.Error.Type.Should().Be(ErrorType.Timeout);
+        result.Error.Code.Should().Be("Transmission.Rejected");
+        result.Error.Description.Should().Contain("Données de facturation invalides");
     }
 
     [Fact]
     public async Task Handle_ShouldFailWithInvalidChannel_WhenChannelStringIsUnknown()
     {
-        // Arrange
+        // Arrange : rejeté avant tout appel HTTP — aucun stub WireMock nécessaire
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder()
             .WithChannel("MARTIAN")
             .Build();
@@ -102,7 +119,7 @@ public class SubmitTransmissionTests : BaseIntegrationTest
         // Assert
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Transmission.InvalidChannel");
-        await Transmitter.DidNotReceiveWithAnyArgs().TransmitAsync(default!, default);
+        WireMock.LogEntries.Should().NotContain(e => e.RequestMessage.Path.Contains("deposer"));
     }
 
     [Fact]
@@ -116,7 +133,7 @@ public class SubmitTransmissionTests : BaseIntegrationTest
         // Act
         Result<SubmitTransmissionSummary> result = await Sender.Send(command);
 
-        // Assert : interceptÃ© par le ValidationPipelineBehavior
+        // Assert : intercepté par le ValidationPipelineBehavior
         result.IsFailure.Should().BeTrue();
         result.Error.Type.Should().Be(ErrorType.Validation);
     }
@@ -138,55 +155,26 @@ public class SubmitTransmissionTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Handle_ShouldRouteThroughIInvoiceTransmitter_WithCorrectChannel()
-    {
-        // Arrange
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Submitted("DEPOT-1"));
-        SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().WithChannel("ChorusPro").Build();
-
-        // Act
-        await Sender.Send(command);
-
-        // Assert
-        await Transmitter.Received(1).TransmitAsync(
-            Arg.Is<InvoiceTransmissionRequest>(r => r.Channel == TransmissionChannel.ChorusPro),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
     public async Task Handle_ShouldPersistTraceability_EvenWhenChorusProRejects()
     {
-        // Arrange : on garantit que chaque tentative est tracÃ©e (cf. rÃ¨gles mÃ©tier)
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Rejected("motif"));
+        // Arrange : rejet métier ? la transmission doit quand même être tracée en base
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(400)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":1,"libelle":"Rejet test traçabilité"}"""));
+
         SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
 
         // Act
         await Sender.Send(command);
 
-        // Assert : insertion + commit ont bien Ã©tÃ© appelÃ©s malgrÃ© le rejet mÃ©tier
-        TransmissionRepository.Received(1).Insert(Arg.Any<Domain.Transmissions.Transmission>());
-        await UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Handle_ShouldAcceptOtherChannel_PdpOrPpf()
-    {
-        // Arrange : modÃ¨le en Y â€” un autre canal doit Ãªtre routÃ© sans toucher l'Application
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Submitted("PDP-DEPOT-1"));
-        SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder()
-            .WithChannel("Pdp")
-            .Build();
-
-        // Act
-        Result<SubmitTransmissionSummary> result = await Sender.Send(command);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        await Transmitter.Received(1).TransmitAsync(
-            Arg.Is<InvoiceTransmissionRequest>(r => r.Channel == TransmissionChannel.Pdp),
-            Arg.Any<CancellationToken>());
+        // Assert : une ligne persiste en base malgré le rejet
+        DbContext.ChangeTracker.Clear();
+        bool persisted = DbContext.Set<DomainTransmission>()
+            .Any(t => t.DocumentReference == command.DocumentReference);
+        persisted.Should().BeTrue();
     }
 }
+

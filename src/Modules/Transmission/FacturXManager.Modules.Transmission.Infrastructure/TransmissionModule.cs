@@ -43,7 +43,7 @@ public static class TransmissionModule
 
         services.AddDbContext<TransmissionDbContext>(options =>
             options
-                .UseSqlServer(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", Schemas.Transmission))
+                .UseSqlite(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", Schemas.Transmission))
                 .UseSnakeCaseNamingConvention());
 
         services.AddScoped<ITransmissionRepository, TransmissionRepository>();

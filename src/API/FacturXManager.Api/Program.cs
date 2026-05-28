@@ -12,7 +12,10 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddUserSecrets<Program>();
 
 WebApplication app = builder.Build();
-
+if (!app.Environment.IsProduction())
+{
+   app.ApplyMigrations();
+}
 app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())

@@ -37,10 +37,6 @@
     <Project Path="src/Common/FacturXManager.Common.Infrastructure/FacturXManager.Common.Infrastructure.csproj" />
     <Project Path="src/Common/FacturXManager.Common.Presentation/FacturXManager.Common.Presentation.csproj" />
   </Folder>
-  <Folder Name="/src/Generators/">
-    <Project Path="../../../repos/ChaussonStore/src/Generators/SnapshotGenerator/SnapshotGenerator.csproj" />
-    <Project Path="../../../repos/ChaussonStore/src/Generators/ValueObjectGenerator/ValueObjectGenerator.csproj" />
-  </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Compliance/">
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Application/FacturXManager.Modules.Compliance.Application.csproj" />
