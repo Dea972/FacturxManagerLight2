@@ -192,4 +192,125 @@ internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceW
             "0088" => (ElectronicAddressSchemeIdentifiers)88,
             _ => (ElectronicAddressSchemeIdentifiers)182 // EM = 182 per CEF code list
         };
+
+    public string Write(CreditNote creditNote)
+    {
+        var descriptor = InvoiceDescriptor.CreateInvoice(
+            creditNote.Number,
+            creditNote.IssueDate.ToDateTime(TimeOnly.MinValue),
+            MapCurrencyCode(creditNote.CurrencyCode));
+
+        descriptor.Type = InvoiceType.CreditNote;
+        descriptor.ReferenceOrderNo = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(creditNote.BuyerReference))
+        {
+            descriptor.SetBuyerOrderReferenceDocument(creditNote.BuyerReference);
+        }
+
+        // Facture d'origine (BT-25 / BT-26)
+        descriptor.AddInvoiceReferencedDocument(
+            creditNote.OriginalInvoice.Number,
+            creditNote.OriginalInvoice.IssueDate?.ToDateTime(TimeOnly.MinValue));
+
+        // Vendeur (BG-4)
+        descriptor.SetSeller(
+            creditNote.Seller.Name,
+            creditNote.Seller.Address.PostalCode,
+            creditNote.Seller.Address.City,
+            creditNote.Seller.Address.Line1,
+            MapCountryCode(creditNote.Seller.Address.CountryCode),
+            legalOrganization: creditNote.Seller.HasLegalOrganizationId ? new LegalOrganization(GlobalIDSchemeIdentifiers.Sirene, creditNote.Seller.LegalOrganizationId) : null);
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Seller.VatIdentifier))
+        {
+            descriptor.AddSellerTaxRegistration(creditNote.Seller.VatIdentifier, TaxRegistrationSchemeID.VA);
+        }
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Seller.LegalRegistrationId))
+        {
+            descriptor.AddSellerTaxRegistration(creditNote.Seller.LegalRegistrationId, TaxRegistrationSchemeID.FC);
+        }
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Seller.ElectronicAddress))
+        {
+            descriptor.SetSellerElectronicAddress(
+                creditNote.Seller.ElectronicAddress,
+                MapElectronicAddressScheme(creditNote.Seller.ElectronicAddressScheme));
+        }
+
+        // Acheteur (BG-7)
+        descriptor.SetBuyer(
+            creditNote.Buyer.Name,
+            creditNote.Buyer.Address.PostalCode,
+            creditNote.Buyer.Address.City,
+            creditNote.Buyer.Address.Line1,
+            MapCountryCode(creditNote.Buyer.Address.CountryCode),
+            legalOrganization: creditNote.Buyer.HasLegalOrganizationId ? new LegalOrganization(GlobalIDSchemeIdentifiers.Sirene, creditNote.Buyer.LegalOrganizationId) : null);
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Buyer.VatIdentifier))
+        {
+            descriptor.AddBuyerTaxRegistration(creditNote.Buyer.VatIdentifier, TaxRegistrationSchemeID.VA);
+        }
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Buyer.LegalRegistrationId))
+        {
+            descriptor.AddBuyerTaxRegistration(creditNote.Buyer.LegalRegistrationId, TaxRegistrationSchemeID.FC);
+        }
+
+        if (!string.IsNullOrWhiteSpace(creditNote.Buyer.ElectronicAddress))
+        {
+            descriptor.SetBuyerElectronicAddress(
+                creditNote.Buyer.ElectronicAddress,
+                MapElectronicAddressScheme(creditNote.Buyer.ElectronicAddressScheme));
+        }
+
+        // Livraison (BG-13)
+        descriptor.ActualDeliveryDate = creditNote.IssueDate.ToDateTime(TimeOnly.MinValue);
+
+        // Moyen de paiement (obligatoire Chorus Pro même sur un avoir)
+        descriptor.SetPaymentMeans(
+            MapPaymentMeansCode(creditNote.PaymentMeansCode),
+            string.Empty);
+
+        // Lignes d'avoir (BG-25)
+        foreach (CreditNoteLine line in creditNote.Lines)
+        {
+            descriptor.AddTradeLineItem(
+                lineID: line.Id,
+                name: line.Description,
+                billedQuantity: line.Quantity,
+                unitCode: MapQuantityCode(line.UnitCode),
+                netUnitPrice: line.UnitNetPrice,
+                categoryCode: MapTaxCategoryCode(line.VatCategory),
+                taxPercent: line.VatRate,
+                taxType: TaxTypes.VAT);
+        }
+
+        // Ventilation TVA (BG-23)
+        foreach (VatBreakdown breakdown in creditNote.VatBreakdowns)
+        {
+            descriptor.AddApplicableTradeTax(
+                breakdown.BasisAmount,
+                breakdown.Rate,
+                breakdown.TaxAmount,
+                TaxTypes.VAT,
+                MapTaxCategoryCode(breakdown.Category));
+        }
+
+        // Totaux
+        descriptor.SetTotals(
+            lineTotalAmount: creditNote.TotalWithoutVat,
+            taxBasisAmount: creditNote.TotalWithoutVat,
+            taxTotalAmount: creditNote.TotalVat,
+            grandTotalAmount: creditNote.TotalWithVat,
+            duePayableAmount: creditNote.AmountDue);
+
+        using var stream = new MemoryStream();
+        descriptor.Save(stream, ZUGFeRDVersion.Version23, MapProfile(creditNote.Profile));
+        stream.Position = 0;
+
+        using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+        return reader.ReadToEnd();
+    }
 }

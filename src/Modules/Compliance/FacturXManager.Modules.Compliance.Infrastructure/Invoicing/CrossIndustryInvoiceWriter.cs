@@ -249,4 +249,167 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
     private static string Rate(decimal value) => value.ToString("0.00", CultureInfo.InvariantCulture);
 
     private static string Quantity(decimal value) => value.ToString("0.####", CultureInfo.InvariantCulture);
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // CreditNote (TypeCode 381)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public string Write(CreditNote creditNote)
+    {
+        var document = new XDocument(
+            new XDeclaration("1.0", "UTF-8", null),
+            new XElement(
+                Rsm + "CrossIndustryInvoice",
+                new XAttribute(XNamespace.Xmlns + "rsm", Rsm.NamespaceName),
+                new XAttribute(XNamespace.Xmlns + "ram", Ram.NamespaceName),
+                new XAttribute(XNamespace.Xmlns + "udt", Udt.NamespaceName),
+                BuildCreditNoteDocumentContext(creditNote),
+                BuildCreditNoteExchangedDocument(creditNote),
+                BuildCreditNoteTradeTransaction(creditNote)));
+
+        string body = document.ToString();
+
+        return document.Declaration is null
+            ? body
+            : $"{document.Declaration}{Environment.NewLine}{body}";
+    }
+
+    private static XElement BuildCreditNoteDocumentContext(CreditNote creditNote)
+    {
+        string guidelineId = creditNote.Profile == FacturXProfile.Extended
+            ? FacturXConstants.ExtendedGuidelineId
+            : FacturXConstants.En16931GuidelineId;
+
+        return new XElement(
+            Rsm + "ExchangedDocumentContext",
+            new XElement(
+                Ram + "GuidelineSpecifiedDocumentContextParameter",
+                new XElement(Ram + "ID", guidelineId)));
+    }
+
+    private static XElement BuildCreditNoteExchangedDocument(CreditNote creditNote) =>
+        new(
+            Rsm + "ExchangedDocument",
+            new XElement(Ram + "ID", creditNote.Number),
+            new XElement(Ram + "TypeCode", "381"),
+            new XElement(
+                Ram + "IssueDateTime",
+                new XElement(
+                    Udt + "DateTimeString",
+                    new XAttribute("format", "102"),
+                    creditNote.IssueDate.ToString("yyyyMMdd", CultureInfo.InvariantCulture))));
+
+    private static XElement BuildCreditNoteTradeTransaction(CreditNote creditNote)
+    {
+        var transaction = new XElement(Rsm + "SupplyChainTradeTransaction");
+
+        foreach (CreditNoteLine line in creditNote.Lines)
+        {
+            transaction.Add(BuildCreditNoteLineItem(line));
+        }
+
+        transaction.Add(BuildCreditNoteHeaderTradeAgreement(creditNote));
+        transaction.Add(new XElement(Ram + "ApplicableHeaderTradeDelivery"));
+        transaction.Add(BuildCreditNoteHeaderTradeSettlement(creditNote));
+
+        return transaction;
+    }
+
+    private static XElement BuildCreditNoteLineItem(CreditNoteLine line) =>
+        new(
+            Ram + "IncludedSupplyChainTradeLineItem",
+            new XElement(
+                Ram + "AssociatedDocumentLineDocument",
+                new XElement(Ram + "LineID", line.Id)),
+            new XElement(
+                Ram + "SpecifiedTradeProduct",
+                new XElement(Ram + "Name", line.Description)),
+            new XElement(
+                Ram + "SpecifiedLineTradeAgreement",
+                new XElement(
+                    Ram + "NetPriceProductTradePrice",
+                    new XElement(Ram + "ChargeAmount", Amount(line.UnitNetPrice)))),
+            new XElement(
+                Ram + "SpecifiedLineTradeDelivery",
+                new XElement(
+                    Ram + "BilledQuantity",
+                    new XAttribute("unitCode", line.UnitCode),
+                    Quantity(line.Quantity))),
+            new XElement(
+                Ram + "SpecifiedLineTradeSettlement",
+                new XElement(
+                    Ram + "ApplicableTradeTax",
+                    new XElement(Ram + "TypeCode", "VAT"),
+                    new XElement(Ram + "CategoryCode", line.VatCategory.ToUnclCode()),
+                    new XElement(Ram + "RateApplicablePercent", Rate(line.VatRate))),
+                new XElement(
+                    Ram + "SpecifiedTradeSettlementLineMonetarySummation",
+                    new XElement(Ram + "LineTotalAmount", Amount(line.NetAmount)))));
+
+    private static XElement BuildCreditNoteHeaderTradeAgreement(CreditNote creditNote)
+    {
+        var agreement = new XElement(Ram + "ApplicableHeaderTradeAgreement");
+
+        if (!string.IsNullOrWhiteSpace(creditNote.BuyerReference))
+        {
+            agreement.Add(new XElement(Ram + "BuyerReference", creditNote.BuyerReference));
+        }
+
+        agreement.Add(BuildTradeParty(Ram + "SellerTradeParty", creditNote.Seller, includeVat: true));
+        agreement.Add(BuildTradeParty(Ram + "BuyerTradeParty", creditNote.Buyer, includeVat: true));
+
+        // InvoiceReferencedDocument (BT-25 / BT-26)
+        var invoiceRef = new XElement(
+            Ram + "InvoiceReferencedDocument",
+            new XElement(Ram + "IssuerAssignedID", creditNote.OriginalInvoice.Number));
+
+        if (creditNote.OriginalInvoice.IssueDate is { } refDate)
+        {
+            invoiceRef.Add(new XElement(
+                Ram + "FormattedIssueDateTime",
+                new XElement(
+                    Udt + "DateTimeString",
+                    new XAttribute("format", "102"),
+                    refDate.ToString("yyyyMMdd", CultureInfo.InvariantCulture))));
+        }
+
+        agreement.Add(invoiceRef);
+
+        return agreement;
+    }
+
+    private static XElement BuildCreditNoteHeaderTradeSettlement(CreditNote creditNote)
+    {
+        var settlement = new XElement(
+            Ram + "ApplicableHeaderTradeSettlement",
+            new XElement(Ram + "InvoiceCurrencyCode", creditNote.CurrencyCode));
+
+        settlement.Add(new XElement(
+            Ram + "SpecifiedTradeSettlementPaymentMeans",
+            new XElement(Ram + "TypeCode", creditNote.PaymentMeansCode)));
+
+        foreach (VatBreakdown breakdown in creditNote.VatBreakdowns)
+        {
+            settlement.Add(new XElement(
+                Ram + "ApplicableTradeTax",
+                new XElement(Ram + "CalculatedAmount", Amount(breakdown.TaxAmount)),
+                new XElement(Ram + "TypeCode", "VAT"),
+                new XElement(Ram + "BasisAmount", Amount(breakdown.BasisAmount)),
+                new XElement(Ram + "CategoryCode", breakdown.Category.ToUnclCode()),
+                new XElement(Ram + "RateApplicablePercent", Rate(breakdown.Rate))));
+        }
+
+        settlement.Add(new XElement(
+            Ram + "SpecifiedTradeSettlementHeaderMonetarySummation",
+            new XElement(Ram + "LineTotalAmount", Amount(creditNote.TotalWithoutVat)),
+            new XElement(Ram + "TaxBasisTotalAmount", Amount(creditNote.TotalWithoutVat)),
+            new XElement(
+                Ram + "TaxTotalAmount",
+                new XAttribute("currencyID", creditNote.CurrencyCode),
+                Amount(creditNote.TotalVat)),
+            new XElement(Ram + "GrandTotalAmount", Amount(creditNote.TotalWithVat)),
+            new XElement(Ram + "DuePayableAmount", Amount(creditNote.AmountDue))));
+
+        return settlement;
+    }
 }

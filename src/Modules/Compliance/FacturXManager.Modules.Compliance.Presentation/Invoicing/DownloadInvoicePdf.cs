@@ -24,7 +24,7 @@ internal sealed class DownloadInvoicePdf : IEndpoint
                 summary => Results.File(summary.PdfBytes, "application/pdf", summary.FileName),
                 ApiResults.Problem);
         })
-        .WithTags(Tags.Compliance)
+        .WithTags(Tags.Invoice)
         .WithSummary("Télécharger le PDF Factur-X")
         .WithDescription(
             "Génère et télécharge directement le PDF/A-3b Factur-X de la facture (retour binaire application/pdf). " +

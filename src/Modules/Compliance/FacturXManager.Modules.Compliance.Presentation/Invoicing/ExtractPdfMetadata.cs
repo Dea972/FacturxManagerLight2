@@ -32,7 +32,7 @@ internal sealed class ExtractPdfMetadata : IEndpoint{
 
             return result.Match(r => Results.Ok(r.Content), ApiResults.Problem);
         })
-        .WithTags(Tags.Compliance)
+        .WithTags(Tags.Invoice)
         .WithSummary("Extraire les métadonnées d'un PDF Factur-X")
         .WithDescription(
             "Upload un PDF Factur-X et retourne ses métadonnées en texte brut. " +

@@ -22,7 +22,7 @@ internal sealed class CertifyInvoice : IEndpoint
 
             return result.Match(Results.Ok, ApiResults.Problem);
         })
-        .WithTags(Tags.Compliance)
+        .WithTags(Tags.Invoice)
         .WithSummary("Certifier une facture Factur-X")
         .WithDescription(
             "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarquant factur-x.xml. " +

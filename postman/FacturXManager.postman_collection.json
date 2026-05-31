@@ -55,10 +55,305 @@
       "description": "Validation EN16931, génération XML CII et PDF/A-3b (Factur-X).",
       "item": [
         {
-          "name": "Invoicing",
+          "name": "Invoice",
           "item": [
             {
               "name": "POST /compliance/invoices/validate — Validate Invoice Compliance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/validate",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "validate" ]
+                },
+                "description": "Vérifie la conformité EN16931 d'une facture sans produire de document. Profils supportés : EN16931 (Comfort), Extended, Basic, BasicWL, Minimum.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/certify — Certify Invoice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/certify",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "certify" ]
+                },
+                "description": "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarquant factur-x.xml. Retourne le document certifié encodé en Base64.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/download — Download Invoice PDF",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/download",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "download" ]
+                },
+                "description": "Génère et télécharge directement le PDF/A-3b Factur-X (retour binaire application/pdf). Le fichier factur-x.xml est embarqué avec AFRelationship=Data.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (Xmp) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne le XMP brut du catalogue PDF (pdfaid:part=3, pdfaid:conformance=B, tags fx:).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"Xmp\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (EmbeddedXml) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne le contenu du XML CII embarqué (factur-x.xml).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"EmbeddedXml\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (Zip) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne une archive ZIP contenant le PDF Factur-X, le XML CII embarqué (factur-x.xml) et le XMP du catalogue (xmp.xml).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"Zip\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/extract-metadata?type=Xmp — Extract XMP from PDF",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/extract-metadata?type=Xmp",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "extract-metadata" ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "Xmp",
+                      "description": "Type de métadonnée à extraire : Xmp ou EmbeddedXml"
+                    }
+                  ]
+                },
+                "description": "Upload un PDF Factur-X et retourne son XMP brut (pdfaid:part, pdfaid:conformance, tags fx:). Utiliser type=EmbeddedXml pour extraire le XML CII embarqué (factur-x.xml).",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Fichier PDF Factur-X à analyser"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/extract-metadata?type=EmbeddedXml — Extract CII XML from PDF",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/extract-metadata?type=EmbeddedXml",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "extract-metadata" ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "EmbeddedXml",
+                      "description": "Type de métadonnée à extraire : Xmp ou EmbeddedXml"
+                    }
+                  ]
+                },
+                "description": "Upload un PDF Factur-X et retourne le XML CII embarqué (factur-x.xml). Utiliser type=Xmp pour extraire le XMP du catalogue.",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Fichier PDF Factur-X à analyser"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Credit Note",
+          "item": [
+            {
+              "name": "POST /compliance/credit-notes/generate — Generate Credit Note",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/credit-notes/generate",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "credit-notes", "generate" ]
+                },
+                "description": "Génère un avoir Factur-X (type CII 381) : construction du XML CII avec InvoiceReferencedDocument et du PDF/A-3b. Retourne le document encodé en Base64.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"creditNote\": {\n    \"number\": \"AV-2025-00012\",\n    \"issueDate\": \"2025-07-01\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"originalInvoiceNumber\": \"FA-2025-00042\",\n    \"originalInvoiceIssueDate\": \"2025-06-15\",\n    \"creditReason\": \"Erreur de facturation sur la quantité\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"paymentMeansCode\": \"30\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Annulation prestation de conseil en informatique\",\n        \"quantity\": 2.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/credit-notes/download — Download Credit Note PDF",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/credit-notes/download",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "credit-notes", "download" ]
+                },
+                "description": "Génère et télécharge directement le PDF/A-3b Factur-X de l'avoir (type CII 381, retour binaire application/pdf). Le fichier factur-x.xml est embarqué avec AFRelationship=Data.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"creditNote\": {\n    \"number\": \"AV-2025-00012\",\n    \"issueDate\": \"2025-07-01\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"Unspecified\",\n    \"originalInvoiceNumber\": \"FA-2025-00042\",\n    \"originalInvoiceIssueDate\": \"2025-06-15\",\n    \"creditReason\": \"Erreur de facturation sur la quantité\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"paymentMeansCode\": \"30\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"183955511\",\n      \"legalOrganizationId\": \"18395551129914\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"834216652\",\n      \"legalOrganizationId\": \"83421665236771\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Annulation prestation de conseil en informatique\",\n        \"quantity\": 2.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"Standard\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
               "request": {
                 "method": "POST",
                 "header": [

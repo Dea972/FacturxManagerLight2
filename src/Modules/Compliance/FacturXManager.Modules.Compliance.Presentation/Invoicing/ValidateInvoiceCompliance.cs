@@ -22,7 +22,7 @@ internal sealed class ValidateInvoiceCompliance : IEndpoint
 
             return result.Match(Results.Ok, ApiResults.Problem);
         })
-        .WithTags(Tags.Compliance)
+        .WithTags(Tags.Invoice)
         .WithSummary("Valider la conformité EN16931")
         .WithDescription(
             "Vérifie la conformité EN16931 d'une facture sans produire de document. " +

@@ -35,6 +35,7 @@ public static class ComplianceModule
     private static void AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<IInvoiceBuilder, InvoiceBuilder>();
+        services.AddScoped<ICreditNoteBuilder, CreditNoteBuilder>();
         services.AddScoped<IEn16931Validator, En16931Validator>();
         services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
         services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();
