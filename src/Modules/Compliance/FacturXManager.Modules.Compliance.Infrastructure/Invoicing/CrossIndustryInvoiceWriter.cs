@@ -124,7 +124,7 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
         }
 
         agreement.Add(BuildTradeParty(Ram + "SellerTradeParty", invoice.Seller, includeVat: true));
-        agreement.Add(BuildTradeParty(Ram + "BuyerTradeParty", invoice.Buyer, includeVat: false));
+        agreement.Add(BuildTradeParty(Ram + "BuyerTradeParty", invoice.Buyer, includeVat: true));
 
         if (!string.IsNullOrWhiteSpace(invoice.PurchaseOrderReference))
         {
@@ -144,7 +144,18 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
         {
             element.Add(new XElement(
                 Ram + "SpecifiedLegalOrganization",
-                new XElement(Ram + "ID", party.LegalRegistrationId)));
+                new XElement(Ram + "ID",
+                    new XAttribute("schemeID", "0002"),
+                    party.LegalRegistrationId)));
+        }
+
+        if (party.HasLegalOrganizationId)
+        {
+            element.Add(new XElement(
+                Ram + "SpecifiedLegalOrganization",
+                new XElement(Ram + "ID",
+                    new XAttribute("schemeID", "0088"),
+                    party.LegalOrganizationId)));
         }
 
         element.Add(new XElement(
@@ -163,6 +174,15 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
                     Ram + "ID",
                     new XAttribute("schemeID", "VA"),
                     party.VatIdentifier)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(party.ElectronicAddress))
+        {
+            element.Add(new XElement(
+                Ram + "URIUniversalCommunication",
+                new XElement(Ram + "URIID",
+                    new XAttribute("schemeID", party.ElectronicAddressScheme ?? "EM"),
+                    party.ElectronicAddress)));
         }
 
         return element;

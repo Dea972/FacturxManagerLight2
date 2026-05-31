@@ -78,5 +78,6 @@
     <!-- Authentication & Authorization -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
+    <PackageVersion Include="ZUGFeRD-csharp" Version="18.0.0" />
   </ItemGroup>
 </Project>

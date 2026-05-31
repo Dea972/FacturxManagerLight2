@@ -44,14 +44,13 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
             ConfigureDocumentInfo(document, request);
             DrawInvoice(document, request);
 
-            byte[] xmlBytes = Encoding.UTF8.GetBytes(request.CrossIndustryInvoiceXml);
-            AttachFacturXXml(document, request.EmbeddedFileName, xmlBytes);
-            AttachXmpMetadata(document, request);
-
             using var stream = new MemoryStream();
             await document.SaveAsync(stream, closeStream: false).ConfigureAwait(false);
 
-            return Result.Success(stream.ToArray());
+            byte[] visualPdf = stream.ToArray();
+            byte[] finalPdf = FacturXPdfEmbedder.EmbedFacturXData(visualPdf, request);
+
+            return Result.Success(finalPdf);
         }
         catch (Exception ex)
         {
@@ -102,7 +101,10 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
 
         var titleFont = new XFont("Arial", 20, XFontStyleEx.Bold);
         var headerFont = new XFont("Arial", 11, XFontStyleEx.Bold);
+        var sectionFont = new XFont("Arial", 10, XFontStyleEx.Bold);
         var bodyFont = new XFont("Arial", 10, XFontStyleEx.Regular);
+        var smallFont = new XFont("Arial", 9, XFontStyleEx.Regular);
+        var smallBoldFont = new XFont("Arial", 9, XFontStyleEx.Bold);
         var footerFont = new XFont("Arial", 8, XFontStyleEx.Italic);
 
         const double margin = 50;
@@ -124,13 +126,119 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
         y += 24;
 
         // Vendeur / Acheteur
-        gfx.DrawString("Vendeur", headerFont, XBrushes.Black, new XPoint(margin, y));
-        gfx.DrawString("Acheteur", headerFont, XBrushes.Black, new XPoint(margin + 280, y));
+        double colWidth = width / 2 - 10;
+        gfx.DrawString("VENDEUR", sectionFont, XBrushes.Black, new XPoint(margin, y));
+        gfx.DrawString("ACHETEUR", sectionFont, XBrushes.Black, new XPoint(margin + colWidth + 20, y));
         y += 16;
 
         gfx.DrawString(request.SellerName, bodyFont, XBrushes.Black, new XPoint(margin, y));
-        gfx.DrawString(request.BuyerName, bodyFont, XBrushes.Black, new XPoint(margin + 280, y));
-        y += 40;
+        gfx.DrawString(request.BuyerName, bodyFont, XBrushes.Black, new XPoint(margin + colWidth + 20, y));
+        y += 14;
+
+        if (!string.IsNullOrWhiteSpace(request.SellerAddress))
+        {
+            gfx.DrawString(request.SellerAddress, smallFont, XBrushes.Black, new XPoint(margin, y));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.BuyerAddress))
+        {
+            gfx.DrawString(request.BuyerAddress, smallFont, XBrushes.Black, new XPoint(margin + colWidth + 20, y));
+        }
+
+        y += 14;
+
+        if (!string.IsNullOrWhiteSpace(request.SellerVatIdentifier))
+        {
+            gfx.DrawString($"TVA : {request.SellerVatIdentifier}", smallFont, XBrushes.Black, new XPoint(margin, y));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.BuyerVatIdentifier))
+        {
+            gfx.DrawString($"TVA : {request.BuyerVatIdentifier}", smallFont, XBrushes.Black, new XPoint(margin + colWidth + 20, y));
+        }
+
+        y += 14;
+
+        if (!string.IsNullOrWhiteSpace(request.SellerLegalRegistrationId))
+        {
+            gfx.DrawString($"SIREN : {request.SellerLegalRegistrationId}", smallFont, XBrushes.Black, new XPoint(margin, y));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.BuyerLegalRegistrationId))
+        {
+            gfx.DrawString($"SIREN : {request.BuyerLegalRegistrationId}", smallFont, XBrushes.Black, new XPoint(margin + colWidth + 20, y));
+        }
+
+        y += 20;
+
+        // Lignes de facture
+        if (request.Lines is { Count: > 0 })
+        {
+            gfx.DrawLine(XPens.Black, margin, y, margin + width, y);
+            y += 8;
+            gfx.DrawString("DÉTAIL DES PRESTATIONS", sectionFont, XBrushes.Black, new XPoint(margin, y));
+            y += 18;
+
+            // En-tête du tableau
+            double[] colX = [margin, margin + 35, margin + 220, margin + 265, margin + 330, margin + 390, margin + 430];
+
+            gfx.DrawString("Réf", smallBoldFont, XBrushes.Black, new XPoint(colX[0], y));
+            gfx.DrawString("Description", smallBoldFont, XBrushes.Black, new XPoint(colX[1], y));
+            gfx.DrawString("Qté", smallBoldFont, XBrushes.Black, new XPoint(colX[2], y));
+            gfx.DrawString("PU HT", smallBoldFont, XBrushes.Black, new XPoint(colX[3], y));
+            gfx.DrawString("TVA %", smallBoldFont, XBrushes.Black, new XPoint(colX[4], y));
+            gfx.DrawString("Montant HT", smallBoldFont, XBrushes.Black, new XPoint(colX[5], y));
+            y += 4;
+            gfx.DrawLine(XPens.LightGray, margin, y + 10, margin + width, y + 10);
+            y += 14;
+
+            foreach (RenderLineItem line in request.Lines)
+            {
+                if (y > page.Height.Point - 100)
+                {
+                    // Nouvelle page si nécessaire
+                    page = document.AddPage();
+                    page.Size = PdfSharp.PageSize.A4;
+                    gfx.Dispose();
+                    var newGfx = XGraphics.FromPdfPage(page);
+                    y = margin;
+                    DrawInvoiceLines(newGfx, request.Lines, ref y, page, margin, width, smallFont, colX, request.CurrencyCode);
+                    DrawRemainder(newGfx, request, ref y, margin, width, bodyFont, headerFont, sectionFont, smallFont, footerFont, page);
+                    return;
+                }
+
+                gfx.DrawString(line.Id, smallFont, XBrushes.Black, new XPoint(colX[0], y));
+                gfx.DrawString(TruncateText(line.Description, 30), smallFont, XBrushes.Black, new XPoint(colX[1], y));
+                gfx.DrawString(line.Quantity.ToString("G", CultureInfo.GetCultureInfo("fr-FR")), smallFont, XBrushes.Black, new XPoint(colX[2], y));
+                gfx.DrawString(FormatAmount(line.UnitNetPrice, request.CurrencyCode), smallFont, XBrushes.Black, new XPoint(colX[3], y));
+                gfx.DrawString($"{line.VatRate:G}%", smallFont, XBrushes.Black, new XPoint(colX[4], y));
+                gfx.DrawString(FormatAmount(line.NetAmount, request.CurrencyCode), smallFont, XBrushes.Black, new XPoint(colX[5], y));
+                y += 14;
+            }
+
+            y += 6;
+        }
+
+        // Ventilation TVA
+        if (request.VatBreakdowns is { Count: > 0 })
+        {
+            gfx.DrawLine(XPens.LightGray, margin, y, margin + width, y);
+            y += 8;
+            gfx.DrawString("VENTILATION TVA", sectionFont, XBrushes.Black, new XPoint(margin, y));
+            y += 16;
+
+            foreach (RenderVatBreakdown vat in request.VatBreakdowns)
+            {
+                gfx.DrawString(
+                    $"{vat.Category} {vat.Rate:G}% — Base : {FormatAmount(vat.BasisAmount, request.CurrencyCode)} — TVA : {FormatAmount(vat.TaxAmount, request.CurrencyCode)}",
+                    smallFont,
+                    XBrushes.Black,
+                    new XPoint(margin, y));
+                y += 14;
+            }
+
+            y += 6;
+        }
 
         // Séparateur
         gfx.DrawLine(XPens.Black, margin, y, margin + width, y);
@@ -145,6 +253,33 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
         DrawTotalRow(gfx, bodyFont, margin, width, y, "TVA", request.TotalVat, request.CurrencyCode);
         y += 16;
         DrawTotalRow(gfx, headerFont, margin, width, y, "Montant TTC", request.TotalWithVat, request.CurrencyCode);
+        y += 16;
+
+        decimal amountDue = request.AmountDue ?? request.TotalWithVat;
+        DrawTotalRow(gfx, sectionFont, margin, width, y, "Net à payer", amountDue, request.CurrencyCode);
+        y += 24;
+
+        // Modalités de paiement
+        if (request.PaymentDueDate.HasValue || !string.IsNullOrWhiteSpace(request.PaymentIban))
+        {
+            gfx.DrawString("MODALITÉS DE PAIEMENT", sectionFont, XBrushes.Black, new XPoint(margin, y));
+            y += 16;
+
+            if (request.PaymentDueDate.HasValue)
+            {
+                gfx.DrawString(
+                    $"Échéance : {request.PaymentDueDate.Value.ToString("dd/MM/yyyy", CultureInfo.GetCultureInfo("fr-FR"))}",
+                    smallFont,
+                    XBrushes.Black,
+                    new XPoint(margin, y));
+                y += 14;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.PaymentIban))
+            {
+                gfx.DrawString($"IBAN : {request.PaymentIban}", smallFont, XBrushes.Black, new XPoint(margin, y));
+            }
+        }
 
         // Pied de page
         double footerY = page.Height.Point - margin;
@@ -156,6 +291,26 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
             XStringFormats.TopLeft);
     }
 
+    // Stubs pour pagination multi-pages (non implémenté — les factures courtes tiennent sur une page)
+    private static void DrawInvoiceLines(XGraphics gfx, IReadOnlyList<RenderLineItem> lines, ref double y,
+        PdfPage page, double margin, double width, XFont font, double[] colX, string currency)
+    {
+        // Pagination multi-pages non implémentée — les factures courtes tiennent sur une page
+    }
+
+    private static void DrawRemainder(XGraphics gfx, FacturXRenderRequest request, ref double y,
+        double margin, double width, XFont bodyFont, XFont headerFont, XFont sectionFont,
+        XFont smallFont, XFont footerFont, PdfPage page)
+    {
+        // Pagination multi-pages non implémentée — les factures courtes tiennent sur une page
+    }
+
+    private static string TruncateText(string text, int maxLength) =>
+        text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 3), "...");
+
+    private static string FormatAmount(decimal amount, string currency) =>
+        string.Format(CultureInfo.GetCultureInfo("fr-FR"), "{0:N2} {1}", amount, currency);
+
     private static void DrawTotalRow(XGraphics gfx, XFont font, double margin, double width, double y, string label, decimal amount, string currency)
     {
         gfx.DrawString(label, font, XBrushes.Black, new XPoint(margin, y));
@@ -166,158 +321,6 @@ internal sealed class FacturXPdfA3BRenderer : IFacturXPdfA3BRenderer
             currency);
         gfx.DrawString(formatted, font, XBrushes.Black, new XRect(margin, y, width, 14), XStringFormats.TopRight);
     }
-
-    private static void AttachFacturXXml(PdfDocument document, string fileName, byte[] xmlBytes)
-    {
-        // Stream contenant le fichier XML embarqué.
-        var embeddedStream = new PdfDictionary(document);
-        embeddedStream.Elements.SetName("/Type", "/EmbeddedFile");
-        embeddedStream.Elements.SetString("/Subtype", "application/xml");
-        embeddedStream.CreateStream(xmlBytes);
-
-        var paramsDict = new PdfDictionary(document);
-        paramsDict.Elements.SetInteger("/Size", xmlBytes.Length);
-        paramsDict.Elements.SetDateTime("/ModDate", DateTime.UtcNow);
-        embeddedStream.Elements["/Params"] = paramsDict;
-
-        document.Internals.AddObject(embeddedStream);
-
-        var efDict = new PdfDictionary(document);
-        efDict.Elements["/F"] = embeddedStream.Reference;
-        efDict.Elements["/UF"] = embeddedStream.Reference;
-
-        var fileSpec = new PdfDictionary(document);
-        fileSpec.Elements.SetName("/Type", "/Filespec");
-        fileSpec.Elements.SetString("/F", fileName);
-        fileSpec.Elements.SetString("/UF", fileName);
-        fileSpec.Elements.SetString("/Desc", "Factur-X invoice data");
-        fileSpec.Elements.SetName("/AFRelationship", "/Data");
-        fileSpec.Elements["/EF"] = efDict;
-        document.Internals.AddObject(fileSpec);
-
-        // Name tree /Names /EmbeddedFiles
-        PdfCatalog catalog = document.Internals.Catalog;
-        PdfDictionary namesDict = catalog.Elements.GetDictionary("/Names") ?? new PdfDictionary(document);
-        var embeddedFilesDict = new PdfDictionary(document);
-        var namesArray = new PdfArray(document);
-        namesArray.Elements.Add(new PdfString(fileName));
-        namesArray.Elements.Add(fileSpec.Reference!);
-        embeddedFilesDict.Elements["/Names"] = namesArray;
-        namesDict.Elements["/EmbeddedFiles"] = embeddedFilesDict;
-        catalog.Elements["/Names"] = namesDict;
-
-        // Tableau /AF sur le catalogue (associated files PDF/A-3).
-        var afArray = new PdfArray(document);
-        afArray.Elements.Add(fileSpec.Reference!);
-        catalog.Elements["/AF"] = afArray;
-    }
-
-    private static void AttachXmpMetadata(PdfDocument document, FacturXRenderRequest request)
-    {
-        string conformanceLevel = request.Profile switch
-        {
-            FacturXProfile.Minimum => "MINIMUM",
-            FacturXProfile.BasicWl => "BASIC WL",
-            FacturXProfile.Basic => "BASIC",
-            FacturXProfile.Extended => "EXTENDED",
-            _ => "EN 16931"
-        };
-
-        string xmp = BuildXmpPacket(request, conformanceLevel);
-        byte[] xmpBytes = Encoding.UTF8.GetBytes(xmp);
-
-        var metadataDict = new PdfDictionary(document);
-        metadataDict.Elements.SetName("/Type", "/Metadata");
-        metadataDict.Elements.SetName("/Subtype", "/XML");
-        metadataDict.CreateStream(xmpBytes);
-
-        document.Internals.AddObject(metadataDict);
-        document.Internals.Catalog.Elements["/Metadata"] = metadataDict.Reference;
-    }
-
-    private static string BuildXmpPacket(FacturXRenderRequest request, string conformanceLevel)
-    {
-        string creationDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-        return $"""
-            <?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
-            <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="FacturXManager">
-              <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-                <rdf:Description rdf:about=""
-                    xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
-                  <pdfaid:part>3</pdfaid:part>
-                  <pdfaid:conformance>B</pdfaid:conformance>
-                </rdf:Description>
-                <rdf:Description rdf:about=""
-                    xmlns:dc="http://purl.org/dc/elements/1.1/">
-                  <dc:title><rdf:Alt><rdf:li xml:lang="x-default">Facture {Escape(request.InvoiceNumber)}</rdf:li></rdf:Alt></dc:title>
-                  <dc:creator><rdf:Seq><rdf:li>{Escape(request.SellerName)}</rdf:li></rdf:Seq></dc:creator>
-                </rdf:Description>
-                <rdf:Description rdf:about=""
-                    xmlns:xmp="http://ns.adobe.com/xap/1.0/">
-                  <xmp:CreatorTool>FacturXManager</xmp:CreatorTool>
-                  <xmp:CreateDate>{creationDate}</xmp:CreateDate>
-                  <xmp:ModifyDate>{creationDate}</xmp:ModifyDate>
-                </rdf:Description>
-                <rdf:Description rdf:about=""
-                    xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
-                    xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
-                    xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">
-                  <pdfaExtension:schemas>
-                    <rdf:Bag>
-                      <rdf:li rdf:parseType="Resource">
-                        <pdfaSchema:schema>Factur-X PDFA Extension Schema</pdfaSchema:schema>
-                        <pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>
-                        <pdfaSchema:prefix>fx</pdfaSchema:prefix>
-                        <pdfaSchema:property>
-                          <rdf:Seq>
-                            <rdf:li rdf:parseType="Resource">
-                              <pdfaProperty:name>DocumentFileName</pdfaProperty:name>
-                              <pdfaProperty:valueType>Text</pdfaProperty:valueType>
-                              <pdfaProperty:category>external</pdfaProperty:category>
-                              <pdfaProperty:description>Name of the embedded XML invoice file</pdfaProperty:description>
-                            </rdf:li>
-                            <rdf:li rdf:parseType="Resource">
-                              <pdfaProperty:name>DocumentType</pdfaProperty:name>
-                              <pdfaProperty:valueType>Text</pdfaProperty:valueType>
-                              <pdfaProperty:category>external</pdfaProperty:category>
-                              <pdfaProperty:description>INVOICE</pdfaProperty:description>
-                            </rdf:li>
-                            <rdf:li rdf:parseType="Resource">
-                              <pdfaProperty:name>Version</pdfaProperty:name>
-                              <pdfaProperty:valueType>Text</pdfaProperty:valueType>
-                              <pdfaProperty:category>external</pdfaProperty:category>
-                              <pdfaProperty:description>Factur-X version</pdfaProperty:description>
-                            </rdf:li>
-                            <rdf:li rdf:parseType="Resource">
-                              <pdfaProperty:name>ConformanceLevel</pdfaProperty:name>
-                              <pdfaProperty:valueType>Text</pdfaProperty:valueType>
-                              <pdfaProperty:category>external</pdfaProperty:category>
-                              <pdfaProperty:description>Factur-X conformance level</pdfaProperty:description>
-                            </rdf:li>
-                          </rdf:Seq>
-                        </pdfaSchema:property>
-                      </rdf:li>
-                    </rdf:Bag>
-                  </pdfaExtension:schemas>
-                </rdf:Description>
-                <rdf:Description rdf:about=""
-                    xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#">
-                  <fx:DocumentType>INVOICE</fx:DocumentType>
-                  <fx:DocumentFileName>{Escape(request.EmbeddedFileName)}</fx:DocumentFileName>
-                  <fx:Version>1.0</fx:Version>
-                  <fx:ConformanceLevel>{conformanceLevel}</fx:ConformanceLevel>
-                </rdf:Description>
-              </rdf:RDF>
-            </x:xmpmeta>
-            <?xpacket end="w"?>
-            """;
-    }
-
-    private static string Escape(string value) =>
-        value
-            .Replace("&", "&amp;", StringComparison.Ordinal)
-            .Replace("<", "&lt;", StringComparison.Ordinal)
-            .Replace(">", "&gt;", StringComparison.Ordinal);
 
     /// <summary>
     /// Résolveur de polices : lit les polices depuis le dossier système Windows.

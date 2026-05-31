@@ -63,7 +63,7 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
             model.CountryCode,
             model.AddressLine2);
 
-        return Party.Create(model.Name, address, model.LegalRegistrationId, model.VatIdentifier);
+        return Party.Create(model.Name, address, model.LegalRegistrationId, model.LegalOrganizationId, model.VatIdentifier, model.ElectronicAddress, model.ElectronicAddressScheme);
     }
 
     private static bool TryParseProfile(string value, out FacturXProfile profile)

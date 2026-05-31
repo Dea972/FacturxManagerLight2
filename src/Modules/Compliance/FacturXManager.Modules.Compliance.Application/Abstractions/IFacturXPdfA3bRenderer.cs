@@ -26,4 +26,37 @@ public sealed record FacturXRenderRequest(
     decimal TotalWithoutVat,
     decimal TotalVat,
     decimal TotalWithVat,
-    FacturXProfile Profile = FacturXProfile.En16931);
+    FacturXProfile Profile = FacturXProfile.En16931,
+    string? SellerAddress = null,
+    string? SellerVatIdentifier = null,
+    string? SellerLegalRegistrationId = null,
+    string? BuyerAddress = null,
+    string? BuyerVatIdentifier = null,
+    string? BuyerLegalRegistrationId = null,
+    decimal? AmountDue = null,
+    string? PaymentMeansCode = null,
+    string? PaymentIban = null,
+    DateOnly? PaymentDueDate = null,
+    IReadOnlyList<RenderLineItem>? Lines = null,
+    IReadOnlyList<RenderVatBreakdown>? VatBreakdowns = null);
+
+/// <summary>
+/// Ligne de facture pour le rendu PDF.
+/// </summary>
+public sealed record RenderLineItem(
+    string Id,
+    string Description,
+    decimal Quantity,
+    string UnitCode,
+    decimal UnitNetPrice,
+    decimal VatRate,
+    decimal NetAmount);
+
+/// <summary>
+/// Ventilation TVA pour le rendu PDF.
+/// </summary>
+public sealed record RenderVatBreakdown(
+    string Category,
+    decimal Rate,
+    decimal BasisAmount,
+    decimal TaxAmount);

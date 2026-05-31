@@ -25,7 +25,10 @@ public sealed record PartyModel(
     string CountryCode,
     string? AddressLine2 = null,
     string? LegalRegistrationId = null,
-    string? VatIdentifier = null);
+    string? LegalOrganizationId = null,
+    string? VatIdentifier = null,
+    string? ElectronicAddress = null,
+    string? ElectronicAddressScheme = null);
 
 public sealed record PaymentModel(
     string MeansCode,

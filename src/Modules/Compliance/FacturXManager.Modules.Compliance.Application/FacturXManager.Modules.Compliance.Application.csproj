@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\FacturXManager.Modules.Compliance.Domain\FacturXManager.Modules.Compliance.Domain.csproj" />
-    <ProjectReference
-      Include="..\..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
+    <ProjectReference Include="..\FacturXManager.Modules.Compliance.Domain\FacturXManager.Modules.Compliance.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Invoicing\GenerateInvoiceXmp\" />
   </ItemGroup>
 
 </Project>

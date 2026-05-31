@@ -2,17 +2,13 @@
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "name": "FacturX Manager API",
-    "description": "Collection de référence pour l'API FacturX Manager. Couvre les modules Compliance, Transmission et EReporting.",
+    "description": "Collection de référence pour l'API FacturX Manager. Couvre les modules Compliance, Transmission et Directory.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "{{apiBaseUrl}}/api"
-    },
-    {
-      "key": "token",
-      "value": ""
     }
   ],
   "auth": {
@@ -32,7 +28,7 @@
         "type": "text/javascript",
         "exec": [
           "const tokenUrl = pm.environment.get('pisteTokenUrl');",
-          "if (!tokenUrl) return; // environnement local, pas de token PISTE",
+          "if (!tokenUrl) return;",
           "",
           "pm.sendRequest({",
           "    url: tokenUrl,",
@@ -53,281 +49,382 @@
       }
     }
   ],
-  "variable": [],
   "item": [
     {
       "name": "Compliance",
       "description": "Validation EN16931, génération XML CII et PDF/A-3b (Factur-X).",
       "item": [
         {
-          "name": "POST /compliance/invoices/validate — Validate Invoice Compliance",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/compliance/invoices/validate",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "compliance", "invoices", "validate" ]
-            },
-            "description": "Vérifie la conformité EN16931 d'une facture sans produire de document. Retourne un rapport de conformité détaillé.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Invoicing",
+          "item": [
+            {
+              "name": "POST /compliance/invoices/validate — Validate Invoice Compliance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/validate",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "validate" ]
+                },
+                "description": "Vérifie la conformité EN16931 d'une facture sans produire de document. Profils supportés : EN16931 (Comfort), Extended, Basic, BasicWL, Minimum.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "POST /compliance/invoices/certify — Certify Invoice",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/compliance/invoices/certify",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "compliance", "invoices", "certify" ]
+              },
+              "response": []
             },
-            "description": "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarqué (Factur-X). Retourne le document certifié encodé en Base64.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "POST /compliance/invoices/certify — Certify Invoice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/certify",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "certify" ]
+                },
+                "description": "Certifie une facture : validation EN16931, génération du XML CII et du PDF/A-3b embarquant factur-x.xml. Retourne le document certifié encodé en Base64.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 }
-              }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/download — Download Invoice PDF",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/download",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "download" ]
+                },
+                "description": "Génère et télécharge directement le PDF/A-3b Factur-X (retour binaire application/pdf). Le fichier factur-x.xml est embarqué avec AFRelationship=Data.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (Xmp) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne le XMP brut du catalogue PDF (pdfaid:part=3, pdfaid:conformance=B, tags fx:).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"Xmp\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (EmbeddedXml) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne le contenu du XML CII embarqué (factur-x.xml).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"EmbeddedXml\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/metadata (Zip) — Inspect Invoice Metadata",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/metadata",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "metadata" ]
+                },
+                "description": "Génère le PDF Factur-X et retourne une archive ZIP contenant le PDF Factur-X, le XML CII embarqué (factur-x.xml) et le XMP du catalogue (xmp.xml).",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"invoice\": {\n    \"number\": \"FA-2025-00042\",\n    \"issueDate\": \"2025-06-15\",\n    \"currencyCode\": \"EUR\",\n    \"profile\": \"EN16931\",\n    \"operationNature\": \"SALE\",\n    \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n    \"purchaseOrderReference\": \"PO-2025-0123\",\n    \"seller\": {\n      \"name\": \"Acme France SAS\",\n      \"addressLine1\": \"12 rue de la Paix\",\n      \"addressLine2\": null,\n      \"postalCode\": \"75001\",\n      \"city\": \"Paris\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"123456789\",\n      \"vatIdentifier\": \"FR12123456789\"\n    },\n    \"buyer\": {\n      \"name\": \"Durand & Fils SARL\",\n      \"addressLine1\": \"45 avenue des Lilas\",\n      \"addressLine2\": \"Bâtiment C\",\n      \"postalCode\": \"69003\",\n      \"city\": \"Lyon\",\n      \"countryCode\": \"FR\",\n      \"legalRegistrationId\": \"987654321\",\n      \"vatIdentifier\": \"FR98987654321\"\n    },\n    \"payment\": {\n      \"meansCode\": \"30\",\n      \"dueDate\": \"2025-07-15\",\n      \"iban\": \"FR7630006000011234567890189\"\n    },\n    \"lines\": [\n      {\n        \"id\": \"1\",\n        \"description\": \"Prestation de conseil en informatique\",\n        \"quantity\": 5.0,\n        \"unitNetPrice\": 800.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"DAY\"\n      },\n      {\n        \"id\": \"2\",\n        \"description\": \"Licence logicielle annuelle\",\n        \"quantity\": 1.0,\n        \"unitNetPrice\": 1200.00,\n        \"vatCategory\": \"S\",\n        \"vatRate\": 20.0,\n        \"unitCode\": \"C62\"\n      }\n    ]\n  },\n  \"metadataType\": \"Zip\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/extract-metadata?type=Xmp — Extract XMP from PDF",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/extract-metadata?type=Xmp",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "extract-metadata" ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "Xmp",
+                      "description": "Type de métadonnée à extraire : Xmp ou EmbeddedXml"
+                    }
+                  ]
+                },
+                "description": "Upload un PDF Factur-X et retourne son XMP brut (pdfaid:part, pdfaid:conformance, tags fx:). Utiliser type=EmbeddedXml pour extraire le XML CII embarqué (factur-x.xml).",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Fichier PDF Factur-X à analyser"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/extract-metadata?type=EmbeddedXml — Extract CII XML from PDF",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/extract-metadata?type=EmbeddedXml",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "extract-metadata" ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "EmbeddedXml",
+                      "description": "Type de métadonnée à extraire : Xmp ou EmbeddedXml"
+                    }
+                  ]
+                },
+                "description": "Upload un PDF Factur-X et retourne le XML CII embarqué (factur-x.xml). Utiliser type=Xmp pour extraire le XMP du catalogue.",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Fichier PDF Factur-X à analyser"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         }
       ]
     },
     {
       "name": "Transmission",
-      "description": "Acheminement des documents certifiés vers Chorus Pro / PDP / PPF.",
+      "description": "Acheminement des documents certifiés vers Chorus Pro / PDP / PPF via DEPOT_PDF_API (PISTE).",
       "item": [
         {
-          "name": "POST /transmissions — Submit Transmission",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/transmissions",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "transmissions" ]
-            },
-            "description": "Dépose un document certifié Factur-X (PDF/A-3b en Base64) sur la plateforme du canal demandé (ex: ChorusPro) et trace la tentative de dépôt.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"documentReference\": \"FA-2025-00042\",\n  \"recipientSiret\": \"98765432100018\",\n  \"channel\": \"ChorusPro\",\n  \"facturXPdfBase64\": \"JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nCvkAgAA//8DBQID\",\n  \"executingService\": \"DSI-Facturation\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Transmissions",
+          "item": [
+            {
+              "name": "POST /transmissions — Submit Transmission",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/transmissions",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "transmissions" ]
+                },
+                "description": "Dépose un document certifié Factur-X (PDF/A-3b en Base64) sur la plateforme du canal demandé (ex: ChorusPro via DEPOT_PDF_API / PISTE) et trace la tentative de dépôt.",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"documentReference\": \"FA-2025-00042\",\n  \"recipientSiret\": \"98765432100018\",\n  \"channel\": \"ChorusPro\",\n  \"facturXPdfBase64\": \"JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nCvkAgAA//8DBQID\",\n  \"executingService\": \"DSI-Facturation\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 }
-              }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /transmissions/file — Submit Transmission File",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/transmissions/file?documentReference=FA-2025-00042&recipientSiret=98765432100018&channel=ChorusPro",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "transmissions", "file" ],
+                  "query": [
+                    {
+                      "key": "documentReference",
+                      "value": "FA-2025-00042"
+                    },
+                    {
+                      "key": "recipientSiret",
+                      "value": "98765432100018"
+                    },
+                    {
+                      "key": "channel",
+                      "value": "ChorusPro"
+                    },
+                    {
+                      "key": "executingService",
+                      "value": "DSI-Facturation",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Dépose un fichier PDF Factur-X directement (multipart/form-data) sur la plateforme du canal demandé. Le fichier est converti en Base64 côté serveur avant transmission via DEPOT_PDF_API / PISTE.",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "/path/to/facturx-FA-2025-00042.pdf"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /transmissions/{transmissionId} — Get Transmission",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/transmissions/{{transmissionId}}",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "transmissions", "{{transmissionId}}" ],
+                  "variable": [
+                    {
+                      "key": "transmissionId",
+                      "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                      "description": "Identifiant unique de la transmission"
+                    }
+                  ]
+                },
+                "description": "Retourne le statut courant et l'historique des tentatives d'une transmission identifiée par son GUID."
+              },
+              "response": []
             }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /transmissions/{transmissionId} — Get Transmission",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/transmissions/{{transmissionId}}",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "transmissions", "{{transmissionId}}" ],
-              "variable": [
-                {
-                  "key": "transmissionId",
-                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  "description": "Identifiant unique de la transmission"
-                }
-              ]
-            },
-            "description": "Retourne le statut courant et l'historique des tentatives d'une transmission identifiée par son GUID."
-          },
-          "response": []
+          ]
         }
       ]
     },
     {
       "name": "Directory",
-      "description": "Consultation de l'annuaire des entreprises (SIRENE INSEE aujourd'hui, annuaire PPF demain).",
+      "description": "Consultation de l'annuaire des entreprises via l'API SIRENE (INSEE). SIREN/SIRET.",
       "item": [
         {
-          "name": "GET /directory/companies/{identifier} — Lookup Company",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/directory/companies/{{identifier}}",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "directory", "companies", "{{identifier}}" ],
-              "variable": [
-                {
-                  "key": "identifier",
-                  "value": "54205118000017",
-                  "description": "SIREN (9 chiffres) ou SIRET (14 chiffres). Espaces et tirets tolérés."
-                }
-              ]
-            },
-            "description": "Recherche l'identité d'une entreprise française à partir d'un SIREN (9 chiffres) ou d'un SIRET (14 chiffres). S'appuie sur l'API SIRENE (INSEE). Retourne la raison sociale, le statut administratif (Active/Ceased), la diffusabilité RGPD et la source."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "EReporting",
-      "description": "Déclarations périodiques B2C et internationales à destination de la DGFiP.",
-      "item": [
-        {
-          "name": "POST /ereporting/declarations — Create Declaration",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/ereporting/declarations",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "ereporting", "declarations" ]
-            },
-            "description": "Crée une nouvelle déclaration d'e-reporting au statut Brouillon pour la période et le type de transaction indiqués.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"year\": 2025,\n  \"month\": 6,\n  \"transactionType\": \"B2C\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+          "name": "Companies",
+          "item": [
+            {
+              "name": "GET /directory/companies/{identifier} — Lookup Company",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/directory/companies/{{identifier}}",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "directory", "companies", "{{identifier}}" ],
+                  "variable": [
+                    {
+                      "key": "identifier",
+                      "value": "54205118000017",
+                      "description": "SIREN (9 chiffres) ou SIRET (14 chiffres). Espaces et tirets tolérés."
+                    }
+                  ]
+                },
+                "description": "Recherche l'identité d'une entreprise française à partir d'un SIREN ou SIRET. Source : API SIRENE (INSEE). Retourne la raison sociale, le statut administratif (Active/Ceased) et la diffusabilité RGPD."
+              },
+              "response": []
             }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /ereporting/declarations/{declarationId} — Get Declaration",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "ereporting", "declarations", "{{declarationId}}" ],
-              "variable": [
-                {
-                  "key": "declarationId",
-                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  "description": "Identifiant unique de la déclaration"
-                }
-              ]
-            },
-            "description": "Retourne le détail complet et le statut courant d'une déclaration d'e-reporting."
-          },
-          "response": []
-        },
-        {
-          "name": "POST /ereporting/declarations/{declarationId}/entries — Add Declaration Entry",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/entries",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "ereporting", "declarations", "{{declarationId}}", "entries" ],
-              "variable": [
-                {
-                  "key": "declarationId",
-                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  "description": "Identifiant unique de la déclaration (statut Brouillon requis)"
-                }
-              ]
-            },
-            "description": "Ajoute une transaction à une déclaration au statut Brouillon. Montants HT et TVA en euros.",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"taxableAmount\": 450.00,\n  \"vatAmount\": 90.00,\n  \"countryCode\": \"FR\",\n  \"operationNature\": \"GOODS\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "POST /ereporting/declarations/{declarationId}/finalize — Finalize Declaration",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/finalize",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "ereporting", "declarations", "{{declarationId}}", "finalize" ],
-              "variable": [
-                {
-                  "key": "declarationId",
-                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  "description": "Identifiant unique de la déclaration (statut Brouillon requis)"
-                }
-              ]
-            },
-            "description": "Finalise une déclaration Brouillon pour la rendre prête à la soumission DGFiP. Retourne 204 No Content."
-          },
-          "response": []
-        },
-        {
-          "name": "POST /ereporting/declarations/{declarationId}/submit — Submit Declaration",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ereporting/declarations/{{declarationId}}/submit",
-              "host": [ "{{baseUrl}}" ],
-              "path": [ "ereporting", "declarations", "{{declarationId}}", "submit" ],
-              "variable": [
-                {
-                  "key": "declarationId",
-                  "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  "description": "Identifiant unique de la déclaration (statut Finalisé requis)"
-                }
-              ]
-            },
-            "description": "Soumet une déclaration finalisée à la DGFiP via l'API PISTE. Retourne le récapitulatif de soumission."
-          },
-          "response": []
+          ]
         }
       ]
     }

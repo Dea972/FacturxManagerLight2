@@ -72,4 +72,7 @@ public static class InvoiceErrors
         Error.Problem(
             "Compliance.PdfRendererNotConfigured",
             "Aucun moteur de rendu PDF/A-3b n'est configuré. Enregistrez une implémentation de IFacturXPdfA3bRenderer.");
+
+    public static readonly Error InvalidPdf =
+        Error.Problem("Compliance.InvalidPdf", "Le fichier fourni n'est pas un PDF valide ou est vide.");
 }

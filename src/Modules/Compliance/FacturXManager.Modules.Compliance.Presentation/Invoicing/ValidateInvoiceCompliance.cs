@@ -23,7 +23,11 @@ internal sealed class ValidateInvoiceCompliance : IEndpoint
             return result.Match(Results.Ok, ApiResults.Problem);
         })
         .WithTags(Tags.Compliance)
-        .WithDescription("Vérifie la conformité EN16931 d'une facture sans produire de document.")
+        .WithSummary("Valider la conformité EN16931")
+        .WithDescription(
+            "Vérifie la conformité EN16931 d'une facture sans produire de document. " +
+            "Profils supportés : EN16931 (Comfort), Extended, Basic, BasicWL, Minimum. " +
+            "Le fichier factur-x.xml n'est pas généré par cet endpoint.")
         .Produces<ComplianceReportResponse>()
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }
