@@ -78,7 +78,7 @@ internal static class SireneCompanyMapper
         }
 
 
-        if (uniteLegale.Periods?[0]?.LegalName is string name && !string.IsNullOrWhiteSpace(name))
+        if (uniteLegale.Periods[0]?.LegalName is string name && !string.IsNullOrWhiteSpace(name))
         {
             return name.Trim();
         }

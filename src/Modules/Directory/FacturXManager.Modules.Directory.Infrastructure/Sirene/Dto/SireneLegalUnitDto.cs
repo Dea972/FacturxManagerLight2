@@ -29,7 +29,7 @@ internal sealed class SireneLegalUnit
     public string? UsageLastName { get; init; }
 
     [JsonPropertyName("periodesUniteLegale")]
-    public IReadOnlyList<SirenePeriodLegalUnit>? Periods { get; init; }
+    public IReadOnlyList<SirenePeriodLegalUnit> Periods { get; init; } = [];
 }
 
 internal sealed class SirenePeriodLegalUnit

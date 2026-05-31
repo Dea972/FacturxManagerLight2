@@ -11,8 +11,4 @@
     <ProjectReference Include="..\..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Invoicing\GenerateInvoiceXmp\" />
-  </ItemGroup>
-
 </Project>

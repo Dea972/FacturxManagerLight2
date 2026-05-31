@@ -10,8 +10,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace FacturXManager.Modules.Compliance.Presentation.Invoicing;
 
-internal sealed class ExtractPdfMetadata : IEndpoint
-{
+internal sealed class ExtractPdfMetadata : IEndpoint{
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("compliance/invoices/extract-metadata", async (
