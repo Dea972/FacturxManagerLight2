@@ -60,7 +60,7 @@ internal sealed class CreditNoteBuilder : ICreditNoteBuilder
             lines,
             model.CreditReason,
             model.BuyerReference,
-            model.PaymentMeansCode);
+            model.PaymentMeansCode.ToUnclCode());
     }
 
     private static Party ToParty(PartyModel model)

@@ -17,7 +17,7 @@ public sealed record CreditNoteModel(
     DateOnly? OriginalInvoiceIssueDate = null,
     string? CreditReason = null,
     string? BuyerReference = null,
-    string PaymentMeansCode = "30");
+    PaymentMeansCode PaymentMeansCode = PaymentMeansCode.BankTransfer);
 
 public sealed record CreditNoteLineModel(
     string Id,

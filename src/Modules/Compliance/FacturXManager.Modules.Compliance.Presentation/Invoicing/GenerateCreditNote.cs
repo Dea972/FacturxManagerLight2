@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using static FacturXManager.Modules.Compliance.Presentation.Invoicing.DownloadCreditNotePdf;
 
 namespace FacturXManager.Modules.Compliance.Presentation.Invoicing;
 
@@ -15,7 +16,7 @@ internal sealed class GenerateCreditNote : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("compliance/credit-notes/generate", async (Request request, ISender sender) =>
+        app.MapPost("compliance/credit-notes/generate", async (CreditNoteRequest request, ISender sender) =>
         {
             Result<GenerateCreditNoteSummary> result =
                 await sender.Send(new GenerateCreditNoteCommand(request.CreditNote));
@@ -31,5 +32,4 @@ internal sealed class GenerateCreditNote : IEndpoint
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }
 
-    internal sealed record Request(CreditNoteModel CreditNote);
 }

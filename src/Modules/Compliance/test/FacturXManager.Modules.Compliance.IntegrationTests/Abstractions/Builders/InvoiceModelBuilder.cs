@@ -15,7 +15,7 @@ public sealed class InvoiceModelBuilder
     private string _operationNature = "Services";
     private PartyModel _seller = new PartyModelBuilder().AsFrenchSeller().Build();
     private PartyModel _buyer = new PartyModelBuilder().AsFrenchBuyer().Build();
-    private PaymentModel _payment = new("58", new DateOnly(2026, 10, 15), "FR7630006000011234567890189");
+    private readonly PaymentModel _payment = new(PaymentMeansCode.SepaCreditTransfer, new DateOnly(2026, 10, 15), "FR7630006000011234567890189");
     private readonly List<InvoiceLineModel> _lines = [new InvoiceLineModelBuilder().Build()];
     private string? _buyerReference;
     private string? _purchaseOrderReference;
@@ -120,7 +120,7 @@ public sealed class InvoiceLineModelBuilder
     private decimal _unitNetPrice = 100m;
     private string _vatCategory = "Standard";
     private decimal _vatRate = 20m;
-    private string _unitCode = "C62";
+    private readonly string _unitCode = "C62";
 
     public InvoiceLineModelBuilder WithId(string id) { _id = id; return this; }
 

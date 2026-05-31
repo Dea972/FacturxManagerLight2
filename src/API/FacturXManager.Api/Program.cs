@@ -1,6 +1,10 @@
+using System.Text.Json.Serialization;
 using FacturXManager.Sdk;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.AddServiceDefaults();
 

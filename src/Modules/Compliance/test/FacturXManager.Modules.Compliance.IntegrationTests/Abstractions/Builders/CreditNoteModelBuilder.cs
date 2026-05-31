@@ -75,7 +75,7 @@ public sealed class CreditNoteLineModelBuilder
     private decimal _unitNetPrice = 100m;
     private string _vatCategory = "Standard";
     private decimal _vatRate = 20m;
-    private string _unitCode = "C62";
+    private readonly string _unitCode = "C62";
 
     public CreditNoteLineModelBuilder WithId(string id) { _id = id; return this; }
 

@@ -31,7 +31,7 @@ public sealed record PartyModel(
     string? ElectronicAddressScheme = null);
 
 public sealed record PaymentModel(
-    string MeansCode,
+    PaymentMeansCode MeansCode,
     DateOnly? DueDate = null,
     string? Iban = null);
 

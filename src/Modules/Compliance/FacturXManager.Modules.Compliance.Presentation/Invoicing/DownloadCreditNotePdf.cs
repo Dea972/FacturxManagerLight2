@@ -15,7 +15,7 @@ internal sealed class DownloadCreditNotePdf : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("compliance/credit-notes/download", async (Request request, ISender sender) =>
+        app.MapPost("compliance/credit-notes/download", async (CreditNoteRequest request, ISender sender) =>
         {
             Result<DownloadCreditNotePdfSummary> result =
                 await sender.Send(new DownloadCreditNotePdfCommand(request.CreditNote));
@@ -33,5 +33,5 @@ internal sealed class DownloadCreditNotePdf : IEndpoint
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }
 
-    internal sealed record Request(CreditNoteModel CreditNote);
+    internal sealed record CreditNoteRequest(CreditNoteModel CreditNote);
 }

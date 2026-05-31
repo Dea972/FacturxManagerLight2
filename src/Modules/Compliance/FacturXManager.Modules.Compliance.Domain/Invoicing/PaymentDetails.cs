@@ -14,7 +14,7 @@ public sealed class PaymentDetails : ValueObject
         DueDate = dueDate;
     }
 
-    /// <summary>Code moyen de paiement UNCL4461 (ex : 58 = virement SEPA, 30 = virement).</summary>
+    /// <summary>Code moyen de paiement UNCL4461 (ex : 30 = virement, 58 = virement SEPA).</summary>
     public string MeansCode { get; }
 
     public string? Iban { get; }

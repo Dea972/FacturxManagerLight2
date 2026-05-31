@@ -38,7 +38,7 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
 
         Party seller = ToParty(model.Seller);
         Party buyer = ToParty(model.Buyer);
-        var payment = PaymentDetails.Create(model.Payment.MeansCode, model.Payment.DueDate, model.Payment.Iban);
+        var payment = PaymentDetails.Create(model.Payment.MeansCode.ToUnclCode(), model.Payment.DueDate, model.Payment.Iban);
 
         return Invoice.Create(
             model.Number,
