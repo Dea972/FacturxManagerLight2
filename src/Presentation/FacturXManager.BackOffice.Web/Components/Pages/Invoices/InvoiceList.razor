@@ -1,0 +1,102 @@
+@page "/invoices"
+@using FacturXManager.BackOffice.Web.Features.Invoices.GetInvoices
+@inject ISender Sender
+@inject NotificationService Notifications
+@inject NavigationManager Navigation
+
+<PageTitle>Factures — FacturX Manager</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H4" class="rz-mb-4">Factures Factur-X</RadzenText>
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+             JustifyContent="JustifyContent.SpaceBetween" class="rz-mb-3">
+    <RadzenText TextStyle="TextStyle.Body1">@_invoices.Count facture(s) enregistrée(s)</RadzenText>
+    <RadzenButton Text="Nouvelle facture" Icon="add" ButtonStyle="ButtonStyle.Primary"
+                  NavigateTo="/invoices/new" />
+</RadzenStack>
+
+@if (_loading)
+{
+    <RadzenProgressBarCircular Mode="ProgressBarMode.Indeterminate" />
+}
+else if (_error is not null)
+{
+    <RadzenAlert AlertStyle="AlertStyle.Danger" ShowIcon="true">@_error</RadzenAlert>
+}
+else if (_invoices.Count == 0)
+{
+    <RadzenAlert AlertStyle="AlertStyle.Info" ShowIcon="true">
+        Aucune facture n'a encore été générée. Cliquez sur "Nouvelle facture" pour commencer.
+    </RadzenAlert>
+}
+else
+{
+    <RadzenDataGrid Data="_invoices" TItem="InvoiceListItemViewModel"
+                    AllowSorting="true" AllowPaging="true" PageSize="20"
+                    GridLines="DataGridGridLines.Horizontal">
+        <Columns>
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Property="Number"
+                                  Title="Numéro" Width="150px" />
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Property="IssueDate"
+                                  Title="Date" Width="110px" />
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Property="SellerName"
+                                  Title="Vendeur" />
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Property="BuyerName"
+                                  Title="Acheteur" />
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Property="TotalWithVat"
+                                  Title="Total TTC" Width="120px" FormatString="{0:N2} €"
+                                  TextAlign="TextAlign.Right" />
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Title="Statut" Width="130px">
+                <Template Context="row">
+                    <RadzenBadge Text="@row.Status" BadgeStyle="@StatusBadge(row.Status)" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Title="N° dépôt" Width="140px">
+                <Template Context="row">
+                    @(row.ChannelDepositId ?? "—")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="InvoiceListItemViewModel" Title="Actions" Width="160px"
+                                  Sortable="false">
+                <Template Context="row">
+                    <RadzenButton Text="Générer un avoir" Icon="undo" ButtonStyle="ButtonStyle.Light"
+                                  Size="ButtonSize.Small"
+                                  Click="@(() => NavigateToNewCreditNote(row))" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    private List<InvoiceListItemViewModel> _invoices = [];
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Result<IReadOnlyList<InvoiceListItemViewModel>> result =
+            await Sender.Send(new GetInvoicesRequestFront());
+
+        _loading = false;
+
+        if (result.IsFailure)
+        {
+            _error = result.ErrorMessage;
+            return;
+        }
+
+        _invoices = [.. result.Value!];
+    }
+
+    private void NavigateToNewCreditNote(InvoiceListItemViewModel invoice) =>
+        Navigation.NavigateTo($"/credit-notes/new?invoiceId={invoice.Id}");
+
+    private static BadgeStyle StatusBadge(string status) => status.ToUpperInvariant() switch
+    {
+        "CERTIFIED" => BadgeStyle.Info,
+        "SUBMITTED" => BadgeStyle.Success,
+        "SUBMISSIONFAILED" => BadgeStyle.Danger,
+        _ => BadgeStyle.Light,
+    };
+}

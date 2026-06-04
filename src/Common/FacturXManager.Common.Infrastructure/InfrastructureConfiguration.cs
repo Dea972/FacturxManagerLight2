@@ -26,7 +26,7 @@ public static class InfrastructureConfiguration
 
         services.AddQuartz(configurator =>
         {
-            var scheduler = Guid.NewGuid();
+            var scheduler = Guid.CreateVersion7();
             configurator.SchedulerId = $"default-id-{scheduler}";
             configurator.SchedulerName = $"default-name-{scheduler}";
         });

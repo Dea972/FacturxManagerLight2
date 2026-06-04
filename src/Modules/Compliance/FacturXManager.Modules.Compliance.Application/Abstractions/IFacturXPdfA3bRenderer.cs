@@ -1,5 +1,5 @@
 using FacturXManager.Common.Domain;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.Common;
 
 namespace FacturXManager.Modules.Compliance.Application.Abstractions;
 

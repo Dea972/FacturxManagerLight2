@@ -1,4 +1,5 @@
-using FacturXManager.Modules.Compliance.Application.Abstractions;
+using FacturXManager.Modules.Compliance.Application.Abstractions.CreditNotes;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
 
 namespace FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 

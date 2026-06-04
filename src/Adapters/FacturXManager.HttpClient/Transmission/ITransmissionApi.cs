@@ -20,6 +20,19 @@ public interface ITransmissionApi
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Dépose un fichier PDF Factur-X directement (multipart/form-data) sur la plateforme du canal demandé.
+    /// </summary>
+    [Multipart]
+    [Post("/transmissions/file")]
+    Task<SubmitTransmissionDto> SubmitFileAsync(
+        [AliasAs("file")] StreamPart file,
+        [Query] string documentReference,
+        [Query] string recipientSiret,
+        [Query] string channel,
+        [Query] string? executingService = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retourne le statut courant et l'historique des tentatives d'une transmission.
     /// </summary>
     [Get("/transmissions/{transmissionId}")]

@@ -57,7 +57,7 @@ public sealed class Transmission : Entity
 
         return new Transmission
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             DocumentReference = documentReference.Trim(),
             RecipientSiret = recipientSiret.Trim(),
             ExecutingService = string.IsNullOrWhiteSpace(executingService) ? null : executingService.Trim(),

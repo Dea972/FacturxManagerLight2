@@ -1,4 +1,5 @@
 using FacturXManager.Modules.Compliance.Application.Abstractions;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
 
 namespace FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 
@@ -19,6 +20,7 @@ public sealed class InvoiceModelBuilder
     private readonly List<InvoiceLineModel> _lines = [new InvoiceLineModelBuilder().Build()];
     private string? _buyerReference;
     private string? _purchaseOrderReference;
+
 
     public InvoiceModelBuilder WithNumber(string number) { _number = number; return this; }
 
@@ -78,6 +80,7 @@ public sealed class PartyModelBuilder
     private string _city = "Paris";
     private string _countryCode = "FR";
     private string? _legalRegistrationId;
+    private string? _legalOrganizationId;
     private string? _vatIdentifier;
 
     public PartyModelBuilder WithName(string name) { _name = name; return this; }
@@ -95,6 +98,7 @@ public sealed class PartyModelBuilder
         _name = "Vendeur SA";
         _legalRegistrationId = "552120222";
         _vatIdentifier = "FR00552120222";
+        _legalOrganizationId = "73282932012345";
         return this;
     }
 
@@ -105,11 +109,12 @@ public sealed class PartyModelBuilder
         _postalCode = "69001";
         _city = "Lyon";
         _legalRegistrationId = "732829320";
+        _legalOrganizationId = "73282932012345";
         return this;
     }
 
     public PartyModel Build() =>
-        new(_name, _addressLine1, _postalCode, _city, _countryCode, null, _legalRegistrationId, _vatIdentifier);
+        new(_name, _addressLine1, _postalCode, _city, _countryCode, null, _legalRegistrationId, _legalOrganizationId, _vatIdentifier);
 }
 
 public sealed class InvoiceLineModelBuilder

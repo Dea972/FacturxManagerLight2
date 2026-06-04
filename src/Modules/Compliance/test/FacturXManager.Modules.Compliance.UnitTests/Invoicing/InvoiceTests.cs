@@ -1,5 +1,6 @@
 using FacturXManager.Common.Domain;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.Common;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
 using FacturXManager.Modules.Compliance.UnitTests.Abstractions;
 using FluentAssertions;
 
@@ -65,7 +66,7 @@ public class InvoiceTests : BaseTest
         // Arrange : deux lignes 20 % + une ligne 5,5 %
         InvoiceLine line1 = InvoiceTestData.StandardLine(quantity: 2m, unitNetPrice: 50m, vatRate: 20m);
         InvoiceLine line2 = InvoiceTestData.StandardLine(quantity: 1m, unitNetPrice: 100m, vatRate: 20m);
-        var line3 = InvoiceLine.Create("3", "Livre", 1m, 10m, VatCategory.Standard, 5.5m);
+        var line3 = InvoiceLine.Create( "Livre", 1m, 10m, VatCategory.Standard, 5.5m);
 
         // Act
         Invoice invoice = InvoiceTestData.BuildInvoice(lines: [line1, line2, line3]).Value;

@@ -1,8 +1,9 @@
 using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Application.Invoicing.DownloadCreditNotePdf;
-using FacturXManager.Modules.Compliance.Application.Invoicing.GenerateCreditNote;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Application.Abstractions.CreditNotes;
+using FacturXManager.Modules.Compliance.Application.CreditNotes.DownloadCreditNotePdf;
+using FacturXManager.Modules.Compliance.Application.CreditNotes.GenerateCreditNote;
+using FacturXManager.Modules.Compliance.Domain.Common;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;

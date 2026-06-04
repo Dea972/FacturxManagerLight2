@@ -1,4 +1,5 @@
-﻿using FacturXManager.Modules.Transmission.Infrastructure.Database;
+﻿using FacturXManager.Modules.Compliance.Infrastructure.Database;
+using FacturXManager.Modules.Transmission.Infrastructure.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class MigrationExtensions
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
 
+        ApplyMigration<ComplianceDbContext>(scope);
         ApplyMigration<TransmissionDbContext>(scope);
 
     }

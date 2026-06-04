@@ -20,7 +20,7 @@ public class GetTransmissionTests : BaseIntegrationTest
     public async Task Handle_ShouldReturnNotFound_WhenTransmissionDoesNotExist()
     {
         // Arrange : aucune transmission en base
-        var unknownId = Guid.NewGuid();
+        var unknownId = Guid.CreateVersion7();
 
         // Act
         Result<TransmissionResponse> result = await Sender.Send(new GetTransmissionQuery(unknownId));

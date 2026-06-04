@@ -1,7 +1,9 @@
 using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Application.Invoicing.CertifyInvoice;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
+using FacturXManager.Modules.Compliance.Application.Invoices.GenerateInvoice;
+using FacturXManager.Modules.Compliance.Domain.Common;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;
@@ -31,7 +33,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");
@@ -49,7 +51,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -70,7 +72,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -89,7 +91,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -103,7 +105,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().WithNumber("").Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert : le ValidationPipelineBehavior agrège l'échec (FluentValidation)
         result.IsFailure.Should().BeTrue();
@@ -117,7 +119,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().WithoutLines().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -131,7 +133,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().WithProfile("UNKNOWN").Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -145,7 +147,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().WithCurrency("").Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -162,7 +164,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -179,7 +181,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -199,7 +201,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -216,7 +218,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert : guideline ID Extended présent dans le XML
         result.IsSuccess.Should().BeTrue();
@@ -235,7 +237,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -253,7 +255,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -271,7 +273,7 @@ public class CertifyInvoiceTests : BaseIntegrationTest
             .Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await Sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await Sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "obligation pas encore en vigueur");

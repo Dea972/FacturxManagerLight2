@@ -71,6 +71,9 @@
     <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.IntegrationTests/FacturXManager.Modules.Transmission.IntegrationTests.csproj" />
     <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.UnitTests/FacturXManager.Modules.Transmission.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/FacturXManager.BackOffice.Web/FacturXManager.BackOffice.Web.csproj" />
+  </Folder>
   <Folder Name="/test/">
     <Project Path="test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />
   </Folder>

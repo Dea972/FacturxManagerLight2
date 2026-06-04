@@ -1,12 +1,15 @@
 using s2industries.ZUGFeRD;
 using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using System.Globalization;
+using FacturXManager.Modules.Compliance.Domain.CreditNotes;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
+using FacturXManager.Modules.Compliance.Domain.Common;
 
 namespace FacturXManager.Modules.Compliance.Infrastructure.Zugferd;
 
 /// <summary>
 /// Génère le XML Cross Industry Invoice (CII) conforme EN16931 via la bibliothèque ZUGFeRD-csharp.
-/// Implémentation alternative à <see cref="Invoicing.CrossIndustryInvoiceWriter"/> (System.Xml.Linq).
+/// Implémentation alternative à <see cref="PdfSharp.CrossIndustryInvoiceWriter"/> (System.Xml.Linq).
 /// </summary>
 internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
 {
@@ -107,8 +110,10 @@ internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceW
         // Lignes de facture (BG-25)
         foreach (InvoiceLine line in invoice.Lines)
         {
+            int index = invoice.Lines.ToList().IndexOf(line) + 1;
+
             descriptor.AddTradeLineItem(
-                lineID: line.Id,
+                lineID: index.ToString(CultureInfo.InvariantCulture),
                 name: line.Description,
                 billedQuantity: line.Quantity,
                 unitCode: MapQuantityCode(line.UnitCode),
@@ -276,8 +281,9 @@ internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceW
         // Lignes d'avoir (BG-25)
         foreach (CreditNoteLine line in creditNote.Lines)
         {
+            int index = creditNote.Lines.ToList().IndexOf(line) + 1;
             descriptor.AddTradeLineItem(
-                lineID: line.Id,
+                lineID: index.ToString(CultureInfo.InvariantCulture),
                 name: line.Description,
                 billedQuantity: line.Quantity,
                 unitCode: MapQuantityCode(line.UnitCode),

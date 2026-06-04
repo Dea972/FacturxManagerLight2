@@ -1,4 +1,5 @@
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.CreditNotes;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
 
 namespace FacturXManager.Modules.Compliance.Application.Abstractions;
 

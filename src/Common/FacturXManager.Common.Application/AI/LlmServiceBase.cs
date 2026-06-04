@@ -167,7 +167,7 @@ public abstract class LlmServiceBase(IEventBus eventBus) : ILlmService
         CancellationToken cancellationToken)
     {
         var integrationEvent = new LlmCalledIntegrationEvent(
-            id: Guid.NewGuid(),
+            id: Guid.CreateVersion7(),
             sessionId: request.SessionId,
             userId: request.UserId,
             agentName: agentName,

@@ -35,7 +35,7 @@ public sealed class TransmissionAttempt : Entity
         string? message) =>
         new()
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             TransmissionId = transmissionId,
             Status = status,
             OccurredOnUtc = occurredOnUtc,

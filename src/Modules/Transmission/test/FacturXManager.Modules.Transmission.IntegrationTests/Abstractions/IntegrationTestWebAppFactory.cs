@@ -21,7 +21,7 @@ namespace FacturXManager.Modules.Transmission.IntegrationTests.Abstractions;
 /// </summary>
 public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly string _dbName = $"transmission-tests-{Guid.NewGuid():N}";
+    private readonly string _dbName = $"transmission-tests-{Guid.CreateVersion7():N}";
 
     /// <summary>Serveur WireMock démarré sur un port libre. Disponible pour tous les tests.</summary>
     public WireMockServer WireMock { get; } = WireMockServer.Start();

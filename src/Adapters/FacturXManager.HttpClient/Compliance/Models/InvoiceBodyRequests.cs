@@ -5,7 +5,7 @@ public sealed class ValidateInvoiceRequest
     public InvoiceRequest Invoice { get; set; } = new();
 }
 
-public sealed class CertifyInvoiceRequest
+public sealed class GenerateInvoiceRequest
 {
     public InvoiceRequest Invoice { get; set; } = new();
 }

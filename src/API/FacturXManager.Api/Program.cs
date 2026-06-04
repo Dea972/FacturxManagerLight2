@@ -23,6 +23,7 @@ builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document,
 await builder.Services.AddFacturXManagerAsync(builder.Configuration);
 
 builder.Configuration.AddEnvironmentVariables();
+
 builder.Configuration.AddUserSecrets<Program>();
 
 WebApplication app = builder.Build();

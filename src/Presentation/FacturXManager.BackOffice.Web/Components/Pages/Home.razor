@@ -1,0 +1,50 @@
+﻿@page "/"
+
+<PageTitle>FacturX Manager</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H4" class="rz-mb-6">Tableau de bord</RadzenText>
+
+<RadzenRow Gap="1.5rem">
+    <RadzenColumn Size="12" SizeMD="4">
+        <RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                <RadzenIcon Icon="description" Style="font-size: 2.5rem; color: var(--rz-primary);" />
+                <RadzenStack>
+                    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-0">Factures Factur-X</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">Générer et télécharger des factures PDF/A-3b conformes EN16931.</RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenButton Text="Nouvelle facture" Icon="add" ButtonStyle="ButtonStyle.Primary"
+                          class="rz-mt-3" NavigateTo="/invoices/new" />
+        </RadzenCard>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" SizeMD="4">
+        <RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                <RadzenIcon Icon="undo" Style="font-size: 2.5rem; color: var(--rz-warning);" />
+                <RadzenStack>
+                    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-0">Avoirs Factur-X</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">Générer des avoirs (type CII 381) avec référence à la facture d'origine.</RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenButton Text="Nouvel avoir" Icon="add" ButtonStyle="ButtonStyle.Warning"
+                          class="rz-mt-3" NavigateTo="/credit-notes/new" />
+        </RadzenCard>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" SizeMD="4">
+        <RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                <RadzenIcon Icon="cloud_upload" Style="font-size: 2.5rem; color: var(--rz-success);" />
+                <RadzenStack>
+                    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-0">Dépôt Chorus Pro</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body2">Déposer un document Factur-X sur Chorus Pro via PISTE (AIFE).</RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenButton Text="Nouveau dépôt" Icon="cloud_upload" ButtonStyle="ButtonStyle.Success"
+                          class="rz-mt-3" NavigateTo="/transmissions/new" />
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
