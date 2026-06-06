@@ -1,9 +1,20 @@
+using FacturXManager.Common.Presentation.Endpoints;
+using FacturXManager.Modules.Compliance.Application;
+using FacturXManager.Modules.Compliance.Application.Abstractions;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Data;
+using FacturXManager.Modules.Compliance.Domain.Common;
+using FacturXManager.Modules.Compliance.Domain.CreditNotes;
+using FacturXManager.Modules.Compliance.Infrastructure.CreditNotes;
+using FacturXManager.Modules.Compliance.Infrastructure.Database;
+using FacturXManager.Modules.Compliance.Infrastructure.Invoices;
+using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
+using FacturXManager.Modules.Compliance.Infrastructure.PdfSharp;
+using FacturXManager.Modules.Compliance.Infrastructure.QuestPdf;
+using FacturXManager.Modules.Compliance.Infrastructure.Zugferd;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using FacturXManager.Common.Presentation.Endpoints;
-using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 
 #pragma warning disable S1172 // Unused method parameters should be removed
 namespace FacturXManager.Modules.Compliance.Infrastructure;
@@ -14,14 +25,9 @@ public static class ComplianceModule
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddMediatR(config =>
-            config.RegisterServicesFromAssembly(Application.AssemblyReference.Assembly));
+        services.AddComplianceApplication();
 
-        services.AddValidatorsFromAssembly(
-            Application.AssemblyReference.Assembly,
-            includeInternalTypes: true);
-
-        services.AddInfrastructure();
+        services.AddInfrastructure(configuration);
 
         services.AddEndpoints(Presentation.AssemblyReference.Assembly);
 
@@ -30,15 +36,32 @@ public static class ComplianceModule
         return services;
     }
 
-    private static void AddInfrastructure(this IServiceCollection services)
+    private static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IInvoiceBuilder, InvoiceBuilder>();
-        services.AddScoped<IEn16931Validator, En16931Validator>();
-        services.AddScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>();
+        string connectionString = configuration.GetConnectionString("Database") ?? string.Empty;
 
-        // Rendu PDF/A-3b basé sur PdfSharp 6.x. Conserver UnconfiguredFacturXPdfA3BRenderer
-        // pour les contextes où le rendu PDF n'est pas souhaité.
-        services.AddScoped<IFacturXPdfA3BRenderer, FacturXPdfA3BRenderer>();
+        services.AddDbContext<ComplianceDbContext>(options =>
+            options
+                .UseSqlite(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory"))
+                .UseSnakeCaseNamingConvention());
+
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ComplianceDbContext>());
+
+
+        services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
+        services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();
+        services.AddScoped<IFacturXPdfEmbedder, FacturXPdfEmbedder>();
+
+        // Keyed: implémentation alternative XML CII (System.Xml.Linq, sans dépendance)
+        services.AddKeyedScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>("xmllinq");
+
+        // Rendu PDF/A-3b via QuestPDF (par défaut) — PDF/A natif, attachments, XMP Factur-X
+        services.AddScoped<IFacturXPdfA3BRenderer, QuestPdfFacturXA3BRenderer>();
+
+        // Keyed: rendu PDF/A-3b via PdfSharp (fallback, post-traitement binaire XMP)
+        services.AddKeyedScoped<IFacturXPdfA3BRenderer, PdfSharpFacturXPdfA3BRenderer>("pdfsharp");
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>

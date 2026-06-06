@@ -1,5 +1,6 @@
 using FacturXManager.Common.Domain;
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.Common;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
 
 namespace FacturXManager.Modules.Compliance.UnitTests.Abstractions;
 
@@ -11,8 +12,8 @@ internal static class InvoiceTestData
     public static PostalAddress FrenchAddress(string city = "Paris", string postalCode = "75001") =>
         PostalAddress.Create("1 rue de Rivoli", postalCode, city, "FR");
 
-    public static Party SellerWithSiren(string siren = "552120222", string? vat = "FR00552120222") =>
-        Party.Create("Vendeur SA", FrenchAddress(), siren, vat);
+    public static Party SellerWithSiren(string siren = "552120222",string siret= "55212022212345", string? vat = "FR00552120222") =>
+        Party.Create("Vendeur SA", FrenchAddress(), siren,siret, vat);
 
     public static Party BuyerWithoutSiren() =>
         Party.Create("Acheteur SAS", FrenchAddress("Lyon", "69001"));
@@ -21,7 +22,7 @@ internal static class InvoiceTestData
         Party.Create("Acheteur SAS", FrenchAddress("Lyon", "69001"), siren);
 
     public static InvoiceLine StandardLine(decimal quantity, decimal unitNetPrice, decimal vatRate = 20m) =>
-        InvoiceLine.Create("1", "Prestation de conseil", quantity, unitNetPrice, VatCategory.Standard, vatRate);
+        InvoiceLine.Create( "Prestation de conseil", quantity, unitNetPrice, VatCategory.Standard, vatRate);
 
     public static Result<Invoice> BuildInvoice(
         DateOnly? issueDate = null,

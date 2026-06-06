@@ -9,12 +9,12 @@ namespace FacturXManager.Modules.Directory.Infrastructure.Sirene;
 internal interface ISireneApi
 {
     [Get("/siren/{siren}")]
-    Task<ApiResponse<SireneUniteLegaleResponse>> GetUniteLegaleAsync(
+    Task<ApiResponse<SireneLegalUnitDto>> GetUniteLegaleAsync(
         string siren,
         CancellationToken cancellationToken = default);
 
     [Get("/siret/{siret}")]
-    Task<ApiResponse<SireneEtablissementDto>> GetEtablissementAsync(
+    Task<ApiResponse<SireneCompanyDto>> GetEtablissementAsync(
         string siret,
         CancellationToken cancellationToken = default);
 }

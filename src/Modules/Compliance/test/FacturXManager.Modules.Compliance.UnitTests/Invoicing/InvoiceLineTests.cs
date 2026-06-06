@@ -1,4 +1,5 @@
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.Common;
+using FacturXManager.Modules.Compliance.Domain.Invoices;
 using FacturXManager.Modules.Compliance.UnitTests.Abstractions;
 using FluentAssertions;
 
@@ -10,7 +11,7 @@ public class InvoiceLineTests : BaseTest
     public void NetAmount_ShouldEqualQuantityTimesUnitPrice_Rounded()
     {
         // Arrange / Act
-        var line = InvoiceLine.Create("1", "X", quantity: 2.5m, unitNetPrice: 33.333m, VatCategory.Standard, vatRate: 20m);
+        var line = InvoiceLine.Create( "X", quantity: 2.5m, unitNetPrice: 33.333m, VatCategory.Standard, vatRate: 20m);
 
         // Assert
         line.NetAmount.Should().Be(83.33m);
@@ -20,9 +21,9 @@ public class InvoiceLineTests : BaseTest
     public void Equality_ShouldBeStructural()
     {
         // Arrange
-        var a = InvoiceLine.Create("1", "X", 1m, 10m, VatCategory.Standard, 20m);
-        var b = InvoiceLine.Create("1", "X", 1m, 10m, VatCategory.Standard, 20m);
-        var c = InvoiceLine.Create("1", "X", 2m, 10m, VatCategory.Standard, 20m);
+        var a = InvoiceLine.Create("X", 1m, 10m, VatCategory.Standard, 20m);
+        var b = InvoiceLine.Create("X", 1m, 10m, VatCategory.Standard, 20m);
+        var c = InvoiceLine.Create("X", 2m, 10m, VatCategory.Standard, 20m);
 
         // Assert
         a.Should().Be(b);
@@ -33,7 +34,7 @@ public class InvoiceLineTests : BaseTest
     public void Create_ShouldDefaultUnitCode_WhenNotProvided()
     {
         // Act
-        var line = InvoiceLine.Create("1", "X", 1m, 10m, VatCategory.Standard, 20m);
+        var line = InvoiceLine.Create("X", 1m, 10m, VatCategory.Standard, 20m);
 
         // Assert
         line.UnitCode.Should().Be("C62");

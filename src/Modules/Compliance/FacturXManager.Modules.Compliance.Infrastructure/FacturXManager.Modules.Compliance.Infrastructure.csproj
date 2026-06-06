@@ -13,8 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="PdfSharp" />
     <PackageReference Include="QuestPDF" />
+    <PackageReference Include="ZUGFeRD-csharp" />
   </ItemGroup>
 
 </Project>

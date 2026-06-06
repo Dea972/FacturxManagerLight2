@@ -13,8 +13,8 @@
 		<PackageReference Include="Aspire.Hosting.SqlServer" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference
-			Include="..\..\src\API\FacturXManager.Api\FacturXManager.Api.csproj" />
+		<ProjectReference Include="..\..\src\API\FacturXManager.Api\FacturXManager.Api.csproj" />
+		<ProjectReference Include="..\..\src\Presentation\FacturXManager.BackOffice.Web\FacturXManager.BackOffice.Web.csproj" />
 	</ItemGroup>
 
 </Project>

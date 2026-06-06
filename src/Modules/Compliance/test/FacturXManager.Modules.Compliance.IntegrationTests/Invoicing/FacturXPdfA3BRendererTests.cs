@@ -1,6 +1,6 @@
 using FacturXManager.Common.Domain;
-using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Application.Invoicing.CertifyInvoice;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
+using FacturXManager.Modules.Compliance.Application.Invoices.GenerateInvoice;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;
@@ -31,7 +31,7 @@ public class FacturXPdfA3BRendererTests : IDisposable
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await _sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await _sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");
@@ -47,7 +47,7 @@ public class FacturXPdfA3BRendererTests : IDisposable
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await _sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await _sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");
@@ -63,7 +63,7 @@ public class FacturXPdfA3BRendererTests : IDisposable
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await _sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await _sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");
@@ -80,7 +80,7 @@ public class FacturXPdfA3BRendererTests : IDisposable
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await _sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await _sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");
@@ -98,7 +98,7 @@ public class FacturXPdfA3BRendererTests : IDisposable
         InvoiceModel model = new InvoiceModelBuilder().Build();
 
         // Act
-        Result<CertifyInvoiceSummary> result = await _sender.Send(new CertifyInvoiceCommand(model));
+        Result<GenerateInvoiceSummary> result = await _sender.Send(new GenerateInvoiceCommand(model));
 
         // Assert
         result.IsSuccess.Should().BeTrue(because: result.IsFailure ? result.Error.Description : "facture valide");

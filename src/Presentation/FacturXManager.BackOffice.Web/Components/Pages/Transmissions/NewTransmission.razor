@@ -1,0 +1,216 @@
+@page "/transmissions/new"
+@using FacturXManager.BackOffice.Web.Features.Transmission
+@using FacturXManager.BackOffice.Web.Features.Transmission.SubmitTransmission
+@using FacturXManager.BackOffice.Web.Features.Transmission.SubmitTransmissionFile
+@inject ISender Sender
+@inject NotificationService Notifications
+
+<PageTitle>Dépôt Chorus Pro — FacturX Manager</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H4" class="rz-mb-4">Dépôt Chorus Pro</RadzenText>
+
+<RadzenTabs>
+    @* ── Onglet 1 : dépôt depuis Base64 ── *@
+    <Tabs>
+        <RadzenTabsItem Text="PDF Base64">
+            <RadzenCard class="rz-mt-4">
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Référence document *" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_docRef" Placeholder="FA-2025-001" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="SIRET destinataire *" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_recipientSiret" Placeholder="12345678901234" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Canal *" class="rz-w-100">
+                            <RadzenDropDown @bind-Value="_channel" Data="_channels" class="rz-w-100" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Service exécutant" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_executingService" Placeholder="Optionnel" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12">
+                        <RadzenFormField Text="PDF Factur-X en Base64 *" class="rz-w-100">
+                            <RadzenTextArea @bind-Value="_pdfBase64" Rows="5" Placeholder="Coller ici le PDF encodé en Base64…" class="rz-w-100" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenButton Text="Déposer" Icon="cloud_upload" ButtonStyle="ButtonStyle.Primary"
+                              IsBusy="_submitting" BusyText="Dépôt en cours…"
+                              Click="OnSubmitBase64Async" class="rz-mt-4" />
+            </RadzenCard>
+        </RadzenTabsItem>
+
+        @* ── Onglet 2 : dépôt de fichier ── *@
+        <RadzenTabsItem Text="Fichier PDF">
+            <RadzenCard class="rz-mt-4">
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Référence document *" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_fileDocRef" Placeholder="FA-2025-001" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="SIRET destinataire *" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_fileRecipientSiret" Placeholder="12345678901234" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Canal *" class="rz-w-100">
+                            <RadzenDropDown @bind-Value="_fileChannel" Data="_channels" class="rz-w-100" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Service exécutant" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_fileExecutingService" Placeholder="Optionnel" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12">
+                        <InputFile OnChange="OnFileSelectedAsync" accept=".pdf" class="rz-mt-2" />
+                        @if (_selectedFileName is not null)
+                        {
+                            <RadzenText TextStyle="TextStyle.Caption" class="rz-mt-1">
+                                Fichier sélectionné : @_selectedFileName
+                            </RadzenText>
+                        }
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenButton Text="Déposer le fichier" Icon="cloud_upload" ButtonStyle="ButtonStyle.Primary"
+                              IsBusy="_submittingFile" BusyText="Dépôt en cours…"
+                              Click="OnSubmitFileAsync" class="rz-mt-4" />
+            </RadzenCard>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+@* ── Résultat ── *@
+@if (_result is not null)
+{
+    <RadzenCard class="rz-mt-4">
+        <RadzenText TextStyle="TextStyle.H6">Résultat du dépôt</RadzenText>
+        <RadzenRow Gap="1rem" class="rz-mt-2">
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenText><strong>ID transmission :</strong> @_result.TransmissionId</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenBadge Text="@_result.Status"
+                             BadgeStyle="@StatusBadgeStyle(_result.Status)" />
+            </RadzenColumn>
+            @if (_result.ChannelDepositId is not null)
+            {
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenText><strong>N° dépôt Chorus Pro :</strong> @_result.ChannelDepositId</RadzenText>
+                </RadzenColumn>
+            }
+            @if (_result.Message is not null)
+            {
+                <RadzenColumn Size="12">
+                    <RadzenAlert AlertStyle="AlertStyle.Warning" ShowIcon="true">@_result.Message</RadzenAlert>
+                </RadzenColumn>
+            }
+        </RadzenRow>
+    </RadzenCard>
+}
+
+@code {
+    // Onglet Base64
+    private string _docRef = string.Empty;
+    private string _recipientSiret = string.Empty;
+    private string _channel = "ChorusPro";
+    private string? _executingService;
+    private string _pdfBase64 = string.Empty;
+    private bool _submitting;
+
+    // Onglet fichier
+    private string _fileDocRef = string.Empty;
+    private string _fileRecipientSiret = string.Empty;
+    private string _fileChannel = "ChorusPro";
+    private string? _fileExecutingService;
+    private byte[]? _fileContent;
+    private string? _selectedFileName;
+    private bool _submittingFile;
+
+    private TransmissionResultViewModel? _result;
+
+    private static readonly string[] _channels = ["ChorusPro"];
+
+    private async Task OnFileSelectedAsync(InputFileChangeEventArgs e)
+    {
+        _fileContent = await BrowserFileReader.ReadAllBytesAsync(e.File);
+        _selectedFileName = e.File.Name;
+    }
+
+    private async Task OnSubmitBase64Async()
+    {
+        if (string.IsNullOrWhiteSpace(_docRef) || string.IsNullOrWhiteSpace(_recipientSiret)
+            || string.IsNullOrWhiteSpace(_pdfBase64))
+        {
+            Notifications.Notify(NotificationSeverity.Warning, "Champs manquants", "Référence, SIRET et Base64 sont obligatoires.");
+            return;
+        }
+
+        _submitting = true;
+        _result = null;
+
+        Result<TransmissionResultViewModel> result = await Sender.Send(
+            new SubmitTransmissionRequestFront(_docRef, _recipientSiret, _channel, _pdfBase64, _executingService));
+
+        _submitting = false;
+
+        if (result.IsFailure)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Échec du dépôt", result.ErrorMessage);
+            return;
+        }
+
+        _result = result.Value;
+        Notifications.Notify(NotificationSeverity.Success, "Dépôt effectué", $"Statut : {_result!.Status}");
+    }
+
+    private async Task OnSubmitFileAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_fileDocRef) || string.IsNullOrWhiteSpace(_fileRecipientSiret)
+            || _fileContent is null)
+        {
+            Notifications.Notify(NotificationSeverity.Warning, "Champs manquants", "Référence, SIRET et fichier PDF sont obligatoires.");
+            return;
+        }
+
+        _submittingFile = true;
+        _result = null;
+
+        Result<TransmissionResultViewModel> result = await Sender.Send(
+            new SubmitTransmissionFileRequestFront(
+                _fileDocRef,
+                _fileRecipientSiret,
+                _fileChannel,
+                _fileExecutingService,
+                _fileContent,
+                _selectedFileName ?? "factur-x.pdf"));
+
+        _submittingFile = false;
+
+        if (result.IsFailure)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Échec du dépôt", result.ErrorMessage);
+            return;
+        }
+
+        _result = result.Value;
+        Notifications.Notify(NotificationSeverity.Success, "Dépôt effectué", $"Statut : {_result!.Status}");
+    }
+
+    private static BadgeStyle StatusBadgeStyle(string status) => status.ToUpperInvariant() switch
+    {
+        "SENT" or "ACCEPTED" => BadgeStyle.Success,
+        "PENDING" or "IN_PROGRESS" => BadgeStyle.Warning,
+        "REJECTED" or "FAILED" => BadgeStyle.Danger,
+        _ => BadgeStyle.Info,
+    };
+}

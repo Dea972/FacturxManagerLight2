@@ -1,6 +1,6 @@
 using FacturXManager.Common.Domain;
-using FacturXManager.Modules.Compliance.Application.Abstractions;
-using FacturXManager.Modules.Compliance.Application.Invoicing.ValidateInvoiceCompliance;
+using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
+using FacturXManager.Modules.Compliance.Application.Invoices.ValidateInvoiceCompliance;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Compliance.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;

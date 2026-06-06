@@ -26,7 +26,10 @@ internal sealed class SubmitTransmission : IEndpoint
             return result.Match(Results.Ok, ApiResults.Problem);
         })
         .WithTags(Tags.Transmission)
-        .WithDescription("Dépose un document certifié sur la plateforme du canal demandé et trace la tentative.")
+        .WithSummary("Déposer une facture (Base64)")
+        .WithDescription(
+            "Dépose un document certifié Factur-X (PDF/A-3b en Base64) sur la plateforme du canal demandé " +
+            "(ex : Chorus Pro via DEPOT_PDF_API / PISTE) et trace la tentative de dépôt.")
         .Produces<SubmitTransmissionSummary>()
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
     }

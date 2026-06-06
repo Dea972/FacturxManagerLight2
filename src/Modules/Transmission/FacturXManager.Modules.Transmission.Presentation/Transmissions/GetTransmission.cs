@@ -21,7 +21,8 @@ internal sealed class GetTransmission : IEndpoint
             return result.Match(Results.Ok, ApiResults.Problem);
         })
         .WithTags(Tags.Transmission)
-        .WithDescription("Retourne le statut et l'historique des tentatives d'une transmission.")
+        .WithSummary("Consulter une transmission")
+        .WithDescription("Retourne le statut courant et l'historique des tentatives d'une transmission identifiée par son GUID.")
         .Produces<TransmissionResponse>()
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }

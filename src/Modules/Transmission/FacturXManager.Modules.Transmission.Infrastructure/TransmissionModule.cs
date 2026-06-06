@@ -43,17 +43,18 @@ public static class TransmissionModule
 
         services.AddDbContext<TransmissionDbContext>(options =>
             options
-                .UseSqlServer(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", Schemas.Transmission))
+                .UseSqlite(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory"))
                 .UseSnakeCaseNamingConvention());
 
         services.AddScoped<ITransmissionRepository, TransmissionRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<TransmissionDbContext>());
 
         services.AddTransient<PisteAuthenticationHandler>();
+        services.AddTransient<CproAccountHandler>();
         services.AddHttpClient("piste-auth");
 
         services
-            .AddRefitClient<IChorusProApiWrite>()
+            .AddRefitClient<IChorusProApi>()
             .ConfigureHttpClient((sp, client) =>
             {
                 PisteAuthOptions options = sp.GetRequiredService<IOptions<PisteAuthOptions>>().Value;
@@ -62,7 +63,8 @@ public static class TransmissionModule
                     client.BaseAddress = new Uri(options.ChorusProBaseUrl);
                 }
             })
-            .AddHttpMessageHandler<PisteAuthenticationHandler>();
+            .AddHttpMessageHandler<PisteAuthenticationHandler>()
+            .AddHttpMessageHandler<CproAccountHandler>();
 
         services.AddScoped<IChannelTransmitter, ChorusProTransmitter>();
         services.AddScoped<IInvoiceTransmitter, CompositeInvoiceTransmitter>();

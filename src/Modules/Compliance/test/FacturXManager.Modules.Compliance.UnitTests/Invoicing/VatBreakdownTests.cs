@@ -1,4 +1,4 @@
-using FacturXManager.Modules.Compliance.Domain.Invoicing;
+using FacturXManager.Modules.Compliance.Domain.Common;
 using FacturXManager.Modules.Compliance.UnitTests.Abstractions;
 using FluentAssertions;
 

@@ -1,6 +1,6 @@
 namespace FacturXManager.Client.Compliance.Models;
 
-public sealed class CertifyInvoiceDto
+public sealed class GenerateInvoiceDto
 {
     public string InvoiceNumber { get; set; } = string.Empty;
     public string Profile { get; set; } = string.Empty;

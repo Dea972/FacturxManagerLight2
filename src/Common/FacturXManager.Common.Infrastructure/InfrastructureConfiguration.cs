@@ -15,7 +15,6 @@ public static class InfrastructureConfiguration
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        string connectionString,
         Action<IRegistrationConfigurator>[] moduleConfigureConsumers)
     {
         services.TryAddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -23,21 +22,15 @@ public static class InfrastructureConfiguration
         services.AddDistributedMemoryCache();
 
 
-        services.TryAddScoped<IDbConnectionFactory>(provider =>
-            new DbConnectionFactory(connectionString));
-        services.TryAddScoped<IDbConnectionFactory, DbConnectionFactory>();
-
         services.TryAddSingleton<ICacheService, CacheService>();
 
         services.AddQuartz(configurator =>
         {
-            var scheduler = Guid.NewGuid();
+            var scheduler = Guid.CreateVersion7();
             configurator.SchedulerId = $"default-id-{scheduler}";
             configurator.SchedulerName = $"default-name-{scheduler}";
         });
 
-
-        services.AddDistributedMemoryCache(); // This requires the Microsoft.Extensions.Caching.Memory namespace
 
 
         services.TryAddSingleton<InsertOutboxMessagesInterceptor>();

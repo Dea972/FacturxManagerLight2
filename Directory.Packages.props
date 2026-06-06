@@ -34,6 +34,7 @@
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
     <!-- Messaging -->
     <PackageVersion Include="MassTransit" Version="9.1.1" />
@@ -49,6 +50,8 @@
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.0" />
     <PackageVersion Include="Refit" Version="9.0.2" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="9.0.2" />
+    <!-- Blazor UI -->
+    <PackageVersion Include="Radzen.Blazor" Version="10.4.6" />
     <!-- PDF Rendering (Factur-X / PDF/A-3b) -->
     <PackageVersion Include="PdfSharp" Version="6.2.4" />
     <!-- Scheduling -->
@@ -77,5 +80,6 @@
     <!-- Authentication & Authorization -->
     <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
+    <PackageVersion Include="ZUGFeRD-csharp" Version="18.0.0" />
   </ItemGroup>
 </Project>

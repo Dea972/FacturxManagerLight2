@@ -1,12 +1,14 @@
 {
   "Transmission": {
     "Piste": {
-      "TokenEndpoint": "https://oauth.piste.gouv.fr/api/oauth/token",
-      "ChorusProBaseUrl": "https://api.piste.gouv.fr",
+      "TokenEndpoint": "https://sandbox-oauth.piste.gouv.fr/api/oauth/token",
+      "ChorusProBaseUrl": "https://sandbox-api.piste.gouv.fr",
       "ClientId": "",
       "ClientSecret": "",
       "Scope": "openid",
-      "RenewBeforeExpirySeconds": 60
+      "RenewBeforeExpirySeconds": 60,
+      "CproLogin": "",
+      "CproPassword": ""
     }
   }
 }

@@ -26,7 +26,11 @@ public static class ServiceCollectionExtensions
         RefitSettings settings = BuildSettings(configure);
 
         services
-            .AddRefitClient<IComplianceApi>(settings)
+            .AddRefitClient<IInvoiceApi>(settings)
+            .ConfigureHttpClient(c => c.BaseAddress = baseUrl);
+
+        services
+            .AddRefitClient<ICreditNoteApi>(settings)
             .ConfigureHttpClient(c => c.BaseAddress = baseUrl);
 
         services
@@ -47,7 +51,11 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string baseUrl,
         Action<RefitSettings>? configure = null)
-        => services.AddFacturXManagerClient(new Uri(baseUrl), configure);
+    {
+        baseUrl = baseUrl.Contains("api") ? baseUrl : $"{baseUrl.TrimEnd('/')}/api";
+        return services.AddFacturXManagerClient(new Uri(baseUrl), configure);
+
+    }
 
     private static RefitSettings BuildSettings(Action<RefitSettings>? configure)
     {

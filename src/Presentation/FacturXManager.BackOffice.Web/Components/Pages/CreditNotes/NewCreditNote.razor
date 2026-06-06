@@ -1,0 +1,322 @@
+@page "/credit-notes/new"
+@using FacturXManager.BackOffice.Web.Features.Compliance
+@using FacturXManager.BackOffice.Web.Features.CreditNotes.GenerateAndSubmitCreditNote
+@using FacturXManager.BackOffice.Web.Features.CreditNotes.GenerateCreditNote
+@using FacturXManager.BackOffice.Web.Features.Invoices.GetInvoices
+@using FacturXManager.BackOffice.Web.Features.CreditNotes.DownloadCreditNotePdf
+@using FacturXManager.BackOffice.Web.Features.CreditNotes.ViewModels
+@using FacturXManager.BackOffice.Web.Features.Invoices.ViewModels
+@inject ISender Sender
+@inject NotificationService Notifications
+@inject NavigationManager Navigation
+@inject IJSRuntime Js
+
+<PageTitle>Nouvel avoir — FacturX Manager</PageTitle>
+
+<RadzenText TextStyle="TextStyle.H4" class="rz-mb-4">Générer un avoir Factur-X</RadzenText>
+
+@if (_prefillSourceNumber is not null)
+{
+    <RadzenAlert AlertStyle="AlertStyle.Info" ShowIcon="true" class="rz-mb-3">
+        Formulaire pré-rempli à partir de la facture <strong>@_prefillSourceNumber</strong>.
+        Saisissez le numéro de l'avoir, la date et le motif, puis ajustez les lignes si nécessaire.
+    </RadzenAlert>
+}
+
+<RadzenCard class="rz-mb-4">
+    <EditForm Model="@_form" OnValidSubmit="OnGenerateAsync">
+        <DataAnnotationsValidator />
+
+        @* ── Identité de l'avoir ── *@
+        <RadzenFieldset Text="Avoir" class="rz-mb-4">
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Numéro *" class="rz-w-100">
+                        <RadzenTextBox @bind-Value="_form.Number" Placeholder="AV-2025-001" />
+                    </RadzenFormField>
+                    <ValidationMessage For="@(() => _form.Number)" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Date d'émission *" class="rz-w-100">
+                        <RadzenDatePicker @bind-Value="_form.IssueDate" DateFormat="dd/MM/yyyy" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Devise *" class="rz-w-100">
+                        <RadzenTextBox @bind-Value="_form.CurrencyCode" Placeholder="EUR" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Profil *" class="rz-w-100">
+                        <RadzenDropDown @bind-Value="_form.Profile" Data="_profiles" class="rz-w-100" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Nature de l'opération *" class="rz-w-100">
+                        <RadzenDropDown @bind-Value="_form.OperationNature" Data="_operationNatures" class="rz-w-100" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Moyen de paiement *" class="rz-w-100">
+                        <RadzenDropDown @bind-Value="_form.PaymentMeansCode" Data="_paymentMeans"
+                                        TextProperty="Label" ValueProperty="Value" class="rz-w-100" />
+                    </RadzenFormField>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+
+        @* ── Facture d'origine ── *@
+        <RadzenFieldset Text="Facture d'origine" class="rz-mb-4">
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="N° de facture d'origine *" class="rz-w-100">
+                        <RadzenTextBox @bind-Value="_form.OriginalInvoiceNumber" Placeholder="FA-2025-001" />
+                    </RadzenFormField>
+                    <ValidationMessage For="@(() => _form.OriginalInvoiceNumber)" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Date de la facture d'origine" class="rz-w-100">
+                        <RadzenDatePicker @bind-Value="_form.OriginalInvoiceIssueDate" DateFormat="dd/MM/yyyy" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenFormField Text="Motif de l'avoir" class="rz-w-100">
+                        <RadzenTextBox @bind-Value="_form.CreditReason" Placeholder="Retour marchandise…" />
+                    </RadzenFormField>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+
+        @* ── Vendeur ── *@
+        <RadzenFieldset Text="Vendeur" class="rz-mb-4">
+            <PartyFields Form="_form.Seller" />
+        </RadzenFieldset>
+
+        @* ── Acheteur ── *@
+        <RadzenFieldset Text="Acheteur" class="rz-mb-4">
+            <PartyFields Form="_form.Buyer" />
+        </RadzenFieldset>
+
+        @* ── Lignes ── *@
+        <RadzenFieldset Text="Lignes d'avoir" class="rz-mb-4">
+            @for (int i = 0; i < _form.Lines.Count; i++)
+            {
+                int index = i;
+                <CreditNoteLineFields Line="_form.Lines[index]" Index="index" OnRemove="RemoveLine" />
+            }
+            <RadzenButton Text="Ajouter une ligne" Icon="add" ButtonStyle="ButtonStyle.Light"
+                          Click="AddLine" class="rz-mt-2" />
+        </RadzenFieldset>
+
+        @* ── Actions ── *@
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Générer" Icon="receipt"
+                          ButtonStyle="ButtonStyle.Primary" IsBusy="_generating" BusyText="Génération…" />
+            <RadzenButton Text="Télécharger PDF" Icon="download" ButtonStyle="ButtonStyle.Secondary"
+                          IsBusy="_downloading" BusyText="Génération…"
+                          Click="OnDownloadPdfAsync" Disabled="@(_generating)" />
+            <RadzenButton Text="Générer et déposer" Icon="cloud_upload" ButtonStyle="ButtonStyle.Warning"
+                          IsBusy="_submitting" BusyText="Dépôt en cours…"
+                          Click="OnGenerateAndSubmitClickAsync" Disabled="@(_generating || _downloading)" />
+        </RadzenStack>
+
+        @if (_showSubmitFields)
+        {
+            <RadzenCard class="rz-mt-3" style="background: var(--rz-warning-lighter)">
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-mb-2">Paramètres Chorus Pro</RadzenText>
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="12" SizeMD="5">
+                        <RadzenFormField Text="SIRET destinataire *" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_recipientSiret" Placeholder="12345678901234" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenFormField Text="Service exécutant" class="rz-w-100">
+                            <RadzenTextBox @bind-Value="_executingService" Placeholder="Optionnel" />
+                        </RadzenFormField>
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="3" class="rz-d-flex rz-align-items-end">
+                        <RadzenButton Text="Confirmer le dépôt" Icon="send" ButtonStyle="ButtonStyle.Warning"
+                                      IsBusy="_submitting" BusyText="Dépôt en cours…"
+                                      Click="OnGenerateAndSubmitAsync" class="rz-w-100" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+        }
+    </EditForm>
+</RadzenCard>
+
+@* ── Résultat ── *@
+@if (_generated is not null)
+{
+    <RadzenCard class="rz-mt-4">
+        <RadzenText TextStyle="TextStyle.H6">Avoir généré</RadzenText>
+        <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap" Gap="1rem" class="rz-mt-2">
+            <RadzenBadge Text="@_generated.CreditNoteNumber" BadgeStyle="BadgeStyle.Primary" />
+            <RadzenBadge Text="@_generated.Profile" BadgeStyle="BadgeStyle.Info" />
+            <RadzenBadge Text="@($"Total TTC : {_generated.TotalWithVat:N2} €")" BadgeStyle="BadgeStyle.Success" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" class="rz-mt-3">
+            <RadzenButton Text="Télécharger le PDF généré" Icon="picture_as_pdf"
+                          ButtonStyle="ButtonStyle.Secondary"
+                          Click="OnDownloadGeneratedPdfAsync" />
+            <RadzenButton Text="Déposer sur Chorus Pro" Icon="cloud_upload"
+                          ButtonStyle="ButtonStyle.Warning"
+                          Click="NavigateToTransmission" />
+        </RadzenStack>
+    </RadzenCard>
+}
+
+@code {
+    private readonly CreditNoteFormViewModel _form = new();
+    private GeneratedCreditNoteViewModel? _generated;
+    private bool _generating;
+    private bool _downloading;
+    private bool _submitting;
+    private bool _showSubmitFields;
+    private string _recipientSiret = string.Empty;
+    private string? _executingService;
+    private string? _prefillSourceNumber;
+
+    [SupplyParameterFromQuery(Name = "invoiceId")]
+    public string? InvoiceId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(InvoiceId) || !Guid.TryParse(InvoiceId, out Guid invoiceGuid))
+        {
+            return;
+        }
+
+        Result<IReadOnlyList<InvoiceListItemViewModel>> listResult =
+            await Sender.Send(new GetInvoicesRequestFront());
+
+        if (listResult.IsFailure)
+        {
+            return;
+        }
+
+        InvoiceListItemViewModel? source = listResult.Value!.FirstOrDefault(i => i.Id == invoiceGuid);
+        if (source is null)
+        {
+            return;
+        }
+
+        _prefillSourceNumber = source.Number;
+        _form.OriginalInvoiceNumber = source.Number;
+        _form.CurrencyCode = "EUR";
+        _form.Seller = new PartyFormViewModel { Name = source.SellerName };
+        _form.Buyer = new PartyFormViewModel { Name = source.BuyerName };
+    }
+
+    private static readonly string[] _profiles = ["EN16931", "Extended"];
+    private static readonly string[] _operationNatures = ["Goods", "Services", "Mixed", "ConstructionWork"];
+
+    private static readonly List<(string Label, string Value)> _paymentMeans =
+    [
+        ("Virement bancaire", "BankTransfer"),
+        ("Virement de débit", "DebitTransfer"),
+        ("Carte bancaire", "BankCard"),
+        ("Prélèvement bancaire", "DirectDebit"),
+        ("Virement SEPA", "SepaCreditTransfer"),
+        ("Prélèvement SEPA", "SepaDirectDebit"),
+        ("Compensation", "ClearingBetweenPartners"),
+    ];
+
+    private void AddLine() =>
+        _form.Lines.Add(new CreditNoteLineFormViewModel { Id = (_form.Lines.Count + 1).ToString() });
+
+    private void RemoveLine(int index)
+    {
+        if (_form.Lines.Count > 1)
+        {
+            _form.Lines.RemoveAt(index);
+        }
+    }
+
+    private async Task OnGenerateAsync()
+    {
+        _generating = true;
+        _generated = null;
+
+        Result<GeneratedCreditNoteViewModel> result =
+            await Sender.Send(new GenerateCreditNoteRequestFront(_form));
+
+        _generating = false;
+
+        if (result.IsFailure)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Échec de la génération", result.ErrorMessage);
+            return;
+        }
+
+        _generated = result.Value;
+        Notifications.Notify(NotificationSeverity.Success, "Avoir généré", $"Avoir {_generated!.CreditNoteNumber} créé avec succès.");
+    }
+
+    private async Task OnDownloadPdfAsync()
+    {
+        _downloading = true;
+
+        Result<GeneratedPdfViewModel> result =
+            await Sender.Send(new DownloadCreditNotePdfRequestFront(_form));
+
+        _downloading = false;
+
+        if (result.IsFailure)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Échec du téléchargement", result.ErrorMessage);
+            return;
+        }
+
+        await TriggerDownload(result.Value!);
+    }
+
+    private async Task OnDownloadGeneratedPdfAsync()
+    {
+        if (_generated is null)
+        {
+            return;
+        }
+
+        byte[] bytes = Convert.FromBase64String(_generated.FacturXPdfBase64);
+        await TriggerDownload(new GeneratedPdfViewModel($"avoir-{_generated.CreditNoteNumber}.pdf", bytes));
+    }
+
+    private void NavigateToTransmission() =>
+        Navigation.NavigateTo("/transmissions/new");
+
+    private void OnGenerateAndSubmitClickAsync() => _showSubmitFields = !_showSubmitFields;
+
+    private async Task OnGenerateAndSubmitAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_recipientSiret))
+        {
+            Notifications.Notify(NotificationSeverity.Warning, "Champ manquant", "Le SIRET destinataire est obligatoire.");
+            return;
+        }
+
+        _submitting = true;
+        _showSubmitFields = false;
+
+        Result<GenerateAndSubmitCreditNoteViewModel> result = await Sender.Send(
+            new GenerateAndSubmitCreditNoteRequest(_form, _recipientSiret, "ChorusPro", _executingService));
+
+        _submitting = false;
+
+        if (result.IsFailure)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "\u00c9chec du d\u00e9p\u00f4t", result.ErrorMessage);
+            return;
+        }
+
+        GenerateAndSubmitCreditNoteViewModel vm = result.Value!;
+        Notifications.Notify(
+            NotificationSeverity.Success,
+            "D\u00e9p\u00f4t effectu\u00e9",
+            $"Avoir {vm.CreditNoteNumber} d\u00e9pos\u00e9. N\u00b0 Chorus Pro : {vm.ChannelDepositId}");
+    }
+
+    private async Task TriggerDownload(GeneratedPdfViewModel pdf) =>
+        await Js.InvokeVoidAsync("downloadFile", pdf.FileName, "application/pdf", pdf.Content);
+}

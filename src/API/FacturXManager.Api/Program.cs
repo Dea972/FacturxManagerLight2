@@ -1,27 +1,49 @@
+using System.Text.Json.Serialization;
 using FacturXManager.Sdk;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
+builder.Configuration.AddUserSecrets<Program>();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Info.Title = "FacturX Manager API";
+        document.Info.Version = "v1";
+        document.Info.Description =
+            "API de génération et transmission de factures électroniques Factur-X " +
+            "(PDF/A-3b + XML CII embarqué) vers Chorus Pro via PISTE (AIFE). " +
+            "Réforme française de facturation électronique — septembre 2026.";
 
-string connectionString = builder.Configuration.GetConnectionString("Database")
-    ?? throw new InvalidOperationException(
-        "La chaîne de connexion 'Database' est obligatoire (section ConnectionStrings).");
+        return Task.CompletedTask;
+    }));
 
-
-await builder.Services.AddFacturXManagerAsync(connectionString, builder.Configuration);
-
-builder.Configuration.AddEnvironmentVariables();
+await builder.Services.AddFacturXManagerAsync(builder.Configuration);
 
 WebApplication app = builder.Build();
 
+
+if (!app.Environment.IsProduction())
+{
+   app.ApplyMigrations();
+}
 app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "FacturX Manager API v1");
+        options.RoutePrefix = "swagger";
+        options.DocumentTitle = "FacturX Manager API";
+    });
 }
 
 app.UseHttpsRedirection();

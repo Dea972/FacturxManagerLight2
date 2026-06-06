@@ -21,9 +21,10 @@ internal sealed class LookupCompany : IEndpoint
             return result.Match(Results.Ok, ApiResults.Problem);
         })
         .WithTags(Tags.Directory)
+        .WithSummary("Rechercher une entreprise (SIREN/SIRET)")
         .WithDescription(
             "Recherche l'identité d'une entreprise française à partir d'un SIREN (9 chiffres) ou d'un SIRET (14 chiffres). " +
-            "S'appuie aujourd'hui sur l'API SIRENE (INSEE) ; sera étendu à l'annuaire de la facturation électronique PPF.")
+            "Source : API SIRENE (INSEE). Retourne la raison sociale, le statut administratif et la diffusabilité RGPD.")
         .Produces<CompanyLookupResponse>()
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);

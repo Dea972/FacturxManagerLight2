@@ -12,7 +12,7 @@
     <Project Path="aspire/FacturXManager.AppHost/FacturXManager.AppHost.csproj" />
     <Project Path="aspire/FacturXManager.ServiceDefaults/FacturXManager.ServiceDefaults.csproj" />
   </Folder>
-  <Folder Name="/postman/" >
+  <Folder Name="/postman/">
     <File Path="postman/FacturXManager.Local.postman_environment.json" />
     <File Path="postman/FacturXManager.postman_collection.json" />
     <File Path="postman/FacturXManager.Production.postman_environment.json" />
@@ -37,18 +37,7 @@
     <Project Path="src/Common/FacturXManager.Common.Infrastructure/FacturXManager.Common.Infrastructure.csproj" />
     <Project Path="src/Common/FacturXManager.Common.Presentation/FacturXManager.Common.Presentation.csproj" />
   </Folder>
-  <Folder Name="/src/Generators/">
-    <Project Path="../../../repos/ChaussonStore/src/Generators/SnapshotGenerator/SnapshotGenerator.csproj" />
-    <Project Path="../../../repos/ChaussonStore/src/Generators/ValueObjectGenerator/ValueObjectGenerator.csproj" />
-  </Folder>
   <Folder Name="/src/Modules/" />
-  <Folder Name="/src/Modules/AiEngine/">
-    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Application/FacturXManager.Modules.AiEngine.Application.csproj" />
-    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Domain/FacturXManager.Modules.AiEngine.Domain.csproj" />
-    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Infrastructure/FacturXManager.Modules.AiEngine.Infrastructure.csproj" />
-    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.IntegrationEvents/FacturXManager.Modules.AiEngine.IntegrationEvents.csproj" />
-    <Project Path="src/Modules/AiEngine/FacturXManager.Modules.AiEngine.Presentation/FacturXManager.Modules.AiEngine.Presentation.csproj" />
-  </Folder>
   <Folder Name="/src/Modules/Compliance/">
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Application/FacturXManager.Modules.Compliance.Application.csproj" />
     <Project Path="src/Modules/Compliance/FacturXManager.Modules.Compliance.Domain/FacturXManager.Modules.Compliance.Domain.csproj" />
@@ -71,17 +60,6 @@
     <Project Path="src/Modules/Directory/test/FacturXManager.Modules.Directory.IntegrationTests/FacturXManager.Modules.Directory.IntegrationTests.csproj" />
     <Project Path="src/Modules/Directory/test/FacturXManager.Modules.Directory.UnitTests/FacturXManager.Modules.Directory.UnitTests.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/EReporting/">
-    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Application/FacturXManager.Modules.EReporting.Application.csproj" />
-    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Domain/FacturXManager.Modules.EReporting.Domain.csproj" />
-    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Infrastructure/FacturXManager.Modules.EReporting.Infrastructure.csproj" />
-    <Project Path="src/Modules/EReporting/FacturXManager.Modules.EReporting.Presentation/FacturXManager.Modules.EReporting.Presentation.csproj" />
-  </Folder>
-  <Folder Name="/src/Modules/EReporting/test/">
-    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.ArchitectureTests/FacturXManager.Modules.EReporting.ArchitectureTests.csproj" />
-    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.IntegrationTests/FacturXManager.Modules.EReporting.IntegrationTests.csproj" />
-    <Project Path="src/Modules/EReporting/test/FacturXManager.Modules.EReporting.UnitTests/FacturXManager.Modules.EReporting.UnitTests.csproj" />
-  </Folder>
   <Folder Name="/src/Modules/Transmission/">
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Application/FacturXManager.Modules.Transmission.Application.csproj" />
     <Project Path="src/Modules/Transmission/FacturXManager.Modules.Transmission.Domain/FacturXManager.Modules.Transmission.Domain.csproj" />
@@ -92,6 +70,9 @@
     <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.ArchitectureTests/FacturXManager.Modules.Transmission.ArchitectureTests.csproj" />
     <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.IntegrationTests/FacturXManager.Modules.Transmission.IntegrationTests.csproj" />
     <Project Path="src/Modules/Transmission/test/FacturXManager.Modules.Transmission.UnitTests/FacturXManager.Modules.Transmission.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/FacturXManager.BackOffice.Web/FacturXManager.BackOffice.Web.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/FacturXManager.ArchitectureTests/FacturXManager.ArchitectureTests.csproj" />

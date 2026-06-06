@@ -1,11 +1,12 @@
-using FacturXManager.Common.Application.Transmission;
-using FacturXManager.Common.Domain;
+﻿using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Transmission.Application.Transmissions.GetTransmission;
 using FacturXManager.Modules.Transmission.Application.Transmissions.SubmitTransmission;
 using FacturXManager.Modules.Transmission.IntegrationTests.Abstractions;
 using FacturXManager.Modules.Transmission.IntegrationTests.Abstractions.Builders;
 using FluentAssertions;
-using NSubstitute;
+using WireMock.RequestBuilders;
+using WireMock.ResponseBuilders;
+using DomainTransmission = FacturXManager.Modules.Transmission.Domain.Transmissions.Transmission;
 
 namespace FacturXManager.Modules.Transmission.IntegrationTests.Transmissions;
 
@@ -18,8 +19,8 @@ public class GetTransmissionTests : BaseIntegrationTest
     [Fact]
     public async Task Handle_ShouldReturnNotFound_WhenTransmissionDoesNotExist()
     {
-        // Arrange : aucune transmission n'a été enregistrée
-        Guid unknownId = Guid.NewGuid();
+        // Arrange : aucune transmission en base
+        var unknownId = Guid.CreateVersion7();
 
         // Act
         Result<TransmissionResponse> result = await Sender.Send(new GetTransmissionQuery(unknownId));
@@ -33,9 +34,13 @@ public class GetTransmissionTests : BaseIntegrationTest
     [Fact]
     public async Task Handle_ShouldReturnTransmission_WithSubmittedStatus_AfterSuccessfulDeposit()
     {
-        // Arrange : on dépose d'abord, puis on relit
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Submitted("DEPOT-XYZ", "OK"));
+        // Arrange
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":0,"libelle":"OK","numeroFluxDepot":"DEPOT-XYZ"}"""));
 
         Result<SubmitTransmissionSummary> submission = await Sender.Send(
             new SubmitTransmissionCommandBuilder().Build());
@@ -56,18 +61,26 @@ public class GetTransmissionTests : BaseIntegrationTest
     [Fact]
     public async Task Handle_ShouldReturnTransmission_WithRejectionReason_AfterPlatformRejected()
     {
-        // Arrange : la plateforme rejette
-        Transmitter.TransmitAsync(Arg.Any<InvoiceTransmissionRequest>(), Arg.Any<CancellationToken>())
-            .Returns(InvoiceTransmissionResult.Rejected("Code retour 12 : SIRET inconnu"));
+        // Arrange : HTTP 200 + codeRetour != 0 = rejet applicatif Chorus Pro
+        WireMock
+            .Given(Request.Create().WithPath("/cpro/factures/v1/deposer/flux").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"codeRetour":12,"libelle":"Code retour 12 : SIRET inconnu"}"""));
 
-        Result<SubmitTransmissionSummary> submission = await Sender.Send(
-            new SubmitTransmissionCommandBuilder().Build());
+        SubmitTransmissionCommand command = new SubmitTransmissionCommandBuilder().Build();
+        Result<SubmitTransmissionSummary> submission = await Sender.Send(command);
 
         // Le dépôt est en échec mais la transmission est persistée pour traçabilité
-        Guid transmissionId = Transmissions.Keys.Single();
+        submission.IsFailure.Should().BeTrue();
+        DbContext.ChangeTracker.Clear();
+        DomainTransmission? persisted = DbContext.Set<DomainTransmission>()
+            .FirstOrDefault(t => t.DocumentReference == command.DocumentReference);
+        persisted.Should().NotBeNull();
 
         // Act
-        Result<TransmissionResponse> result = await Sender.Send(new GetTransmissionQuery(transmissionId));
+        Result<TransmissionResponse> result = await Sender.Send(new GetTransmissionQuery(persisted!.Id));
 
         // Assert
         result.IsSuccess.Should().BeTrue();

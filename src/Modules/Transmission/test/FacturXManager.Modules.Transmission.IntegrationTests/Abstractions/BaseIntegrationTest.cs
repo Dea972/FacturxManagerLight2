@@ -1,12 +1,10 @@
 using Bogus;
-using FacturXManager.Common.Application.Transmission;
-using FacturXManager.Modules.Transmission.Application.Abstractions.Data;
-using FacturXManager.Modules.Transmission.Domain.Transmissions;
+using FacturXManager.Modules.Transmission.Infrastructure.Database;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using NSubstitute.ClearExtensions;
-using DomainTransmission = FacturXManager.Modules.Transmission.Domain.Transmissions.Transmission;
+using WireMock.RequestBuilders;
+using WireMock.ResponseBuilders;
+using WireMock.Server;
 
 namespace FacturXManager.Modules.Transmission.IntegrationTests.Abstractions;
 
@@ -21,13 +19,10 @@ public abstract class BaseIntegrationTest : IDisposable
 
     protected readonly IServiceProvider ServiceProvider;
 
-    protected readonly IInvoiceTransmitter Transmitter;
+    protected readonly TransmissionDbContext DbContext;
 
-    protected readonly ITransmissionRepository TransmissionRepository;
-
-    protected readonly IUnitOfWork UnitOfWork;
-
-    protected readonly Dictionary<Guid, DomainTransmission> Transmissions;
+    /// <summary>Serveur WireMock partagé. Stubs réinitialisés entre chaque test.</summary>
+    protected readonly WireMockServer WireMock;
 
     protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
     {
@@ -35,17 +30,11 @@ public abstract class BaseIntegrationTest : IDisposable
         Scope = factory.Services.CreateScope();
         ServiceProvider = Scope.ServiceProvider;
         Sender = ServiceProvider.GetRequiredService<ISender>();
-        Transmitter = factory.Transmitter;
-        TransmissionRepository = factory.TransmissionRepository;
-        UnitOfWork = factory.UnitOfWork;
-        Transmissions = factory.Transmissions;
+        DbContext = ServiceProvider.GetRequiredService<TransmissionDbContext>();
+        WireMock = factory.WireMock;
 
-        // Reset state between tests
-        Transmitter.ClearReceivedCalls();
-        Transmitter.ClearSubstitute();
-        UnitOfWork.ClearReceivedCalls();
-        TransmissionRepository.ClearReceivedCalls();
-        Transmissions.Clear();
+        WireMock.Reset();
+        StubOAuth2(WireMock);
     }
 
     public void Dispose()
@@ -53,4 +42,18 @@ public abstract class BaseIntegrationTest : IDisposable
         Scope.Dispose();
         GC.SuppressFinalize(this);
     }
+
+    /// <summary>
+    /// Réenregistre le stub OAuth2 minimal après un <c>Reset()</c>.
+    /// </summary>
+    protected static void StubOAuth2(WireMockServer server)
+    {
+        server
+            .Given(Request.Create().WithPath("/oauth/token").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""{"access_token":"test-token","expires_in":3600,"token_type":"Bearer"}"""));
+    }
 }
+
