@@ -11,8 +11,6 @@ public partial class InitialCreate : Migration
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.EnsureSchema(
-            name: "transmission");
 
         migrationBuilder.CreateTable(
             name: "transmissions",

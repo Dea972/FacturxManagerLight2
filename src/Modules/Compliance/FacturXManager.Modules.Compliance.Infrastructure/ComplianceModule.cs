@@ -42,7 +42,7 @@ public static class ComplianceModule
 
         services.AddDbContext<ComplianceDbContext>(options =>
             options
-                .UseSqlite(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", Schemas.Compliance))
+                .UseSqlite(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory"))
                 .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();

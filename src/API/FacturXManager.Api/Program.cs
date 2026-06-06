@@ -3,6 +3,10 @@ using FacturXManager.Sdk;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
+builder.Configuration.AddUserSecrets<Program>();
+
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -22,11 +26,9 @@ builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document,
 
 await builder.Services.AddFacturXManagerAsync(builder.Configuration);
 
-builder.Configuration.AddEnvironmentVariables();
-
-builder.Configuration.AddUserSecrets<Program>();
-
 WebApplication app = builder.Build();
+
+
 if (!app.Environment.IsProduction())
 {
    app.ApplyMigrations();
