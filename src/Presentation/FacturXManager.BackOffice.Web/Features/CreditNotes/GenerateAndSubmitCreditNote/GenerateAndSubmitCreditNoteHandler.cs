@@ -1,11 +1,9 @@
 using FacturXManager.BackOffice.Web.Common;
 using FacturXManager.BackOffice.Web.Features.Compliance;
 using FacturXManager.BackOffice.Web.Features.CreditNotes.ViewModels;
-using FacturXManager.Client.Compliance;
-using FacturXManager.Client.Compliance.Models;
-using FacturXManager.Client.Transmission;
-using FacturXManager.Client.Transmission.Models;
+using FacturXManager.Client.Workflows;
 using MediatR;
+using ClientRequest = FacturXManager.Client.Compliance.Models.GenerateAndSubmitCreditNoteRequest;
 
 namespace FacturXManager.BackOffice.Web.Features.CreditNotes.GenerateAndSubmitCreditNote;
 
@@ -33,8 +31,7 @@ public sealed record GenerateAndSubmitCreditNoteRequest(
     : IRequest<Result<GenerateAndSubmitCreditNoteViewModel>>;
 
 internal sealed class GenerateAndSubmitCreditNoteHandler(
-    ICreditNoteApi creditNoteApi,
-    ITransmissionApi transmissionApi,
+    FacturXManagerClient client,
     ILogger<GenerateAndSubmitCreditNoteHandler> logger)
     : IRequestHandler<GenerateAndSubmitCreditNoteRequest, Result<GenerateAndSubmitCreditNoteViewModel>>
 {
@@ -44,35 +41,26 @@ internal sealed class GenerateAndSubmitCreditNoteHandler(
     {
         try
         {
-            var apiRequest = new Client.Compliance.Models.GenerateCreditNoteRequest
-            {
-                CreditNote = ComplianceRequestMapper.ToRequest(request.Form),
-            };
-
-            GenerateCreditNoteDto dto =
-                await creditNoteApi.GenerateAsync(apiRequest, cancellationToken);
-
-            var submitTransmissionRequest = new SubmitTransmissionRequest
-            {
-                DocumentReference = dto.EmbeddedFileName,
-                FacturXPdfBase64 = dto.FacturXPdfBase64,
-                RecipientSiret = request.RecipientSiret,
-                Channel = request.Channel,
-                ExecutingService = request.ExecutingService
-            };
-
-            SubmitTransmissionDto transmissionDto = await transmissionApi.SubmitAsync(submitTransmissionRequest, cancellationToken);
+            GenerateAndSubmitDto result = await client.Workflows.GenerateAndSubmitCreditNoteAsync(
+                new ClientRequest
+                {
+                    CreditNote = ComplianceRequestMapper.ToRequest(request.Form),
+                    RecipientSiret = request.RecipientSiret,
+                    Channel = request.Channel,
+                    ExecutingService = request.ExecutingService,
+                },
+                cancellationToken);
 
             return Result<GenerateAndSubmitCreditNoteViewModel>.Success(
                 new GenerateAndSubmitCreditNoteViewModel(
-                        Guid.CreateVersion7(),
-                        dto.CreditNoteNumber,
-                        dto.Profile,
-                        dto.TotalWithVat,
-                        dto.FacturXPdfBase64,
-                        transmissionDto.Status,
-                        transmissionDto.ChannelDepositId,
-                        transmissionDto.Message));
+                    result.DocumentId,
+                    result.DocumentNumber,
+                    result.Profile,
+                    result.TotalWithVat,
+                    result.FacturXPdfBase64,
+                    result.Status,
+                    result.ChannelDepositId,
+                    result.Message));
         }
         catch (Exception exception)
         {

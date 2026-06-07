@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Options;
 
-namespace FacturXManager.Modules.Transmission.Infrastructure.ChorusPro;
+namespace FacturXManager.Common.Infrastructure.Piste;
 
 /// <summary>
 /// Injecte le header <c>cpro-account</c> (base64(login:password)) requis par Chorus Pro
 /// sur chaque appel sortant. La valeur est lue depuis la configuration et n'est jamais loggée.
 /// </summary>
-internal sealed class CproAccountHandler(IOptions<PisteAuthOptions> options) : DelegatingHandler
+public sealed class CproAccountHandler(IOptions<PisteAuthOptions> options) : DelegatingHandler
 {
     private readonly PisteAuthOptions _options = options.Value;
 

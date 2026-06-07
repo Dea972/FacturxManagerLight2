@@ -7,6 +7,7 @@ using FacturXManager.Common.Application.Transmission;
 using FacturXManager.Common.Presentation.Endpoints;
 using FacturXManager.Modules.Transmission.Application.Abstractions.Data;
 using FacturXManager.Modules.Transmission.Domain.Transmissions;
+using FacturXManager.Common.Infrastructure.Piste;
 using FacturXManager.Modules.Transmission.Infrastructure.ChorusPro;
 using FacturXManager.Modules.Transmission.Infrastructure.Database;
 using FacturXManager.Modules.Transmission.Infrastructure.Transmissions;

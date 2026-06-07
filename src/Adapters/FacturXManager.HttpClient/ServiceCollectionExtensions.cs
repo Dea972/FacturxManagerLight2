@@ -2,6 +2,7 @@ using System;
 using FacturXManager.Client.Compliance;
 using FacturXManager.Client.EReporting;
 using FacturXManager.Client.Transmission;
+using FacturXManager.Client.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
 
@@ -40,6 +41,9 @@ public static class ServiceCollectionExtensions
         services
             .AddRefitClient<IEReportingApi>(settings)
             .ConfigureHttpClient(c => c.BaseAddress = baseUrl);
+
+        services.AddScoped<InvoiceWorkflowClient>();
+        services.AddScoped<FacturXManagerClient>();
 
         return services;
     }

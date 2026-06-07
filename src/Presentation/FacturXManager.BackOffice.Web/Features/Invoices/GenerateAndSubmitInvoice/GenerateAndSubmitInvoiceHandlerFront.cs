@@ -1,12 +1,8 @@
 using FacturXManager.BackOffice.Web.Common;
 using FacturXManager.BackOffice.Web.Features.Compliance;
-using FacturXManager.BackOffice.Web.Features.Invoices;
-using FacturXManager.BackOffice.Web.Features.Invoices.GenerateInvoice;
 using FacturXManager.BackOffice.Web.Features.Invoices.ViewModels;
-using FacturXManager.Client.Compliance;
 using FacturXManager.Client.Compliance.Models;
-using FacturXManager.Client.Transmission;
-using FacturXManager.Client.Transmission.Models;
+using FacturXManager.Client.Workflows;
 using MediatR;
 
 namespace FacturXManager.BackOffice.Web.Features.Invoices.GenerateAndSubmitInvoice;
@@ -35,8 +31,7 @@ public sealed record GenerateAndSubmitInvoiceRequestFront(
     : IRequest<Result<GenerateAndSubmitInvoiceViewModel>>;
 
 internal sealed class GenerateAndSubmitInvoiceHandlerFront(
-    IInvoiceApi invoiceApi,
-    ITransmissionApi transmissionApi,
+    FacturXManagerClient client,
     ILogger<GenerateAndSubmitInvoiceHandlerFront> logger)
     : IRequestHandler<GenerateAndSubmitInvoiceRequestFront, Result<GenerateAndSubmitInvoiceViewModel>>
 {
@@ -46,45 +41,31 @@ internal sealed class GenerateAndSubmitInvoiceHandlerFront(
     {
         try
         {
-            // 1. Génération de la facture Factur-X (XML CII + PDF/A-3b)
-            var generateRequest = new Client.Compliance.Models.GenerateInvoiceRequest
-            {
-                Invoice = ComplianceRequestMapper.ToRequest(request.Form),
-            };
-
-            GenerateInvoiceDto dto = await invoiceApi.GenerateAsync(generateRequest, cancellationToken);
-
-            logger.LogInformation(
-                "Facture {InvoiceNumber} générée avec succès (profil {Profile})",
-                dto.InvoiceNumber,
-                dto.Profile);
-
-            // 2. Dépôt sur Chorus Pro via le module Transmission
-            var submitRequest = new SubmitTransmissionRequest
-            {
-                DocumentReference = dto.InvoiceNumber,
-                RecipientSiret = request.RecipientSiret,
-                Channel = request.Channel,
-                FacturXPdfBase64 = dto.FacturXPdfBase64,
-            };
-
-            SubmitTransmissionDto transmission = await transmissionApi.SubmitAsync(submitRequest, cancellationToken);
+            GenerateAndSubmitDto result = await client.Workflows.GenerateAndSubmitInvoiceAsync(
+                new GenerateAndSubmitInvoiceRequest
+                {
+                    Invoice = ComplianceRequestMapper.ToRequest(request.Form),
+                    RecipientSiret = request.RecipientSiret,
+                    Channel = request.Channel,
+                    ExecutingService = request.ExecutingService,
+                },
+                cancellationToken);
 
             logger.LogInformation(
-                "Facture {InvoiceNumber} soumise sur Chorus Pro — TransmissionId : {TransmissionId}, Statut : {Status}",
-                dto.InvoiceNumber,
-                transmission.TransmissionId,
-                transmission.Status);
+                "Facture {DocumentNumber} générée et soumise (profil {Profile}, statut {Status})",
+                result.DocumentNumber,
+                result.Profile,
+                result.Status);
 
             return Result<GenerateAndSubmitInvoiceViewModel>.Success(new GenerateAndSubmitInvoiceViewModel(
-                Guid.CreateVersion7(),
-                dto.InvoiceNumber,
-                dto.Profile,
-                dto.TotalWithVat,
-                dto.FacturXPdfBase64,
-                transmission.Status,
-                transmission.ChannelDepositId,
-                transmission.Message));
+                result.DocumentId,
+                result.DocumentNumber,
+                result.Profile,
+                result.TotalWithVat,
+                result.FacturXPdfBase64,
+                result.Status,
+                result.ChannelDepositId,
+                result.Message));
         }
         catch (Exception exception)
         {

@@ -751,6 +751,75 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Chorus Pro",
+          "description": "Consultation de l'annuaire Chorus Pro (PISTE) : structures et utilisateurs. Requiert les credentials OAuth2 PISTE configurés.",
+          "item": [
+            {
+              "name": "GET /directory/chorus-pro/structures/search — Search Chorus Pro Structure",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/directory/chorus-pro/structures/search?siret={{siret}}",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "directory", "chorus-pro", "structures", "search" ],
+                  "query": [
+                    {
+                      "key": "siret",
+                      "value": "54205118000017",
+                      "description": "SIRET de l'établissement (14 chiffres)."
+                    }
+                  ]
+                },
+                "description": "Recherche une structure Chorus Pro par SIRET. Source : API PISTE /structures/v1/rechercher. Retourne la raison sociale et l'identifiant technique de rattachement PPF."
+              },
+              "response": []
+            },
+            {
+              "name": "GET /directory/chorus-pro/structures/{idStructureCpp} — Consult Chorus Pro Structure",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/directory/chorus-pro/structures/{{idStructureCpp}}",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "directory", "chorus-pro", "structures", "{{idStructureCpp}}" ],
+                  "variable": [
+                    {
+                      "key": "idStructureCpp",
+                      "value": "123456",
+                      "description": "Identifiant numérique CPP de la structure Chorus Pro."
+                    }
+                  ]
+                },
+                "description": "Retourne le détail complet d'une structure Chorus Pro (coordonnées, services, identifiant technique). Source : API PISTE /structures/v1/consulter."
+              },
+              "response": []
+            },
+            {
+              "name": "GET /directory/chorus-pro/users/{login} — Lookup Chorus Pro User",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/directory/chorus-pro/users/{{chorusProLogin}}",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "directory", "chorus-pro", "users", "{{chorusProLogin}}" ],
+                  "variable": [
+                    {
+                      "key": "chorusProLogin",
+                      "value": "utilisateur@exemple.fr",
+                      "description": "Login Chorus Pro (adresse e-mail ou identifiant technique)."
+                    }
+                  ]
+                },
+                "description": "Consulte un utilisateur Chorus Pro à partir de son login. Source : API PISTE /utilisateurs/v1/consulter. ⚠️ Requiert des droits de gestionnaire sur la structure Chorus Pro cible."
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }
