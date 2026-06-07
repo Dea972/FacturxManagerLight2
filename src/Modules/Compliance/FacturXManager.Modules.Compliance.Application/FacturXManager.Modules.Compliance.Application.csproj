@@ -11,4 +11,11 @@
     <ProjectReference Include="..\..\..\Common\FacturXManager.Common.Application\FacturXManager.Common.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FacturX\AttachFacturX\" />
+    <Folder Include="Invoicing\AttachFacturX\" />
+  </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="FacturXManager.Modules.Compliance.IntegrationTests" />
+	</ItemGroup>
 </Project>

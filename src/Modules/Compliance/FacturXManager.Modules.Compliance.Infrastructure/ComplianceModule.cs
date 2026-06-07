@@ -6,6 +6,7 @@ using FacturXManager.Modules.Compliance.Domain.Common;
 using FacturXManager.Modules.Compliance.Domain.CreditNotes;
 using FacturXManager.Modules.Compliance.Infrastructure.CreditNotes;
 using FacturXManager.Modules.Compliance.Infrastructure.Database;
+using FacturXManager.Modules.Compliance.Infrastructure.FacturX;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoices;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
 using FacturXManager.Modules.Compliance.Infrastructure.PdfSharp;
@@ -15,6 +16,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QuestPDF.Infrastructure;
 
 #pragma warning disable S1172 // Unused method parameters should be removed
 namespace FacturXManager.Modules.Compliance.Infrastructure;
@@ -52,7 +54,7 @@ public static class ComplianceModule
 
         services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
         services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();
-        services.AddScoped<IFacturXPdfEmbedder, FacturXPdfEmbedder>();
+        services.AddScoped<IFacturXPdfEmbedder, QuestPdfFacturXEmbedder>();
 
         // Keyed: implémentation alternative XML CII (System.Xml.Linq, sans dépendance)
         services.AddKeyedScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>("xmllinq");
@@ -64,6 +66,9 @@ public static class ComplianceModule
         services.AddKeyedScoped<IFacturXPdfA3BRenderer, PdfSharpFacturXPdfA3BRenderer>("pdfsharp");
     }
 
-    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration) =>
-        Task.CompletedTask;
+    private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+        return Task.CompletedTask;
+    }
 }

@@ -288,6 +288,37 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "POST /compliance/invoices/embed — Embed FacturX in Existing PDF",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/compliance/invoices/embed",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "compliance", "invoices", "embed" ]
+                },
+                "description": "Reçoit un PDF visuel existant (IFormFile) et les données de facture (InvoiceModel en JSON form field), génère le XML CII conforme EN16931 et l'embarque dans le PDF fourni pour produire un PDF/A-3b Factur-X. Retourne directement le PDF enrichi en téléchargement (application/pdf). Nom du fichier : facturx-{invoiceNumber}.pdf.",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Fichier PDF visuel source à enrichir avec le XML Factur-X"
+                    },
+                    {
+                      "key": "invoice",
+                      "type": "text",
+                      "value": "{\n  \"number\": \"FA-2025-00042\",\n  \"issueDate\": \"2025-06-15\",\n  \"currencyCode\": \"EUR\",\n  \"profile\": \"EN16931\",\n  \"operationNature\": \"Unspecified\",\n  \"buyerReference\": \"BON-COMMANDE-2025-0123\",\n  \"purchaseOrderReference\": \"PO-2025-0123\",\n  \"seller\": {\n    \"name\": \"Acme France SAS\",\n    \"addressLine1\": \"12 rue de la Paix\",\n    \"addressLine2\": null,\n    \"postalCode\": \"75001\",\n    \"city\": \"Paris\",\n    \"countryCode\": \"FR\",\n    \"legalRegistrationId\": \"183955511\",\n    \"legalOrganizationId\": \"18395551129914\",\n    \"vatIdentifier\": \"FR12123456789\"\n  },\n  \"buyer\": {\n    \"name\": \"Durand & Fils SARL\",\n    \"addressLine1\": \"45 avenue des Lilas\",\n    \"addressLine2\": \"Bâtiment C\",\n    \"postalCode\": \"69003\",\n    \"city\": \"Lyon\",\n    \"countryCode\": \"FR\",\n    \"legalRegistrationId\": \"834216652\",\n    \"legalOrganizationId\": \"83421665236771\",\n    \"vatIdentifier\": \"FR98987654321\"\n  },\n  \"payment\": {\n    \"meansCode\": \"30\",\n    \"dueDate\": \"2025-07-15\",\n    \"iban\": \"FR7630006000011234567890189\"\n  },\n  \"lines\": [\n    {\n      \"id\": \"1\",\n      \"description\": \"Prestation de conseil en informatique\",\n      \"quantity\": 5.0,\n      \"unitNetPrice\": 800.00,\n      \"vatCategory\": \"Standard\",\n      \"vatRate\": 20.0,\n      \"unitCode\": \"DAY\"\n    },\n    {\n      \"id\": \"2\",\n      \"description\": \"Licence logicielle annuelle\",\n      \"quantity\": 1.0,\n      \"unitNetPrice\": 1200.00,\n      \"vatCategory\": \"Standard\",\n      \"vatRate\": 20.0,\n      \"unitCode\": \"C62\"\n    }\n  ]\n}",
+                      "description": "Données de facture au format JSON (InvoiceModel)"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },

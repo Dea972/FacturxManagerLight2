@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -10,24 +9,24 @@ using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
 using FacturXManager.Modules.Compliance.Domain.Common;
 using FacturXManager.Modules.Compliance.Domain.Invoices;
 
-namespace FacturXManager.Modules.Compliance.Application.FacturX.AttachFacturX;
+namespace FacturXManager.Modules.Compliance.Application.Invoicing.EmbedFacturX;
 
-public sealed class AttachFacturXCommandHandler(
+internal sealed class EmbedFacturXCommandHandler(
     IInvoiceBuilder invoiceBuilder,
     IEn16931Validator validator,
     ICrossIndustryInvoiceWriter xmlWriter,
     IFacturXPdfEmbedder pdfEmbedder)
-    : ICommandHandler<AttachFacturXCommand, AttachFacturXSummary>
+    : ICommandHandler<EmbedFacturXCommand, byte[]>
 {
-    public async Task<Result<AttachFacturXSummary>> Handle(
-        AttachFacturXCommand request,
+    public async Task<Result<byte[]>> Handle(
+        EmbedFacturXCommand request,
         CancellationToken cancellationToken)
     {
-        // 1. Convertir et valider la conformité des données d'Invoice
+        // 1. Construire et valider l'entité Invoice
         Result<Invoice> buildResult = invoiceBuilder.Build(request.Invoice);
         if (buildResult.IsFailure)
         {
-            return Result.Failure<AttachFacturXSummary>(buildResult.Error);
+            return Result.Failure<byte[]>(buildResult.Error);
         }
 
         Invoice invoice = buildResult.Value;
@@ -35,13 +34,13 @@ public sealed class AttachFacturXCommandHandler(
         Result validation = validator.Validate(invoice);
         if (validation.IsFailure)
         {
-            return Result.Failure<AttachFacturXSummary>(validation.Error);
+            return Result.Failure<byte[]>(validation.Error);
         }
 
         // 2. Générer le XML CII réglementaire
         string ciiXml = xmlWriter.Write(invoice);
 
-        // 3. Modéliser la requête d'intégration (réutilisation de FacturXRenderRequest existant)
+        // 3. Construire la requête d'embedding
         var renderRequest = new FacturXRenderRequest(
             ciiXml,
             FacturXConstants.EmbeddedXmlFileName,
@@ -84,16 +83,10 @@ public sealed class AttachFacturXCommandHandler(
         Result<byte[]> pdfResult = await pdfEmbedder.EmbedAsync(request.VisualPdfBytes, renderRequest, cancellationToken);
         if (pdfResult.IsFailure)
         {
-            return Result.Failure<AttachFacturXSummary>(pdfResult.Error);
+            return Result.Failure<byte[]>(pdfResult.Error);
         }
 
-        return new AttachFacturXSummary(
-            invoice.Number,
-            invoice.Profile.ToString(),
-            FacturXConstants.EmbeddedXmlFileName,
-            ciiXml,
-            Convert.ToBase64String(pdfResult.Value),
-            invoice.TotalWithVat);
+        return Result.Success(pdfResult.Value);
     }
 
     private static string FormatAddress(PostalAddress address) =>

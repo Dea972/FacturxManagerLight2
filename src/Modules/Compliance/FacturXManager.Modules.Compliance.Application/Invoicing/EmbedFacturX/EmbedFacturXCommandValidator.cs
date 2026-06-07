@@ -1,11 +1,10 @@
-using FacturXManager.Modules.Compliance.Application.Abstractions;
 using FluentValidation;
 
-namespace FacturXManager.Modules.Compliance.Application.FacturX.AttachFacturX;
+namespace FacturXManager.Modules.Compliance.Application.Invoicing.EmbedFacturX;
 
-internal sealed class AttachFacturXCommandValidator : AbstractValidator<AttachFacturXCommand>
+internal sealed class EmbedFacturXCommandValidator : AbstractValidator<EmbedFacturXCommand>
 {
-    public AttachFacturXCommandValidator()
+    public EmbedFacturXCommandValidator()
     {
         RuleFor(c => c.VisualPdfBytes)
             .NotEmpty()

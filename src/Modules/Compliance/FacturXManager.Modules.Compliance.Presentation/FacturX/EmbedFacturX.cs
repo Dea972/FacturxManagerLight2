@@ -3,20 +3,20 @@ using FacturXManager.Common.Domain;
 using FacturXManager.Common.Presentation.ApiResults;
 using FacturXManager.Common.Presentation.Endpoints;
 using FacturXManager.Modules.Compliance.Application.Abstractions.Invoices;
-using FacturXManager.Modules.Compliance.Application.FacturX.AttachFacturX;
+using FacturXManager.Modules.Compliance.Application.Invoicing.EmbedFacturX;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace FacturXManager.Modules.Compliance.Presentation.Invoicing;
+namespace FacturXManager.Modules.Compliance.Presentation.FacturX;
 
-internal sealed class AttachFacturX : IEndpoint
+internal sealed class EmbedFacturX : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("compliance/invoices/attach-facturx", async (
+        app.MapPost("compliance/invoices/embed", async (
             IFormFile file,
             [FromForm] string invoice,
             ISender sender) =>
@@ -34,10 +34,7 @@ internal sealed class AttachFacturX : IEndpoint
             InvoiceModel? invoiceModel;
             try
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 invoiceModel = JsonSerializer.Deserialize<InvoiceModel>(invoice, options);
             }
             catch (JsonException)
@@ -54,19 +51,20 @@ internal sealed class AttachFacturX : IEndpoint
             await file.CopyToAsync(ms);
             byte[] pdfBytes = ms.ToArray();
 
-            Result<AttachFacturXSummary> result =
-                await sender.Send(new AttachFacturXCommand(pdfBytes, invoiceModel));
+            Result<byte[]> result = await sender.Send(new EmbedFacturXCommand(pdfBytes, invoiceModel));
 
-            return result.Match(Results.Ok, ApiResults.Problem);
+            return result.Match(
+                bytes => Results.File(bytes, "application/pdf", $"facturx-{invoiceModel.Number}.pdf"),
+                ApiResults.Problem);
         })
         .WithTags(Tags.Invoice)
-        .WithSummary("Attacher Factur-X à un PDF existant")
+        .WithSummary("Embarquer Factur-X dans un PDF existant")
         .WithDescription(
-            "Prend un fichier PDF visuel et ses métadonnées métier (InvoiceModel) sous forme de formulaire, " +
-            "génère le XML CII conforme EN16931 et l'intègre au sein du PDF existant pour produire un PDF/A-3b Factur-X.")
-        .Produces<AttachFacturXSummary>()
+            "Reçoit un PDF visuel existant et les données de facture (InvoiceModel) en form-data, " +
+            "génère le XML CII conforme EN16931 et l'embarque dans le PDF fourni pour produire un PDF/A-3b Factur-X. " +
+            "Retourne directement le PDF enrichi en téléchargement.")
+        .Produces(StatusCodes.Status200OK, contentType: "application/pdf")
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .DisableAntiforgery();
-
     }
 }

@@ -76,6 +76,11 @@ public static class InvoiceErrors
     public static readonly Error InvalidPdf =
         Error.Problem("Compliance.InvalidPdf", "Le fichier fourni n'est pas un PDF valide ou est vide.");
 
+    public static readonly Error PdfEmbedFailed =
+        Error.Problem(
+            "Compliance.PdfEmbedFailed",
+            "L'intégration des données Factur-X dans le PDF fourni a échoué.");
+
     public static Error InvalidTransmissionChannel(string value) =>
         Error.Problem(
             "Compliance.Invoice.InvalidTransmissionChannel",
