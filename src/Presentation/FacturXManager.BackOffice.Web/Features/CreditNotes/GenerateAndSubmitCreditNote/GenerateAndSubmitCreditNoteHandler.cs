@@ -1,6 +1,7 @@
 using FacturXManager.BackOffice.Web.Common;
 using FacturXManager.BackOffice.Web.Features.Compliance;
 using FacturXManager.BackOffice.Web.Features.CreditNotes.ViewModels;
+using FacturXManager.Client.Compliance.Models;
 using FacturXManager.Client.Workflows;
 using MediatR;
 using ClientRequest = FacturXManager.Client.Compliance.Models.GenerateAndSubmitCreditNoteRequest;

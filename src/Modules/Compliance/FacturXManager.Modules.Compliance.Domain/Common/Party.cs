@@ -8,10 +8,9 @@ namespace FacturXManager.Modules.Compliance.Domain.Common;
 public sealed class Party : ValueObject
 {
     private Party() { }  // ← pour EF Core
-    private Party(string name, string? legalRegistrationId, string? legalOrganizationId, string? vatIdentifier, PostalAddress address, string? electronicAddress, string? electronicAddressScheme)
+    private Party(string name,   string legalOrganizationId, string? vatIdentifier, PostalAddress address, string? electronicAddress, string? electronicAddressScheme)
     {
         Name = name;
-        LegalRegistrationId = legalRegistrationId;
         LegalOrganizationId = legalOrganizationId;
         VatIdentifier = vatIdentifier;
         Address = address;
@@ -21,11 +20,13 @@ public sealed class Party : ValueObject
 
     public string Name { get; }
 
-    /// <summary>Identifiant SIREN (9 chiffres) — identifiant légal de l'entreprise.</summary>
-    public string? LegalRegistrationId { get; }
+    /// <summary>Identifiant SIREN (9 chiffres) — dérivé automatiquement du SIRET.</summary>
+    public string? LegalRegistrationId => LegalOrganizationId is { Length: >= 9 } siret
+        ? siret[..9]
+        : null;
 
     /// <summary>Identifiant SIRET (14 chiffres) — identifiant de l'établissement (SpecifiedLegalOrganization).</summary>
-    public string? LegalOrganizationId { get; }
+    public string LegalOrganizationId { get; }
 
     /// <summary>Numéro de TVA intracommunautaire (ex : FR12345678901).</summary>
     public string? VatIdentifier { get; }
@@ -45,15 +46,13 @@ public sealed class Party : ValueObject
     public static Party Create(
         string name,
         PostalAddress address,
-        string? legalRegistrationId = null,
-        string? legalOrganizationId = null,
+        string legalOrganizationId,
         string? vatIdentifier = null,
         string? electronicAddress = null,
         string? electronicAddressScheme = null) =>
         new(
             name?.Trim() ?? string.Empty,
-            string.IsNullOrWhiteSpace(legalRegistrationId) ? null : legalRegistrationId.Trim(),
-            string.IsNullOrWhiteSpace(legalOrganizationId) ? null : legalOrganizationId.Trim(),
+            string.IsNullOrWhiteSpace(legalOrganizationId) ? string.Empty : legalOrganizationId.Trim(),
             string.IsNullOrWhiteSpace(vatIdentifier) ? null : vatIdentifier.Trim().ToUpperInvariant(),
             address,
             string.IsNullOrWhiteSpace(electronicAddress) ? null : electronicAddress.Trim(),

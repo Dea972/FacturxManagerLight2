@@ -39,7 +39,9 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
 
         Party seller = ToParty(model.Seller);
         Party buyer = ToParty(model.Buyer);
-        var payment = PaymentDetails.Create(model.Payment.MeansCode.ToUnclCode(), model.Payment.DueDate, model.Payment.Iban);
+        PaymentDetails payment = model.Payment is not null 
+            ? PaymentDetails.Create(model.Payment.MeansCode.ToUnclCode(), model.Payment.DueDate, model.Payment.Iban)
+            : null;
 
         return Invoice.Create(
             model.Number,
@@ -64,7 +66,7 @@ internal sealed class InvoiceBuilder : IInvoiceBuilder
             model.CountryCode,
             model.AddressLine2);
 
-        return Party.Create(model.Name, address, model.LegalRegistrationId, model.LegalOrganizationId, model.VatIdentifier, model.ElectronicAddress, model.ElectronicAddressScheme);
+        return Party.Create(model.Name, address, model.LegalOrganizationId, model.VatIdentifier, model.ElectronicAddress, model.ElectronicAddressScheme);
     }
 
     private static bool TryParseProfile(string value, out FacturXProfile profile)

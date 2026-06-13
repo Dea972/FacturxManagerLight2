@@ -81,7 +81,9 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
 
         transaction.Add(BuildHeaderTradeAgreement(invoice));
         transaction.Add(new XElement(Ram + "ApplicableHeaderTradeDelivery"));
+
         transaction.Add(BuildHeaderTradeSettlement(invoice));
+
 
         return transaction;
     }
@@ -196,19 +198,22 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
         var settlement = new XElement(
             Ram + "ApplicableHeaderTradeSettlement",
             new XElement(Ram + "InvoiceCurrencyCode", invoice.CurrencyCode));
-
-        var paymentMeans = new XElement(
+        if (invoice.Payment is not null)
+        {
+            var paymentMeans = new XElement(
             Ram + "SpecifiedTradeSettlementPaymentMeans",
             new XElement(Ram + "TypeCode", invoice.Payment.MeansCode));
 
-        if (!string.IsNullOrWhiteSpace(invoice.Payment.Iban))
-        {
-            paymentMeans.Add(new XElement(
-                Ram + "PayeePartyCreditorFinancialAccount",
-                new XElement(Ram + "IBANID", invoice.Payment.Iban)));
-        }
 
-        settlement.Add(paymentMeans);
+            if (!string.IsNullOrWhiteSpace(invoice.Payment.Iban))
+            {
+                paymentMeans.Add(new XElement(
+                    Ram + "PayeePartyCreditorFinancialAccount",
+                    new XElement(Ram + "IBANID", invoice.Payment.Iban)));
+            }
+
+            settlement.Add(paymentMeans);
+        }
 
         foreach (VatBreakdown breakdown in invoice.VatBreakdowns)
         {
@@ -221,7 +226,7 @@ internal sealed class CrossIndustryInvoiceWriter : ICrossIndustryInvoiceWriter
                 new XElement(Ram + "RateApplicablePercent", Rate(breakdown.Rate))));
         }
 
-        if (invoice.Payment.DueDate is { } dueDate)
+        if (invoice.Payment?.DueDate is { } dueDate)
         {
             settlement.Add(new XElement(
                 Ram + "SpecifiedTradePaymentTerms",

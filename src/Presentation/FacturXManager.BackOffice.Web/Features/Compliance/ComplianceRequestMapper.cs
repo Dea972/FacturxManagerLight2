@@ -73,7 +73,7 @@ internal static class ComplianceRequestMapper
         PostalCode = party.PostalCode,
         City = party.City,
         CountryCode = party.CountryCode,
-        LegalRegistrationId = party.LegalRegistrationId,
+        LegalOrganizationId = party.LegalOrganizationId,
         VatIdentifier = party.VatIdentifier,
     };
 

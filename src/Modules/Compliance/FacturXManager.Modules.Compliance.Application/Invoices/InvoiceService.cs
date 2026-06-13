@@ -56,9 +56,9 @@ internal sealed class InvoiceService(
             BuyerVatIdentifier: invoice.Buyer.VatIdentifier,
             BuyerLegalRegistrationId: invoice.Buyer.LegalRegistrationId,
             AmountDue: invoice.AmountDue,
-            PaymentMeansCode: invoice.Payment.MeansCode,
-            PaymentIban: invoice.Payment.Iban,
-            PaymentDueDate: invoice.Payment.DueDate,
+            PaymentMeansCode: invoice.Payment?.MeansCode,
+            PaymentIban: invoice.Payment?.Iban,
+            PaymentDueDate: invoice.Payment?.DueDate,
             Lines: invoice.Lines.Select(l =>
             {
                 int index = invoice.Lines.ToList().IndexOf(l) + 1; // 1-based index for line IDs

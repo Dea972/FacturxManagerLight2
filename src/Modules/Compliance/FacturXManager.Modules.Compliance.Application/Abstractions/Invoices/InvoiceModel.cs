@@ -23,9 +23,8 @@ public sealed record PartyModel(
     string PostalCode,
     string City,
     string CountryCode,
+    string LegalOrganizationId,
     string? AddressLine2 = null,
-    string? LegalRegistrationId = null,
-    string? LegalOrganizationId = null,
     string? VatIdentifier = null,
     string? ElectronicAddress = null,
     string? ElectronicAddressScheme = null);
@@ -33,7 +32,8 @@ public sealed record PartyModel(
 public sealed record PaymentModel(
     PaymentMeansCode MeansCode,
     DateOnly? DueDate = null,
-    string? Iban = null);
+    string? Iban = null,
+    string? Bic = null);
 
 public sealed record InvoiceLineModel(
     string Id,

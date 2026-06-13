@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using FacturXManager.Common.Domain;
 using FacturXManager.Modules.Directory.Application.Abstractions;
@@ -83,7 +84,7 @@ internal sealed class ChorusProStructureService(
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return Result.Failure<ChorusProStructureDetailResponse>(
-                    CompanyErrors.NotFound(idStructureCpp.ToString()));
+                    CompanyErrors.NotFound(idStructureCpp.ToString(CultureInfo.InvariantCulture)));
             }
 
             if (!response.IsSuccessStatusCode || response.Content is null)
@@ -139,6 +140,6 @@ internal sealed class ChorusProStructureService(
             IsActive: isActive,
             IsPubliclyDisclosed: true,
             Source: nameof(DirectorySource.Ppf),
-            AttachedPlatformIdentifier: structure.IdentifiantTechnique ?? structure.IdStructureCpp.ToString());
+            AttachedPlatformIdentifier: structure.IdentifiantTechnique ?? structure.IdStructureCpp.ToString(CultureInfo.InvariantCulture));
     }
 }

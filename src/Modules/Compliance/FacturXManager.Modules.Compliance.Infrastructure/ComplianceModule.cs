@@ -50,7 +50,7 @@ public static class ComplianceModule
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ComplianceDbContext>());
-
+        QuestPDF.Settings.EnableDebugging = true;
 
         services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
         services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();

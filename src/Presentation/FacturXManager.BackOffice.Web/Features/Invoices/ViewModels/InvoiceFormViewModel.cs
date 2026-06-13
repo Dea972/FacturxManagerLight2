@@ -55,7 +55,12 @@ public sealed class PartyFormViewModel
     [Required]
     public string CountryCode { get; set; } = "FR";
 
-    public string? LegalRegistrationId { get; set; }
+    /// <summary>SIRET (14 chiffres) saisi dans le formulaire.</summary>
+    public string LegalOrganizationId { get; set; }
+
+    /// <summary>SIREN calculé à partir des 9 premiers caractères du SIRET.</summary>
+    public string? LegalRegistrationId =>
+        LegalOrganizationId is { Length: >= 9 } siret ? siret[..9] : null;
 
     public string? VatIdentifier { get; set; }
 }
