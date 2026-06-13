@@ -9,6 +9,7 @@ using FacturXManager.Modules.Compliance.Infrastructure.Database;
 using FacturXManager.Modules.Compliance.Infrastructure.FacturX;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoices;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
+using FacturXManager.Modules.Compliance.Infrastructure.iText7;
 using FacturXManager.Modules.Compliance.Infrastructure.PdfSharp;
 using FacturXManager.Modules.Compliance.Infrastructure.QuestPdf;
 using FacturXManager.Modules.Compliance.Infrastructure.Zugferd;
@@ -64,6 +65,9 @@ public static class ComplianceModule
 
         // Keyed: rendu PDF/A-3b via PdfSharp (fallback, post-traitement binaire XMP)
         services.AddKeyedScoped<IFacturXPdfA3BRenderer, PdfSharpFacturXPdfA3BRenderer>("pdfsharp");
+
+        // Keyed: embedding Factur-X via iText 8 (PDF externe fourni par le client, entièrement en mémoire)
+        services.AddKeyedScoped<IFacturXPdfEmbedder, ITextFacturXPdfEmbedder>("itext7");
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)

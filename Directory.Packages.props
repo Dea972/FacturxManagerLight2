@@ -54,6 +54,8 @@
     <!-- Blazor UI -->
     <PackageVersion Include="Radzen.Blazor" Version="10.4.6" />
     <!-- PDF Rendering (Factur-X / PDF/A-3b) -->
+    <PackageVersion Include="itext7" Version="8.0.5" />
+    <PackageVersion Include="itext7.bouncy-castle-adapter" Version="8.0.5" />
     <PackageVersion Include="PdfSharp" Version="6.2.4" />
     <!-- Scheduling -->
     <PackageVersion Include="Quartz.Extensions.Hosting" Version="3.18.1" />
