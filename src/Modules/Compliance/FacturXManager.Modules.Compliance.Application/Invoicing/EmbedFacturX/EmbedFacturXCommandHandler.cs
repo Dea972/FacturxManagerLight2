@@ -60,9 +60,9 @@ internal sealed class EmbedFacturXCommandHandler(
             BuyerVatIdentifier: invoice.Buyer.VatIdentifier,
             BuyerLegalRegistrationId: invoice.Buyer.LegalRegistrationId,
             AmountDue: invoice.AmountDue,
-            PaymentMeansCode: invoice.Payment.MeansCode,
-            PaymentIban: invoice.Payment.Iban,
-            PaymentDueDate: invoice.Payment.DueDate,
+            PaymentMeansCode: invoice.Payment?.MeansCode,
+            PaymentIban: invoice.Payment?.Iban,
+            PaymentDueDate: invoice.Payment?.DueDate,
             Lines: invoice.Lines.Select((l, index) =>
                 new RenderLineItem(
                     (index + 1).ToString(CultureInfo.InvariantCulture),

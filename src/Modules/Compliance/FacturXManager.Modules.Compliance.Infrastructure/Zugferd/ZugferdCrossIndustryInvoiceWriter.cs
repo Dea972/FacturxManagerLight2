@@ -71,7 +71,7 @@ internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceW
         if (!string.IsNullOrWhiteSpace(invoice.Buyer.LegalRegistrationId))
         {
             descriptor.AddBuyerTaxRegistration(invoice.Buyer.LegalRegistrationId, TaxRegistrationSchemeID.FC);
-            
+
         }
 
 
@@ -85,27 +85,32 @@ internal sealed class ZugferdCrossIndustryInvoiceWriter : ICrossIndustryInvoiceW
         // Livraison (BG-13) — obligatoire dans le XSD CII même si vide
         descriptor.ActualDeliveryDate = invoice.IssueDate.ToDateTime(TimeOnly.MinValue);
 
-        // Modalités de paiement (BG-16)
-        descriptor.SetPaymentMeans(
-            MapPaymentMeansCode(invoice.Payment.MeansCode),
-            string.Empty);
 
-        if (invoice.Payment.DueDate.HasValue)
+        if (invoice.Payment is not null)
         {
+            // Modalités de paiement (BG-16)
             descriptor.SetPaymentMeans(
                 MapPaymentMeansCode(invoice.Payment.MeansCode),
                 string.Empty);
-            descriptor.AddTradePaymentTerms(
-                string.Empty,
-                invoice.Payment.DueDate.Value.ToDateTime(TimeOnly.MinValue));
+
+            if (invoice.Payment.DueDate.HasValue)
+            {
+                descriptor.SetPaymentMeans(
+                    MapPaymentMeansCode(invoice.Payment.MeansCode),
+                    string.Empty);
+                descriptor.AddTradePaymentTerms(
+                    string.Empty,
+                    invoice.Payment.DueDate.Value.ToDateTime(TimeOnly.MinValue));
+            }
+
+            if (!string.IsNullOrWhiteSpace(invoice.Payment.Iban))
+            {
+                descriptor.SetPaymentMeansSepaDirectDebit(
+                    string.Empty,
+                    invoice.Payment.Iban);
+            }
         }
 
-        if (!string.IsNullOrWhiteSpace(invoice.Payment.Iban))
-        {
-            descriptor.SetPaymentMeansSepaDirectDebit(
-                string.Empty,
-                invoice.Payment.Iban);
-        }
 
         // Lignes de facture (BG-25)
         foreach (InvoiceLine line in invoice.Lines)

@@ -3,6 +3,7 @@
 @using FacturXManager.BackOffice.Web.Features.Invoices.GenerateAndSubmitInvoice
 @using FacturXManager.BackOffice.Web.Features.Invoices.GenerateInvoice
 @using FacturXManager.BackOffice.Web.Features.Invoices.DownloadInvoicePdf
+@using FacturXManager.BackOffice.Web.Features.Invoices.ImportFromJson
 @using FacturXManager.BackOffice.Web.Features.Invoices.ViewModels
 @inject ISender Sender
 @inject NotificationService Notifications
@@ -12,6 +13,23 @@
 <PageTitle>Nouvelle facture — FacturX Manager</PageTitle>
 
 <RadzenText TextStyle="TextStyle.H4" class="rz-mb-4">Générer une facture Factur-X</RadzenText>
+
+@* ── Import JSON ── *@
+<RadzenCard class="rz-mb-4">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+        <RadzenIcon Icon="upload_file" style="font-size: 1.5rem; color: var(--rz-primary)" />
+        <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">Préremplir depuis un JSON</RadzenText>
+        <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0" style="color: var(--rz-text-secondary-color)">
+            Importez un fichier JSON au format <code>invoice</code> pour préremplir automatiquement le formulaire.
+        </RadzenText>
+        <RadzenUpload Accept=".json,application/json" Auto="false" Change="OnJsonFileSelectedAsync"
+                      Disabled="_importBusy" ChooseText="Choisir un fichier JSON" />
+        @if (_importBusy)
+        {
+            <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Small" />
+        }
+    </RadzenStack>
+</RadzenCard>
 
 <RadzenCard class="rz-mb-4">
     <EditForm Model="@_form" OnValidSubmit="OnCertifyAsync">
@@ -169,6 +187,7 @@
     private bool _downloading;
     private bool _submitting;
     private bool _showSubmitFields;
+    private bool _importBusy;
     private string _recipientSiret = string.Empty;
     private string? _executingService;
 
@@ -198,6 +217,31 @@
             _form.Lines.RemoveAt(index);
         }
     }
+
+    private async Task OnJsonFileSelectedAsync(UploadChangeEventArgs e)
+    {
+        IBrowserFile? file = e.Files?.FirstOrDefault();
+        if (file is null)
+        {
+            return;
+        }
+
+        _importBusy = true;
+
+        string? error = await InvoiceJsonImporter.TryApplyAsync(file, _form);
+
+        _importBusy = false;
+
+        if (error is not null)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Import JSON échoué", error);
+        }
+        else
+        {
+            Notifications.Notify(NotificationSeverity.Success, "Formulaire prérempli", "Les données du JSON ont été appliquées au formulaire.");
+        }
+    }
+
 
     private async Task OnCertifyAsync()
     {

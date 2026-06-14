@@ -33,7 +33,7 @@ public sealed class Invoice : Entity
 
     public Party Buyer { get; private set; } = null!;
 
-    public PaymentDetails Payment { get; private set; } = null!;
+    public PaymentDetails? Payment { get; private set; } = null!;
 
     public string? BuyerReference { get; private set; }
 
@@ -69,7 +69,7 @@ public sealed class Invoice : Entity
         OperationNature operationNature,
         Party? seller,
         Party? buyer,
-        PaymentDetails payment,
+        PaymentDetails? payment,
         IReadOnlyCollection<InvoiceLine> lines,
         string? buyerReference = null,
         string? purchaseOrderReference = null)

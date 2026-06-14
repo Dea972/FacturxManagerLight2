@@ -1,4 +1,4 @@
-namespace FacturXManager.Modules.Transmission.Infrastructure.ChorusPro;
+namespace FacturXManager.Common.Infrastructure.Piste;
 
 /// <summary>
 /// Options OAuth2 PISTE (AIFE). Renseignées via configuration / variables d'environnement,
@@ -27,5 +27,5 @@ public sealed class PisteAuthOptions
 
     public string CproLogin { get; init; } = string.Empty;
 
-    public string CproPassword { get; init;} = string.Empty;
+    public string CproPassword { get; init; } = string.Empty;
 }

@@ -9,6 +9,7 @@ using FacturXManager.Modules.Compliance.Infrastructure.Database;
 using FacturXManager.Modules.Compliance.Infrastructure.FacturX;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoices;
 using FacturXManager.Modules.Compliance.Infrastructure.Invoicing;
+using FacturXManager.Modules.Compliance.Infrastructure.iText7;
 using FacturXManager.Modules.Compliance.Infrastructure.PdfSharp;
 using FacturXManager.Modules.Compliance.Infrastructure.QuestPdf;
 using FacturXManager.Modules.Compliance.Infrastructure.Zugferd;
@@ -50,11 +51,11 @@ public static class ComplianceModule
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ComplianceDbContext>());
-
+        QuestPDF.Settings.EnableDebugging = true;
 
         services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
         services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();
-        services.AddScoped<IFacturXPdfEmbedder, QuestPdfFacturXEmbedder>();
+        services.AddScoped<IFacturXPdfEmbedder, TextFacturXPdfEmbedder>();
 
         // Keyed: implémentation alternative XML CII (System.Xml.Linq, sans dépendance)
         services.AddKeyedScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>("xmllinq");
@@ -64,6 +65,9 @@ public static class ComplianceModule
 
         // Keyed: rendu PDF/A-3b via PdfSharp (fallback, post-traitement binaire XMP)
         services.AddKeyedScoped<IFacturXPdfA3BRenderer, PdfSharpFacturXPdfA3BRenderer>("pdfsharp");
+
+        // Keyed: embedding Factur-X via iText 8 (PDF externe fourni par le client, entièrement en mémoire)
+        services.AddKeyedScoped<IFacturXPdfEmbedder, TextFacturXPdfEmbedder>("itext7");
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)

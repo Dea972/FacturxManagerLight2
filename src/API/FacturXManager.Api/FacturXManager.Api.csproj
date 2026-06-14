@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="BouncyCastle.Cryptography" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">

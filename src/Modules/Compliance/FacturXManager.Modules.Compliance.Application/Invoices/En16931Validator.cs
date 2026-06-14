@@ -21,7 +21,7 @@ internal sealed class En16931Validator : IEn16931Validator
             errors.Add(InvoiceErrors.SellerRequired);
         }
 
-        if (!invoice.Seller.HasLegalRegistrationId)
+        if (!invoice.Seller.HasLegalOrganizationId)
         {
             errors.Add(InvoiceErrors.SellerSirenRequired);
         }
@@ -37,17 +37,9 @@ internal sealed class En16931Validator : IEn16931Validator
             errors.Add(InvoiceErrors.BuyerRequired);
         }
 
-        if (invoice.IsSubjectToB2BObligation())
+        if (invoice.IsSubjectToB2BObligation() && invoice.OperationNature == OperationNature.Unspecified)
         {
-            if (!invoice.Buyer.HasLegalRegistrationId)
-            {
-                errors.Add(InvoiceErrors.BuyerSirenRequired);
-            }
-
-            if (invoice.OperationNature == OperationNature.Unspecified)
-            {
                 errors.Add(InvoiceErrors.OperationNatureRequired);
-            }
         }
 
         foreach (InvoiceLine line in invoice.Lines)

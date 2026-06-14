@@ -4,20 +4,20 @@ using FacturXManager.Common.Application.Caching;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FacturXManager.Modules.Transmission.Infrastructure.ChorusPro;
+namespace FacturXManager.Common.Infrastructure.Piste;
 
 /// <summary>
 /// Injecte le token OAuth2 PISTE (client_credentials) sur chaque appel sortant.
 /// Le token est mis en cache et renouvelé avant expiration ; il n'est jamais loggué.
 /// </summary>
-internal sealed class PisteAuthenticationHandler(
+public sealed class PisteAuthenticationHandler(
     IHttpClientFactory httpClientFactory,
     ICacheService cacheService,
     IOptions<PisteAuthOptions> options,
     ILogger<PisteAuthenticationHandler> logger)
     : DelegatingHandler
 {
-    private const string CacheKey = "transmission:piste:access-token";
+    private const string CacheKey = "piste:access-token";
 
     private readonly PisteAuthOptions _options = options.Value;
 

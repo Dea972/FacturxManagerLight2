@@ -1,7 +1,10 @@
 using System.Text.Json.Serialization;
 
-namespace FacturXManager.Modules.Transmission.Infrastructure.ChorusPro;
+namespace FacturXManager.Common.Infrastructure.Piste;
 
+/// <summary>
+/// Réponse du serveur OAuth2 PISTE (flux client_credentials).
+/// </summary>
 internal sealed record PisteTokenResponse
 {
     [JsonPropertyName("access_token")]

@@ -26,7 +26,7 @@ public sealed class PartyRequest
     public string PostalCode { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string CountryCode { get; set; } = string.Empty;
-    public string? LegalRegistrationId { get; set; }
+    public string LegalOrganizationId { get; set; }
     public string? VatIdentifier { get; set; }
 }
 

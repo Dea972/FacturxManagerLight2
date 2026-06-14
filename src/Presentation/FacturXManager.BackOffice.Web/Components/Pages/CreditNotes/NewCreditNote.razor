@@ -2,6 +2,7 @@
 @using FacturXManager.BackOffice.Web.Features.Compliance
 @using FacturXManager.BackOffice.Web.Features.CreditNotes.GenerateAndSubmitCreditNote
 @using FacturXManager.BackOffice.Web.Features.CreditNotes.GenerateCreditNote
+@using FacturXManager.BackOffice.Web.Features.CreditNotes.ImportFromJson
 @using FacturXManager.BackOffice.Web.Features.Invoices.GetInvoices
 @using FacturXManager.BackOffice.Web.Features.CreditNotes.DownloadCreditNotePdf
 @using FacturXManager.BackOffice.Web.Features.CreditNotes.ViewModels
@@ -22,6 +23,23 @@
         Saisissez le numéro de l'avoir, la date et le motif, puis ajustez les lignes si nécessaire.
     </RadzenAlert>
 }
+
+@* ── Import JSON ── *@
+<RadzenCard class="rz-mb-4">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+        <RadzenIcon Icon="upload_file" style="font-size: 1.5rem; color: var(--rz-primary)" />
+        <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">Préremplir depuis un JSON</RadzenText>
+        <RadzenText TextStyle="TextStyle.Body2" class="rz-m-0" style="color: var(--rz-text-secondary-color)">
+            Importez un fichier JSON au format <code>creditNote</code> pour préremplir automatiquement le formulaire.
+        </RadzenText>
+        <RadzenUpload Accept=".json,application/json" Auto="false" Change="OnJsonFileSelectedAsync"
+                      Disabled="_importBusy" ChooseText="Choisir un fichier JSON" />
+        @if (_importBusy)
+        {
+            <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Small" />
+        }
+    </RadzenStack>
+</RadzenCard>
 
 <RadzenCard class="rz-mb-4">
     <EditForm Model="@_form" OnValidSubmit="OnGenerateAsync">
@@ -174,6 +192,7 @@
     private bool _downloading;
     private bool _submitting;
     private bool _showSubmitFields;
+    private bool _importBusy;
     private string _recipientSiret = string.Empty;
     private string? _executingService;
     private string? _prefillSourceNumber;
@@ -212,16 +231,42 @@
     private static readonly string[] _profiles = ["EN16931", "Extended"];
     private static readonly string[] _operationNatures = ["Goods", "Services", "Mixed", "ConstructionWork"];
 
-    private static readonly List<(string Label, string Value)> _paymentMeans =
+    private sealed record PaymentMean(string Label, string Value);
+
+    private static readonly List<PaymentMean> _paymentMeans =
     [
-        ("Virement bancaire", "BankTransfer"),
-        ("Virement de débit", "DebitTransfer"),
-        ("Carte bancaire", "BankCard"),
-        ("Prélèvement bancaire", "DirectDebit"),
-        ("Virement SEPA", "SepaCreditTransfer"),
-        ("Prélèvement SEPA", "SepaDirectDebit"),
-        ("Compensation", "ClearingBetweenPartners"),
+        new("Virement bancaire", "BankTransfer"),
+        new("Virement de débit", "DebitTransfer"),
+        new("Carte bancaire", "BankCard"),
+        new("Prélèvement bancaire", "DirectDebit"),
+        new("Virement SEPA", "SepaCreditTransfer"),
+        new("Prélèvement SEPA", "SepaDirectDebit"),
+        new("Compensation", "ClearingBetweenPartners"),
     ];
+
+    private async Task OnJsonFileSelectedAsync(UploadChangeEventArgs e)
+    {
+        IBrowserFile? file = e.Files?.FirstOrDefault();
+        if (file is null)
+        {
+            return;
+        }
+
+        _importBusy = true;
+
+        string? error = await CreditNoteJsonImporter.TryApplyAsync(file, _form);
+
+        _importBusy = false;
+
+        if (error is not null)
+        {
+            Notifications.Notify(NotificationSeverity.Error, "Import JSON échoué", error);
+        }
+        else
+        {
+            Notifications.Notify(NotificationSeverity.Success, "Formulaire prérempli", "Les données du JSON ont été appliquées au formulaire.");
+        }
+    }
 
     private void AddLine() =>
         _form.Lines.Add(new CreditNoteLineFormViewModel { Id = (_form.Lines.Count + 1).ToString() });
