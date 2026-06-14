@@ -16,7 +16,7 @@ internal static class InvoiceTestData
         Party.Create("Vendeur SA", FrenchAddress(), siren,siret, vat);
 
     public static Party BuyerWithoutSiren() =>
-        Party.Create("Acheteur SAS", FrenchAddress("Lyon", "69001"));
+        Party.Create("Acheteur SAS", FrenchAddress("Lyon", "69001"), "55212022212345");
 
     public static Party BuyerWithSiren(string siren = "732829320") =>
         Party.Create("Acheteur SAS", FrenchAddress("Lyon", "69001"), siren);

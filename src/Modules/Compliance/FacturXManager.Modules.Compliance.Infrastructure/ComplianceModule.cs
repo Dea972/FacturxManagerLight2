@@ -55,7 +55,7 @@ public static class ComplianceModule
 
         services.AddScoped<ICrossIndustryInvoiceWriter, ZugferdCrossIndustryInvoiceWriter>();
         services.AddScoped<IFacturXMetadataExtractor, FacturXMetadataExtractor>();
-        services.AddScoped<IFacturXPdfEmbedder, QuestPdfFacturXEmbedder>();
+        services.AddScoped<IFacturXPdfEmbedder, TextFacturXPdfEmbedder>();
 
         // Keyed: implémentation alternative XML CII (System.Xml.Linq, sans dépendance)
         services.AddKeyedScoped<ICrossIndustryInvoiceWriter, CrossIndustryInvoiceWriter>("xmllinq");
@@ -67,7 +67,7 @@ public static class ComplianceModule
         services.AddKeyedScoped<IFacturXPdfA3BRenderer, PdfSharpFacturXPdfA3BRenderer>("pdfsharp");
 
         // Keyed: embedding Factur-X via iText 8 (PDF externe fourni par le client, entièrement en mémoire)
-        services.AddKeyedScoped<IFacturXPdfEmbedder, ITextFacturXPdfEmbedder>("itext7");
+        services.AddKeyedScoped<IFacturXPdfEmbedder, TextFacturXPdfEmbedder>("itext7");
     }
 
     private static Task ConfigureAsync(this IServiceCollection services, IConfiguration configuration)
